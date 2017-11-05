@@ -36,3 +36,6 @@ node_modules
 
 # Exclude node run files
 package-lock.json
+
+# Exclude other
+.DS_Store
