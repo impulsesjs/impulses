@@ -1,8 +1,8 @@
 'use strict'
 
-import Values from './values.js'
+import Values from './values'
 
-const queue = class QueueClass {
+const Queue = class QueueClass {
 
     /**
      * Creates and initializes a Values object
@@ -40,9 +40,12 @@ const queue = class QueueClass {
          */
         function add (data) {
             let id = Date.now().toString()
+            // Make sure that we do not have the same key already stored
+            while (queuedData.isSet(id)) {
+                id = Date.now().toString()
+            }
             queuedData.set(id, data)
             queue.push(id)
-            console.log(queue, queuedData.export())
             return id
         }
 
@@ -50,14 +53,16 @@ const queue = class QueueClass {
          * Cancel a queued data, by removing it from the queue and from the data
          *
          * @param {number} id Queued Data identifier
-         * @returns {boolean}
+         * @returns {boolean|null}
          */
         function cancel (id) {
-            if (queue.indexOf(id) >= 0) {
+            let pos = queue.indexOf(id)
+            if (pos >= 0) {
+                queue.splice(pos, 1)
                 let result = queuedData.destroy(id)
                 return (result !== null) ? result : true
             }
-            return true
+            return null
         }
 
         /**
@@ -72,16 +77,40 @@ const queue = class QueueClass {
 
         /**** Privileged Methods *************************************************************************************/
 
+        /**
+         * Gets the first in queue line and remove it from the list
+         *
+         * @returns {*|null} Value or null if not present
+         */
         this.next = () => { return next() }
 
+        /**
+         * Adds a new data to the queue
+         *
+         * @param {*} data Any structure or simple type allowed
+         * @returns {number}
+         */
         this.add = (data) => { return add(data) }
 
+        /**
+         * Cancel a queued data, by removing it from the queue and from the data
+         *
+         * @param {number} id Queued Data identifier
+         * @returns {boolean}
+         */
         this.cancel = (id) => { return cancel(id) }
 
+        /**
+         * Gets the value of a specific id (if present)
+         *
+         * @param {number} id Queued Data identifier
+         * @returns {*|null} Value or null if not present
+         */
         this.get = (id) => { return get(id) }
     }
 
     /**** Prototype Methods ******************************************************************************************/
 }
 
-module.exports = queue
+export default Queue
+// module.exports = Queue
