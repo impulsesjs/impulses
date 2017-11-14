@@ -5,11 +5,12 @@
   "main": "lib/commbus.js",
   "scripts": {
     "build": "webpack --env build",
+    "build:cov": "webpack",
     "build:watch": "webpack -w --config webpack.config.js",
     "test": "mocha --compilers js:babel-core/register --colors ./test/*.spec.js",
     "test:watch": "mocha --compilers js:babel-core/register --colors -w ./test/*.spec.js",
     "test:export": "mkdir -p output-test && mocha --compilers js:babel-register --recursive > output-test/index.txt",
-    "test:cov": "babel-node ./node_modules/isparta/bin/isparta cover ./node_modules/mocha/bin/_mocha -- --recursive",
+    "test:cov": "babel-node ./node_modules/isparta/bin/isparta cover _mocha -- --recursive",
     "test:export:watch": "npm test -- --watch"
   },
   "devDependencies": {
@@ -24,6 +25,7 @@
     "eslint-loader": "1.7.1",
     "mocha": "3.3.0",
     "webpack": "3.1.0",
+    "webpack-bundle-analyzer": "^2.8.2",
     "yargs": "7.1.0"
   },
   "repository": {

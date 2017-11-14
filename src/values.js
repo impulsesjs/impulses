@@ -1,6 +1,6 @@
 'use strict'
 
-const values = class ValuesClass {
+const Values = class ValuesClass {
 
     /**
      * Creates and initializes a Values object
@@ -71,9 +71,10 @@ const values = class ValuesClass {
 
             if (previousPathToDestroy.length > 1) {
                 let pathToDestroy = previousPathToDestroy[previousPathToDestroy.length-1]
-                delete previousPathToDestroy[previousPathToDestroy.length-1]
+                previousPathToDestroy.splice(previousPathToDestroy.length-1, 1)
+                // delete previousPathToDestroy[previousPathToDestroy.length-1]
 
-                let holder = getPointerTo(previousPathToDestroy)
+                let holder = getPointerTo(previousPathToDestroy.join('.'))
                 if (holder.hasOwnProperty(pathToDestroy)) {
                     delete holder[pathToDestroy]
                 } else {
@@ -136,6 +137,16 @@ const values = class ValuesClass {
             })
         }
 
+        /**
+         * Check if the provided path is set
+         *
+         * @param {string} fullPath Object notation 'some.variable.name'
+         * @returns {boolean}
+         */
+        function isSet (fullPath) {
+            return getPointerTo(fullPath) !== null
+        }
+
         /**** Privileged Methods *************************************************************************************/
 
         /**
@@ -175,6 +186,14 @@ const values = class ValuesClass {
         this.set = (fullPath, valueToSet) => { set(fullPath, valueToSet) }
 
         /**
+         * Checks if a path is set
+         *
+         * @param {string} fullPath Object notation 'some.variable.name.to.check'
+         * @returns {boolean}
+         */
+        this.isSet = (fullPath) => { return isSet(fullPath) }
+
+        /**
          * Get a specific value
          *
          * @param {string} fullPath Object notation 'some.variable.name.to.fetch'
@@ -194,4 +213,4 @@ const values = class ValuesClass {
     /**** Prototype Methods ******************************************************************************************/
 }
 
-module.exports = values
+export default Values
