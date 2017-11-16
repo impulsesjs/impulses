@@ -52,5 +52,8 @@
   "bugs": {
     "url": "https://gitlab.com/techchase/comm-bus/issues"
   },
-  "homepage": "https://gitlab.com/techchase/comm-bus"
+  "homepage": "https://gitlab.com/techchase/comm-bus",
+  "dependencies": {
+    "md5": "^2.2.1"
+  }
 }

@@ -6,6 +6,7 @@ const Queue = class QueueClass {
 
     /**
      * Creates and initializes a Values object
+     * @constructor
      */
     constructor () {
 
@@ -13,8 +14,22 @@ const Queue = class QueueClass {
 
         let queue = []
         let queuedData = new Values()
+        let hold = false
 
         /**** Private Methods ****************************************************************************************/
+
+        function onHold() {
+            return hold
+        }
+
+        function getHold() {
+            while (onHold()) {}
+            hold = true
+        }
+
+        function relaseHold() {
+            hold = false
+        }
 
         /**
          * Gets the first in queue line and remove it from the list
@@ -23,9 +38,11 @@ const Queue = class QueueClass {
          */
         function next () {
             if (queue.length > 0) {
+                getHold()
                 let id = queue.shift()
                 let data = get(id)
                 queuedData.destroy(id)
+                relaseHold()
                 return data
             } else {
                 return null
@@ -36,7 +53,7 @@ const Queue = class QueueClass {
          * Adds a new data to the queue
          *
          * @param {*} data Any structure or simple type allowed
-         * @returns {number}
+         * @returns {string}
          */
         function add (data) {
             let id = Date.now().toString()
@@ -44,8 +61,10 @@ const Queue = class QueueClass {
             while (queuedData.isSet(id)) {
                 id = Date.now().toString()
             }
+            getHold()
             queuedData.set(id, data)
             queue.push(id)
+            relaseHold()
             return id
         }
 
@@ -58,8 +77,10 @@ const Queue = class QueueClass {
         function cancel (id) {
             let pos = queue.indexOf(id)
             if (pos >= 0) {
+                getHold()
                 queue.splice(pos, 1)
                 let result = queuedData.destroy(id)
+                relaseHold()
                 return (result !== null) ? result : true
             }
             return null
@@ -88,7 +109,7 @@ const Queue = class QueueClass {
          * Adds a new data to the queue
          *
          * @param {*} data Any structure or simple type allowed
-         * @returns {number}
+         * @returns {string}
          */
         this.add = (data) => { return add(data) }
 
