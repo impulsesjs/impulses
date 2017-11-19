@@ -6,6 +6,7 @@ const Queue = class QueueClass {
 
     /**
      * Creates and initializes a Values object
+     * @constructor
      */
     constructor () {
 
@@ -13,8 +14,33 @@ const Queue = class QueueClass {
 
         let queue = []
         let queuedData = new Values()
+        let lock = false
 
         /**** Private Methods ****************************************************************************************/
+
+        /**
+         * Check if there is a lock for the queue
+         *
+         * @returns {boolean}
+         */
+        function isLocked() {
+            return lock
+        }
+
+        /**
+         * Lock the queue for doing operations
+         */
+        function getLock() {
+            while (isLocked()) {}
+            lock = true
+        }
+
+        /**
+         * Release the lock
+         */
+        function releaseLock() {
+            lock = false
+        }
 
         /**
          * Gets the first in queue line and remove it from the list
@@ -23,9 +49,11 @@ const Queue = class QueueClass {
          */
         function next () {
             if (queue.length > 0) {
+                getLock()
                 let id = queue.shift()
                 let data = get(id)
                 queuedData.destroy(id)
+                releaseLock()
                 return data
             } else {
                 return null
@@ -36,16 +64,18 @@ const Queue = class QueueClass {
          * Adds a new data to the queue
          *
          * @param {*} data Any structure or simple type allowed
-         * @returns {number}
+         * @returns {string}
          */
         function add (data) {
+            getLock()
             let id = Date.now().toString()
             // Make sure that we do not have the same key already stored
             while (queuedData.isSet(id)) {
                 id = Date.now().toString()
             }
-            queuedData.set(id, data)
+            queuedData.set(id, { id: id, data: data })
             queue.push(id)
+            releaseLock()
             return id
         }
 
@@ -58,8 +88,10 @@ const Queue = class QueueClass {
         function cancel (id) {
             let pos = queue.indexOf(id)
             if (pos >= 0) {
+                getLock()
                 queue.splice(pos, 1)
                 let result = queuedData.destroy(id)
+                releaseLock()
                 return (result !== null) ? result : true
             }
             return null
@@ -88,7 +120,7 @@ const Queue = class QueueClass {
          * Adds a new data to the queue
          *
          * @param {*} data Any structure or simple type allowed
-         * @returns {number}
+         * @returns {string}
          */
         this.add = (data) => { return add(data) }
 

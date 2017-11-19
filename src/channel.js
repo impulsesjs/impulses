@@ -1,7 +1,8 @@
 'use strict'
 
 import Queue from './queue'
-import MD5 from './md5'
+// import MD5 from './md5'
+import md5 from 'md5'
 
 // TODO: need this to be WebWorker Working
 const channel = class ChannelClass {
@@ -17,6 +18,7 @@ const channel = class ChannelClass {
         const OPEN_STATUS = 1
         const ON_HOLD_STATUS = 2
 
+        let processingQueue = false
         let name = channelName
         let statusOpen = true
         let statusHold = initOnHold || false
@@ -33,6 +35,10 @@ const channel = class ChannelClass {
          */
         function getName () {
             return name
+        }
+
+        function isProcessingQueue() {
+            return processingQueue
         }
 
         /**
@@ -62,12 +68,21 @@ const channel = class ChannelClass {
             return statusOpen && !statusHold
         }
 
+        function startQueueProcessing() {
+            while (isProcessingQueue()) {}
+            processingQueue = true
+        }
+
+        function endQueueProcessing() {
+            processingQueue = false
+        }
+
         /**
          * Change the channel status and start processing if it is not on hold
          */
         function start() {
             if (!isOnHold()) {
-                resume()
+                startQueueProcess()
             }
         }
 
@@ -80,6 +95,7 @@ const channel = class ChannelClass {
             if (!isActive()) {
                 statusOpen = true
                 statusHold = false
+                startQueueProcess()
                 return true
             }
             return false
@@ -169,7 +185,7 @@ const channel = class ChannelClass {
         function cancelHook (id) {
             try {
                 for (let idx = 0; idx < hookList.length; idx++) {
-                    if (hookList[idx].id === id) {
+                    if (hookList[idx].qid === id) {
                         hookList.splice(idx, 1)
                         break
                     }
@@ -187,17 +203,25 @@ const channel = class ChannelClass {
          * @returns {*}
          */
         function getListenerInfo (id) {
-            try {
-                for (let idx = 0; idx < hookList.length; idx++) {
-                    if (hookList[idx].id === id) {
-                        return hookList[idx]
+            startQueueProcessing()
+            let toReturn = listenerQ.get(id)
+            endQueueProcessing()
+            if (toReturn === null) {
+                try {
+                    for (let idx = 0; idx < hookList.length; idx++) {
+                        if (hookList[idx].qid === id) {
+                            toReturn = hookList[idx].data
+                        }
                     }
                 }
+                catch (e) {
+                    // something went wrong probably list length change due to cancellation / activity
+                }
+            } else {
+                toReturn = toReturn.data
             }
-            catch (e) {
-                // something went wrong probably list length change due to cancellation / activity
-            }
-            return listenerQ.get(id)
+
+            return toReturn
         }
 
         /**
@@ -207,14 +231,17 @@ const channel = class ChannelClass {
          */
         function processMessage (message) {
             try {
-                for (let idx = 0; idx < hookList.length; idx++) {
-                    if (typeof hookList[idx].listener !== 'undefined') {
-                        if (typeof hookList[idx].times !== 'undefined' && hookList[idx].times > 0) {
-                            hookList[idx].listener(message)
-                            hookList[idx].times--
+                let idx = 0;
+                let length = hookList.length
+                for (; idx < length; idx++) {
+                    if (typeof hookList[idx].data.listener !== 'undefined') {
+
+                        hookList[idx].data.listener(message)
+                        if (hookList[idx].data.times > 0) {
+                            hookList[idx].data.times--
                         }
 
-                        if (hookList[idx].times < 1) {
+                        if (hookList[idx].data.times < 1) {
                             hookList.splice(idx, 1)
                             idx--
                         }
@@ -270,13 +297,17 @@ const channel = class ChannelClass {
          * Processes the listener queue
          */
         function processListenersQueue() {
-            let md5 = new MD5()
-            let hash = null
-            let listenerInfo = listenerQ.next()
-            while (listenerInfo !== null) {
-                hash = md5.calculate(listenerInfo.toString())
-                hookList.push({id: md5, data: listenerInfo})
-                listenerInfo = listenerQ.next()
+            if (!isProcessingQueue()) {
+                startQueueProcessing()
+                let hash = null
+                let listenerInfo = listenerQ.next()
+                while (listenerInfo !== null) {
+                    hash = md5(listenerInfo.toString())
+                    let item = {id: hash, qid: listenerInfo.id, data: listenerInfo.data}
+                    hookList.push(item)
+                    listenerInfo = listenerQ.next()
+                }
+                endQueueProcessing()
             }
         }
 
@@ -286,7 +317,7 @@ const channel = class ChannelClass {
         function processMessagesQueue() {
             let message = messageQ.next()
             while (message !== null) {
-                processMessage(message)
+                processMessage(message.data)
                 message = messageQ.next()
             }
         }
@@ -325,4 +356,4 @@ const channel = class ChannelClass {
     /**** Prototype Methods ******************************************************************************************/
 }
 
-module.exports = channel
+export default channel

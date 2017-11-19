@@ -109,6 +109,7 @@ const Values = class ValuesClass {
                         level = level[name]
                     } else {
                         returnValue = level[name]
+                        break
                     }
                 } else {
                     break
