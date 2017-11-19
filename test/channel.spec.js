@@ -84,9 +84,7 @@ describe('Given an instance of channel', () => {
         })
 
         it('it should possible to get the information back', () => {
-            // console.log(id)
             let info = lib.listenerInfo(id)
-            // console.log('received', info)
             expect(info).to.be.equal(listener1)
         })
 
@@ -96,7 +94,7 @@ describe('Given an instance of channel', () => {
         })
 
         it('it should receive a message', (done) => {
-            listenerDynamic.listener = (message) => {
+            listenerDynamic.listener = function (message) {
                 expect(message).to.be.equal(message1)
                 done()
             }

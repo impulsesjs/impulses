@@ -34,7 +34,7 @@ describe('Given an instance of queue', () => {
 
         it('it should be possible to get the value', () => {
             let obj = lib.get(id)
-            expect(obj).to.be.equal(objecto)
+            expect(obj.data).to.be.equal(objecto)
         })
 
         it('it should be possible to cancel the value', () => {
@@ -54,7 +54,7 @@ describe('Given an instance of queue', () => {
         it('it should be returned when next is requested', () => {
             id = lib.add(objecto1)
             let obj = lib.next()
-            expect(obj).to.be.equal(objecto1)
+            expect(obj.data).to.be.equal(objecto1)
         })
     })
 
@@ -64,10 +64,10 @@ describe('Given an instance of queue', () => {
             id = lib.add(objecto1)
             id = lib.add(objecto3)
             id = lib.add(objecto4)
-            expect(lib.next()).to.be.equal(objecto2)
-            expect(lib.next()).to.be.equal(objecto1)
-            expect(lib.next()).to.be.equal(objecto3)
-            expect(lib.next()).to.be.equal(objecto4)
+            expect(lib.next().data).to.be.equal(objecto2)
+            expect(lib.next().data).to.be.equal(objecto1)
+            expect(lib.next().data).to.be.equal(objecto3)
+            expect(lib.next().data).to.be.equal(objecto4)
         })
     })
 })
