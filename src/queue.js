@@ -14,21 +14,32 @@ const Queue = class QueueClass {
 
         let queue = []
         let queuedData = new Values()
-        let hold = false
+        let lock = false
 
         /**** Private Methods ****************************************************************************************/
 
-        function onHold() {
-            return hold
+        /**
+         * Check if there is a lock for the queue
+         *
+         * @returns {boolean}
+         */
+        function isLocked() {
+            return lock
         }
 
-        function getHold() {
-            while (onHold()) {}
-            hold = true
+        /**
+         * Lock the queue for doing operations
+         */
+        function getLock() {
+            while (isLocked()) {}
+            lock = true
         }
 
-        function relaseHold() {
-            hold = false
+        /**
+         * Release the lock
+         */
+        function releaseLock() {
+            lock = false
         }
 
         /**
@@ -38,11 +49,11 @@ const Queue = class QueueClass {
          */
         function next () {
             if (queue.length > 0) {
-                getHold()
+                getLock()
                 let id = queue.shift()
                 let data = get(id)
                 queuedData.destroy(id)
-                relaseHold()
+                releaseLock()
                 return data
             } else {
                 return null
@@ -56,15 +67,15 @@ const Queue = class QueueClass {
          * @returns {string}
          */
         function add (data) {
+            getLock()
             let id = Date.now().toString()
             // Make sure that we do not have the same key already stored
             while (queuedData.isSet(id)) {
                 id = Date.now().toString()
             }
-            getHold()
-            queuedData.set(id, data)
+            queuedData.set(id, { id: id, data: data })
             queue.push(id)
-            relaseHold()
+            releaseLock()
             return id
         }
 
@@ -77,10 +88,10 @@ const Queue = class QueueClass {
         function cancel (id) {
             let pos = queue.indexOf(id)
             if (pos >= 0) {
-                getHold()
+                getLock()
                 queue.splice(pos, 1)
                 let result = queuedData.destroy(id)
-                relaseHold()
+                releaseLock()
                 return (result !== null) ? result : true
             }
             return null
