@@ -6,20 +6,20 @@ const Values = class ValuesClass {
      * Creates and initializes a Values object
      *
      * @param {object} values Object with variables
-     * @param {int} ttlToSet Number of seconds before deprecating
+     * // param {int} ttlToSet Number of seconds before deprecating
      */
-    constructor (values = null, ttlToSet = null) {
+    constructor (values = null/*, ttlToSet = null*/) {
 
         /**** Private Attributes *************************************************************************************/
 
-        let ttl = ttlToSet || null
+        // let ttl = ttlToSet || null
         let dirty = values !== null
         let value = values || {}
         let eol = null
 
-        if (ttl !== null) {
-            eol = (Date.now() / 1000) + ttl
-        }
+        // if (ttl !== null && !isNaN(ttl)) {
+        //     eol = (Date.now() / 1000) + ttl
+        // }
 
         /**** Private Methods ****************************************************************************************/
 
@@ -35,9 +35,9 @@ const Values = class ValuesClass {
          *
          * @returns {boolean}
          */
-        function isValid () {
-            return (Date.now() / 1000) < eol
-        }
+        // function isValid () {
+        //     return (Date.now() / 1000) < eol
+        // }
 
         /**
          * Resolve and returns the reference for the provided variable path
