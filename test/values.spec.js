@@ -82,5 +82,26 @@ describe('Given an instance of values', () => {
             expect(exp.name2.with.several.levels).to.be.undefined
         })
     })
+
+    // describe('After initialised with a short TTL', () => {
+    //     before(() => {
+    //         lib = new Values({preset1: 'psv1', preset2: {name1: 'valuePS1'}}, 1)
+    //     })
+    //
+    //     it('it should be deprecated', () => {
+    //         lib.isValid()
+    //         expect(lib.get('preset1')).to.be.equal('psv1')
+    //     })
+    //     it('it should be possible to get a single complex value', () => {
+    //         expect(lib.get('preset2.name1')).to.be.equal('valuePS1')
+    //     })
+    //
+    //     it('it should be possible to export and have all values present', () => {
+    //         let exp = lib.export()
+    //         expect(exp.preset1).to.be.equal('psv1')
+    //         expect(exp.preset2.name1).to.be.equal('valuePS1')
+    //     })
+    // })
+    //
 })
 

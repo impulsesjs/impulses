@@ -25,6 +25,12 @@ const CommBus = class CommBusClass {
 
         /**** Private Methods ****************************************************************************************/
 
+        /**
+         * Validates if an object is as channel info definition
+         *
+         * @param {ChannelInfo} channelInfo
+         * @returns {boolean}
+         */
         function isValidChannelInformation (channelInfo) {
             /* attribute entity registers tha responsible entity*/
             if (typeof channelInfo.entity === 'undefined' ) {
@@ -37,42 +43,47 @@ const CommBus = class CommBusClass {
             }
 
             /* require field must be an string array with the required attributes expressed as a string */
-            if (typeof channelInfo.require === 'undefined' || channelInfo.require.constructor !== Array) {
-                return false
-            }
+            return (typeof channelInfo.require === 'undefined' || channelInfo.require.constructor === Array);
 
-            return true
+
         }
 
         /**
          * Register channel(s) into the bus allowing the discovery by entity and by channel name
          *
-         * @param {ChannelsInfo} channels
+         * @param {ChannelInfo[]} channels
+         * @returns {String[]} List of the registered channels (entity.name)
          */
-        function register (channels = []) {
-            if (channels.constructor === Array) {
-                let idx = 0,
-                    amount = channels.length
-                for (; idx < amount; idx++) {
-                    if (isValidChannelInformation(channels[idx])) {
-                        /** @type {ChannelInfo} channelInfo */
-                        let channelInfo = Object.assign({}, channels[idx])
-                        let entity = channelInfo.entity
-                        let name = channelInfo.name
-                        delete channelInfo.entity
-                        delete channelInfo.name
-                        channelInfo.channel = new Channel(name)
+        function register (channels) {
+            let registeredChannels = []
+            if (channels.constructor !== Array) {
+                channels = [channels]
+            }
 
-                        if (typeof channelsInfo[entity] === 'undefined') {
-                            channelsInfo[entity] = {}
-                        }
+            let idx = 0,
+                amount = channels.length
 
-                        if (typeof channelsInfo[entity][name] === 'undefined') {
-                            channelsInfo[entity][name] = channelInfo
-                        }
+            for (; idx < amount; idx++) {
+                if (isValidChannelInformation(channels[idx])) {
+                    let channelInfo = Object.assign({}, channels[idx])
+                    let entity = channelInfo.entity
+                    let name = channelInfo.name
+                    delete channelInfo.entity
+                    delete channelInfo.name
+                    channelInfo.channel = new Channel(name)
+
+                    if (typeof channelsInfo[entity] === 'undefined') {
+                        channelsInfo[entity] = {}
+                    }
+
+                    if (typeof channelsInfo[entity][name] === 'undefined') {
+                        channelsInfo[entity][name] = channelInfo
+                        registeredChannels.push(`${entity}.${name}`)
                     }
                 }
             }
+
+            return registeredChannels
         }
 
         /**
@@ -82,7 +93,7 @@ const CommBus = class CommBusClass {
          * @param {string|null} channelName Channel name to search for
          * @returns {boolean}
          */
-        function exists (entity, channelName = null) {
+        function exists (entity, channelName) {
             if (typeof channelsInfo[entity] !== 'undefined') {
                 if (channelName !== null) {
                     return get(entity, channelName) !== null
@@ -102,11 +113,8 @@ const CommBus = class CommBusClass {
          */
         function get (entity, channelName) {
             if (typeof channelsInfo[entity] !== 'undefined') {
-                let idx = 0
-                for (; idx < channelsInfo[entity].length; idx++) {
-                    if (channelsInfo[entity][idx].name === channelName) {
-                        return channelsInfo[entity][idx].channel
-                    }
+                if (typeof channelsInfo[entity][channelName] !== 'undefined') {
+                    return channelsInfo[entity][channelName].channel
                 }
             }
             return null

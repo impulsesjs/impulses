@@ -82,7 +82,7 @@ const Queue = class QueueClass {
         /**
          * Cancel a queued data, by removing it from the queue and from the data
          *
-         * @param {number} id Queued Data identifier
+         * @param {string} id Queued Data identifier
          * @returns {boolean|null}
          */
         function cancel (id) {
@@ -100,7 +100,7 @@ const Queue = class QueueClass {
         /**
          * Gets the value of a specific id (if present)
          *
-         * @param {number} id Queued Data identifier
+         * @param {string} id Queued Data identifier
          * @returns {*|null} Value or null if not present
          */
         function get (id) {
@@ -127,7 +127,7 @@ const Queue = class QueueClass {
         /**
          * Cancel a queued data, by removing it from the queue and from the data
          *
-         * @param {number} id Queued Data identifier
+         * @param {string} id Queued Data identifier
          * @returns {boolean}
          */
         this.cancel = (id) => { return cancel(id) }
@@ -135,7 +135,7 @@ const Queue = class QueueClass {
         /**
          * Gets the value of a specific id (if present)
          *
-         * @param {number} id Queued Data identifier
+         * @param {string} id Queued Data identifier
          * @returns {*|null} Value or null if not present
          */
         this.get = (id) => { return get(id) }
