@@ -41,7 +41,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/project
-      - run: npm run test:cover
+      - run: npm run test:cov
       - run:
          name: report coverage stats for non-PRs
          command: |
