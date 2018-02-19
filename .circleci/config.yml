@@ -36,25 +36,19 @@ jobs:
           at: ~/project
       - run: npm run lint
 
-  test-cover:
+  test:
     <<: *defaults
     steps:
       - attach_workspace:
           at: ~/project
-      - run: npm run test:covisparta
-      - run:
-         name: report coverage stats for non-PRs
-         command: |
-           if [[ -z $CI_PULL_REQUEST ]]; then
-             cat ./coverage/lcov.info | ./node_modules/.bin/codecov
-           fi
+      - run: npm run test
 
 workflows:
   version: 2
   install-and-parallel-test:
     jobs:
       - install
-      - test-cover:
+      - test:
           requires:
             - install
       - lint:
