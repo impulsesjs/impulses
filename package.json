@@ -7,6 +7,7 @@
     "build": "webpack --env build",
     "build:cov": "webpack",
     "build:watch": "webpack -w --config webpack.config.js",
+    "lint": "eslint --fix src scripts test",
     "test": "mocha --compilers js:babel-core/register --colors ./test/*.spec.js",
     "test:karma": "karma start ./karma.config.js",
     "test:watch": "mocha --compilers js:babel-core/register --colors -w ./test/*.spec.js",
