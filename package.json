@@ -1,8 +1,8 @@
 {
-  "name": "comm-bus",
+  "name": "impulses",
   "version": "0.1.0",
-  "description": "Communication Bus",
-  "main": "lib/commbus.js",
+  "description": "Non-Obstructive Modular Event System",
+  "main": "lib/impulses.js",
   "scripts": {
     "build": "webpack --env build",
     "build:cov": "webpack",
@@ -51,29 +51,31 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/techchase/comm-bus.git"
+    "url": "https://github.com/impulsesjs/lib.git"
   },
   "keywords": [
     "bus",
+    "event",
     "events",
     "communication",
+    "modular",
     "library"
   ],
   "author": {
     "name": "Joao Correia",
-    "url": "https://gitlab.com/jcorreia"
+    "url": "https://github.com/joaocac"
   },
   "contributors": [
     {
       "name": "Maxim Vitkovsky",
-      "url": "https://gitlab.com/mopsek"
+      "url": "https://github.com/mopsek"
     }
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://gitlab.com/techchase/comm-bus/issues"
+    "url": "https://github.com/impulsesjs/lib/issues"
   },
-  "homepage": "https://gitlab.com/techchase/comm-bus",
+  "homepage": "https://github.com/impulsesjs/lib",
   "dependencies": {
     "md5": "^2.2.1"
   }

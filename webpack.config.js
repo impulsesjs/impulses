@@ -6,7 +6,7 @@ const path = require('path');
 const env = require('yargs').argv.env; // use --env with webpack 2
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-let libraryName = 'commbus';
+let libraryName = 'impulses';
 
 let plugins = [], outputFile;
 
