@@ -48,7 +48,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/project
-      - run: npm run test:covisparta
+      - run: npm run test:cov
 
 workflows:
   version: 2
