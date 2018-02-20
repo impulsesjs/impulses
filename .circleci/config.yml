@@ -53,7 +53,7 @@ jobs:
           name: Report coverage stats for non-PRs
           command: |
             if [[ -z $CI_PULL_REQUEST ]]; then
-              cat ./coverage/lcov.info
+              cat ./coverage/lcov.info | ./node_modules/.bin/codecov
             fi
 
 workflows:
