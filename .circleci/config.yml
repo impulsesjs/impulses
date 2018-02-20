@@ -43,12 +43,19 @@ jobs:
           at: ~/project
       - run: npm run test
 
+  test-coverage:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run: npm run test:covisparta
+
 workflows:
   version: 2
   install-and-parallel-test:
     jobs:
       - install
-      - test:
+      - test-coverage:
           requires:
             - install
       - lint:

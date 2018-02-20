@@ -13,7 +13,7 @@
     "test:watch": "mocha --compilers js:babel-core/register --colors -w ./test/*.spec.js",
     "test:export": "mkdir -p output-test && mocha --compilers js:babel-register --recursive > output-test/index.txt",
     "test:cov": "babel-node ./node_modules/.bin/babel-istanbul cover _mocha ./test/*.spec.js",
-    "test:covisparta": "./node_modules/.bin/babel-node ./node_modules/.bin/isparta cover ./node_modules/.bin/_mocha",
+    "test:covisparta": "babel-node ./node_modules/.bin/isparta cover ./node_modules/.bin/_mocha",
     "test:export:watch": "npm test -- --watch"
   },
   "devDependencies": {
