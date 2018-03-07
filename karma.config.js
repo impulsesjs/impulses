@@ -11,7 +11,7 @@ module.exports = function (config) {
         frameworks: ['mocha', 'sinon-chai'],
         reporters: ['spec', 'coverage'],
         files: [
-            './index.js',
+            './src/index.js',
             './test/*.spec.js'
         ],
         preprocessors: {

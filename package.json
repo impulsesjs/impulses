@@ -2,19 +2,32 @@
   "name": "impulses",
   "version": "0.1.0",
   "description": "Non-Obstructive Modular Event System",
-  "main": "lib/impulses.js",
+  "main": "lib/impulses.min.js",
   "scripts": {
     "build": "webpack --env build",
-    "build:cov": "webpack",
+    "build:norm": "webpack",
     "build:watch": "webpack -w --config webpack.config.js",
-    "lint": "eslint --fix src scripts test",
     "test": "mocha --compilers js:babel-core/register --colors ./test/*.spec.js",
-    "test:karma": "karma start ./karma.config.js",
     "test:watch": "mocha --compilers js:babel-core/register --colors -w ./test/*.spec.js",
-    "test:export": "mkdir -p output-test && mocha --compilers js:babel-register --recursive > output-test/index.txt",
     "test:cov": "babel-node ./node_modules/.bin/babel-istanbul cover _mocha ./test/*.spec.js",
+    "test:karma": "karma start ./karma.config.js",
+    "test:export": "mkdir -p output-test && mocha --compilers js:babel-register --recursive > output-test/index.txt",
+    "lint": "eslint --fix src scripts test",
+    "commit": "git-cz",
+    "release": "bash scripts/release.sh",
+    "release:note": "node scripts/gen-release-note.js",
     "test:covisparta": "babel-node ./node_modules/.bin/isparta cover ./node_modules/.bin/_mocha",
     "test:export:watch": "npm test -- --watch"
+  },
+  "gitHooks": {
+    "pre-commit": "lint-staged",
+    "commit-msg": "node scripts/verify-commit-msg.js"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ]
   },
   "devDependencies": {
     "babel-cli": "6.24.1",
@@ -25,7 +38,11 @@
     "babel-plugin-add-module-exports": "0.2.1",
     "babel-preset-es2015": "6.24.1",
     "chai": "3.5.0",
+    "chalk": "^2.3.1",
     "codecov": "^3.0.0",
+    "commitizen": "^2.9.6",
+    "conventional-changelog": "^1.1.16",
+    "cz-conventional-changelog": "^2.1.0",
     "eslint": "3.19.0",
     "eslint-loader": "1.7.1",
     "isparta": "^4.0.0",
@@ -80,5 +97,10 @@
   "homepage": "https://github.com/impulsesjs/lib",
   "dependencies": {
     "md5": "^2.2.1"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
