@@ -14,7 +14,7 @@ const md5 = class MD5 {
 
         /**** Private Attributes *************************************************************************************/
 
-        let hexChr = "0123456789abcdef"
+        let hexChr = '0123456789abcdef'
 
         /**** Private Methods ****************************************************************************************/
 
@@ -26,7 +26,7 @@ const md5 = class MD5 {
          */
         function numberToHex(num)
         {
-            let str = "";
+            let str = '';
             for(let idx = 0; idx <= 3; idx++) {
                 str += hexChr.charAt((num >> (idx * 8 + 4)) & 0x0F) + hexChr.charAt((num >> (idx * 8)) & 0x0F)
             }
