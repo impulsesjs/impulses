@@ -3,7 +3,7 @@ logs
 *.log
 
 # Exclude build libraries
-lib/
+# lib/
 build/
 
 # Runtime data
