@@ -2,7 +2,9 @@
   "name": "impulses",
   "version": "0.1.1",
   "description": "Non-Obstructive Modular Event System",
-  "main": "lib/impulses.min.js",
+  "main": "lib/impulses.js",
+  "unpkg": "lib/impulses.js",
+  "jsdelivr": "lib/impulses.js",
   "scripts": {
     "build": "webpack --env build",
     "build:norm": "webpack",

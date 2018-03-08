@@ -3,9 +3,9 @@
 <p align="center">
   <a href="https://circleci.com/gh/impulsesjs/lib/tree/dev"><img src="https://circleci.com/gh/impulsesjs/lib/tree/dev.svg?style=svg" alt="Build Status"></a>
   <a href="https://codecov.io/gh/impulsesjs/lib?branch=dev"><img src="https://codecov.io/gh/impulsesjs/lib/branch/dev/graph/badge.svg" alt="Coverage Status"></a>
-  <a href="https://www.npmjs.com/package/impulsesjs"><img src="https://img.shields.io/npm/dm/impulsesjs.svg" alt="Downloads"></a>
-  <a href="https://www.npmjs.com/package/impulsesjs"><img src="https://img.shields.io/npm/v/impulsesjs.svg" alt="Version"></a>
-  <a href="https://www.npmjs.com/package/impulsesjs"><img src="https://img.shields.io/npm/l/impulsesjs.svg" alt="License"></a>
+  <a href="https://www.npmjs.com/package/impulsesjs"><img src="https://img.shields.io/npm/dm/impulses.svg" alt="Downloads"></a>
+  <a href="https://www.npmjs.com/package/impulsesjs"><img src="https://img.shields.io/npm/v/impulses.svg" alt="Version"></a>
+  <a href="https://www.npmjs.com/package/impulsesjs"><img src="https://img.shields.io/npm/l/impulses.svg" alt="License"></a>
 </p>
 
 
