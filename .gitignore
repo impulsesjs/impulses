@@ -35,4 +35,6 @@ node_modules
 .vscode
 
 # Exclude other
+output-compiler/
+RELEASE_NOTE*.md
 .DS_Store
