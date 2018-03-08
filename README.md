@@ -1,6 +1,7 @@
 <p align="center"><a href="https://impulses.org" target="_blank"><img width="100" src="https://avatars3.githubusercontent.com/u/36459504?s=100&u=0164560545792c2abd56ef7a061aec945d05624a&v=4" alt="Impulses.js logo"></a></p>
 
 <p align="center">
+  <a href="https://circleci.com/gh/impulsesjs/lib/tree/dev"><img src="https://img.shields.io/circleci/project/impulsesjs/lib/dev.svg" alt="Build Status"></a>
   <a href="https://circleci.com/gh/impulsesjs/lib/tree/dev"><img src="https://circleci.com/gh/impulsesjs/lib/tree/dev.svg?style=svg" alt="Build Status"></a>
   <a href="https://codecov.io/gh/impulsesjs/lib?branch=dev"><img src="https://codecov.io/gh/impulsesjs/lib/branch/dev/graph/badge.svg" alt="Coverage Status"></a>
   <a href="https://www.npmjs.com/package/impulsesjs"><img src="https://img.shields.io/npm/dm/impulses.svg" alt="Downloads"></a>
