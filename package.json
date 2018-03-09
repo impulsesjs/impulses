@@ -43,7 +43,7 @@
     "chalk": "^2.3.1",
     "codecov": "^3.0.0",
     "commitizen": "^2.9.6",
-    "conventional-changelog": "^1.1.16",
+    "conventional-changelog": "^1.1.18",
     "cz-conventional-changelog": "^2.1.0",
     "eslint": "3.19.0",
     "eslint-loader": "1.7.1",
@@ -97,9 +97,7 @@
     "url": "https://github.com/impulsesjs/lib/issues"
   },
   "homepage": "https://github.com/impulsesjs/lib",
-  "dependencies": {
-    "md5": "^2.2.1"
-  },
+  "dependencies": {},
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"

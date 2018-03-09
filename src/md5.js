@@ -1,20 +1,31 @@
 /**
  * A JavaScript implementation of the RSA Data Security, Inc. MD5 Message
  * Digest Algorithm, as defined in RFC 1321.
- * Copyright (C) Paul Johnston 1999 - 2000.
+ * Fastest md5 implementation around (JKM md5).
+ *
+ * Credits: Joseph Myers
  * Updated by Joao Correia 2017 - 2018.
- * See http://pajhome.org.uk/site/legal.html for details.
+ *
+ * @see http://www.myersdaily.org/joseph/javascript/md5-text.html
+ * @see http://jsperf.com/md5-shootout/7
  */
 const md5 = class MD5 {
 
     /**
      * Creates and initializes a Values object
+     *
+     * @param {boolean} alwaysUseSafe This will override and use always the special IE mode (exists for safety reason)
      */
-    constructor () {
-
+    constructor(alwaysUseSafe = false) {
         /**** Private Attributes *************************************************************************************/
 
-        let hexChr = '0123456789abcdef'
+        let hexChr = '0123456789abcdef'.split('')
+
+        // Some IEs are the only ones known of that need the idiotic function.
+        let isSpecialIe = false
+        if (alwaysUseSafe || '5d41402abc4b2a76b9719d911017c592' !== calculate('hello')) {
+            isSpecialIe = true
+        }
 
         /**** Private Methods ****************************************************************************************/
 
@@ -26,45 +37,18 @@ const md5 = class MD5 {
          */
         function numberToHex(num)
         {
-            let str = '';
-            for(let idx = 0; idx <= 3; idx++) {
-                str += hexChr.charAt((num >> (idx * 8 + 4)) & 0x0F) + hexChr.charAt((num >> (idx * 8)) & 0x0F)
+            let str = ''
+            for (let idx = 0; idx < 4; idx++) {
+                str += hexChr[(num >> (idx * 8 + 4)) & 0x0F] + hexChr[(num >> (idx * 8)) & 0x0F]
             }
-            return str;
+            return str
         }
 
         /**
-         * Convert a string to a sequence of 16-word blocks, stored as an array.
-         * Append padding bits and the length, as described in the MD5 standard.
+         * Add integers, wrapping at 2^32.
+         * This uses 16-bit operations internally to work around bugs in some JS interpreters if necessary.
          *
-         * @param {string} data
-         * @returns {Array}
-         */
-        function stringToBlocks (data) {
-            console.log(data)
-            let numberOfBlocks = ((data.length + 8) >> 6) + 1
-            console.log(numberOfBlocks)
-            let blocks = new Array(numberOfBlocks * 16)
-
-            for(let idx = 0; idx < numberOfBlocks * 16; idx++) {
-                blocks[idx] = 0
-            }
-
-            for(let idx = 0; idx < data.length; idx++) {
-                blocks[idx >> 2] |= data.charCodeAt(idx) << ((idx % 4) * 8)
-            }
-
-            blocks[idx >> 2] |= 0x80 << ((idx % 4) * 8)
-            console.log(blocks)
-            blocks[numberOfBlocks * 16 - 2] = data.length * 8
-            console.log(blocks)
-
-            return blocks
-        }
-
-        /**
-         * Add integers, wrapping at 2^32. This uses 16-bit operations internally
-         * to work around bugs in some JS interpreters.
+         * @aka add32
          *
          * @param {int} x
          * @param {int} y
@@ -72,47 +56,154 @@ const md5 = class MD5 {
          */
         function add(x, y)
         {
-            let leastSignificantWord = (x & 0xFFFF) + (y & 0xFFFF)
-            let mostSignificantWord = (x >> 16) + (y >> 16) + (leastSignificantWord >> 16)
-
-            return (mostSignificantWord << 16) | (leastSignificantWord & 0xFFFF)
-        }
-
-        /**
-         * Bitwise rotate a 32-bit number to the left
-         *
-         * @param number
-         * @param times
-         * @returns {number}
-         */
-        function rotateLeft(number, times)
-        {
-            return (number << times) | (number >>> (32 - times))
+            if (!alwaysUseSafe && !isSpecialIe) {
+                return (x + y) & 0xFFFFFFFF
+            } else {
+                let leastSignificantWord = (x & 0xFFFF) + (y & 0xFFFF)
+                let mostSignificantWord = (x >> 16) + (y >> 16) + (leastSignificantWord >> 16)
+                return (mostSignificantWord << 16) | (leastSignificantWord & 0xFFFF)
+            }
         }
 
         /**
          * These functions implement the basic operation for each round of the
          * algorithm.
          */
-        function cmn(q, a, b, x, s, t)
-        {
-            return add(rotateLeft(add(add(a, q), add(x, t)), s), b)
+        function cmn(q, a, b, x, s, t) {
+            a = add(add(a, q), add(x, t))
+            return add((a << s) | (a >>> (32 - s)), b)
         }
-        function ff(a, b, c, d, x, s, t)
-        {
+
+        function ff(a, b, c, d, x, s, t) {
             return cmn((b & c) | ((~b) & d), a, b, x, s, t)
         }
-        function gg(a, b, c, d, x, s, t)
-        {
+
+        function gg(a, b, c, d, x, s, t) {
             return cmn((b & d) | (c & (~d)), a, b, x, s, t)
         }
-        function hh(a, b, c, d, x, s, t)
-        {
+
+        function hh(a, b, c, d, x, s, t) {
             return cmn(b ^ c ^ d, a, b, x, s, t)
         }
-        function ii(a, b, c, d, x, s, t)
-        {
+
+        function ii(a, b, c, d, x, s, t) {
             return cmn(c ^ (b | (~d)), a, b, x, s, t)
+        }
+
+        /**
+         * Convert a string into block representation
+         *
+         * @param {string} data
+         * @returns {array}
+         */
+        function stringToBlocks(data) {
+            let blocks = []
+            for (let idx = 0; idx < 64; idx += 4) {
+                blocks[idx >> 2] = data.charCodeAt(idx)
+                    + (data.charCodeAt(idx + 1) << 8)
+                    + (data.charCodeAt(idx + 2) << 16)
+                    + (data.charCodeAt(idx + 3) << 24)
+            }
+            return blocks
+        }
+
+        /**
+         * Convert an array of integers to an hex string
+         *
+         * @param {int[]} blocks
+         * @returns {string}
+         */
+        function blocksToHex(blocks) {
+            for (let idx = 0; idx < blocks.length; idx++) {
+                blocks[idx] = numberToHex(blocks[idx])
+            }
+            return blocks.join('');
+        }
+
+        /**
+         * Cycle through blocks
+         *
+         * @param {int[]} state
+         * @param {int[]} blocks
+         */
+        function cycle(state, blocks) {
+            let val_a = state[0]
+            let val_b = state[1]
+            let val_c = state[2]
+            let val_d = state[3]
+
+            val_a = ff(val_a, val_b, val_c, val_d, blocks[0], 7, -680876936)
+            val_d = ff(val_d, val_a, val_b, val_c, blocks[1], 12, -389564586)
+            val_c = ff(val_c, val_d, val_a, val_b, blocks[2], 17,  606105819)
+            val_b = ff(val_b, val_c, val_d, val_a, blocks[3], 22, -1044525330)
+            val_a = ff(val_a, val_b, val_c, val_d, blocks[4], 7, -176418897)
+            val_d = ff(val_d, val_a, val_b, val_c, blocks[5], 12,  1200080426)
+            val_c = ff(val_c, val_d, val_a, val_b, blocks[6], 17, -1473231341)
+            val_b = ff(val_b, val_c, val_d, val_a, blocks[7], 22, -45705983)
+            val_a = ff(val_a, val_b, val_c, val_d, blocks[8], 7,  1770035416)
+            val_d = ff(val_d, val_a, val_b, val_c, blocks[9], 12, -1958414417)
+            val_c = ff(val_c, val_d, val_a, val_b, blocks[10], 17, -42063)
+            val_b = ff(val_b, val_c, val_d, val_a, blocks[11], 22, -1990404162)
+            val_a = ff(val_a, val_b, val_c, val_d, blocks[12], 7,  1804603682)
+            val_d = ff(val_d, val_a, val_b, val_c, blocks[13], 12, -40341101)
+            val_c = ff(val_c, val_d, val_a, val_b, blocks[14], 17, -1502002290)
+            val_b = ff(val_b, val_c, val_d, val_a, blocks[15], 22,  1236535329)
+
+            val_a = gg(val_a, val_b, val_c, val_d, blocks[1], 5, -165796510)
+            val_d = gg(val_d, val_a, val_b, val_c, blocks[6], 9, -1069501632)
+            val_c = gg(val_c, val_d, val_a, val_b, blocks[11], 14,  643717713)
+            val_b = gg(val_b, val_c, val_d, val_a, blocks[0], 20, -373897302)
+            val_a = gg(val_a, val_b, val_c, val_d, blocks[5], 5, -701558691)
+            val_d = gg(val_d, val_a, val_b, val_c, blocks[10], 9,  38016083)
+            val_c = gg(val_c, val_d, val_a, val_b, blocks[15], 14, -660478335)
+            val_b = gg(val_b, val_c, val_d, val_a, blocks[4], 20, -405537848)
+            val_a = gg(val_a, val_b, val_c, val_d, blocks[9], 5,  568446438)
+            val_d = gg(val_d, val_a, val_b, val_c, blocks[14], 9, -1019803690)
+            val_c = gg(val_c, val_d, val_a, val_b, blocks[3], 14, -187363961)
+            val_b = gg(val_b, val_c, val_d, val_a, blocks[8], 20,  1163531501)
+            val_a = gg(val_a, val_b, val_c, val_d, blocks[13], 5, -1444681467)
+            val_d = gg(val_d, val_a, val_b, val_c, blocks[2], 9, -51403784)
+            val_c = gg(val_c, val_d, val_a, val_b, blocks[7], 14,  1735328473)
+            val_b = gg(val_b, val_c, val_d, val_a, blocks[12], 20, -1926607734)
+
+            val_a = hh(val_a, val_b, val_c, val_d, blocks[5], 4, -378558)
+            val_d = hh(val_d, val_a, val_b, val_c, blocks[8], 11, -2022574463)
+            val_c = hh(val_c, val_d, val_a, val_b, blocks[11], 16,  1839030562)
+            val_b = hh(val_b, val_c, val_d, val_a, blocks[14], 23, -35309556)
+            val_a = hh(val_a, val_b, val_c, val_d, blocks[1], 4, -1530992060)
+            val_d = hh(val_d, val_a, val_b, val_c, blocks[4], 11,  1272893353)
+            val_c = hh(val_c, val_d, val_a, val_b, blocks[7], 16, -155497632)
+            val_b = hh(val_b, val_c, val_d, val_a, blocks[10], 23, -1094730640)
+            val_a = hh(val_a, val_b, val_c, val_d, blocks[13], 4,  681279174)
+            val_d = hh(val_d, val_a, val_b, val_c, blocks[0], 11, -358537222)
+            val_c = hh(val_c, val_d, val_a, val_b, blocks[3], 16, -722521979)
+            val_b = hh(val_b, val_c, val_d, val_a, blocks[6], 23,  76029189)
+            val_a = hh(val_a, val_b, val_c, val_d, blocks[9], 4, -640364487)
+            val_d = hh(val_d, val_a, val_b, val_c, blocks[12], 11, -421815835)
+            val_c = hh(val_c, val_d, val_a, val_b, blocks[15], 16,  530742520)
+            val_b = hh(val_b, val_c, val_d, val_a, blocks[2], 23, -995338651)
+
+            val_a = ii(val_a, val_b, val_c, val_d, blocks[0], 6, -198630844)
+            val_d = ii(val_d, val_a, val_b, val_c, blocks[7], 10,  1126891415)
+            val_c = ii(val_c, val_d, val_a, val_b, blocks[14], 15, -1416354905)
+            val_b = ii(val_b, val_c, val_d, val_a, blocks[5], 21, -57434055)
+            val_a = ii(val_a, val_b, val_c, val_d, blocks[12], 6,  1700485571)
+            val_d = ii(val_d, val_a, val_b, val_c, blocks[3], 10, -1894986606)
+            val_c = ii(val_c, val_d, val_a, val_b, blocks[10], 15, -1051523)
+            val_b = ii(val_b, val_c, val_d, val_a, blocks[1], 21, -2054922799)
+            val_a = ii(val_a, val_b, val_c, val_d, blocks[8], 6,  1873313359)
+            val_d = ii(val_d, val_a, val_b, val_c, blocks[15], 10, -30611744)
+            val_c = ii(val_c, val_d, val_a, val_b, blocks[6], 15, -1560198380)
+            val_b = ii(val_b, val_c, val_d, val_a, blocks[13], 21,  1309151649)
+            val_a = ii(val_a, val_b, val_c, val_d, blocks[4], 6, -145523070)
+            val_d = ii(val_d, val_a, val_b, val_c, blocks[11], 10, -1120210379)
+            val_c = ii(val_c, val_d, val_a, val_b, blocks[2], 15,  718787259)
+            val_b = ii(val_b, val_c, val_d, val_a, blocks[9], 21, -343485551)
+
+            state[0] = add(val_a, state[0])
+            state[1] = add(val_b, state[1])
+            state[2] = add(val_c, state[2])
+            state[3] = add(val_d, state[3])
         }
 
         /**
@@ -121,107 +212,37 @@ const md5 = class MD5 {
          * @param {string} data Data to be used for the calculation
          * @returns {string}
          */
-        function calculate(data)
-        {
-            let blocks = stringToBlocks(data)
-            let valueA =  1732584193
-            let valueB = -271733879
-            let valueC = -1732584194
-            let valueD =  271733878
+        function calculate(data) {
+            let data_length = data.length
+            let state = [1732584193, -271733879, -1732584194, 271733878]
+            let idx
 
-            let numberOfBlocks = blocks.length
-
-            for(let idx = 0; idx < numberOfBlocks; idx += 16)
-            {
-                let oldA = valueA
-                let oldB = valueB
-                let oldC = valueC
-                let oldD = valueD
-
-                valueA = ff(valueA, valueB, valueC, valueD, blocks[idx], 7 , -680876936)
-                valueD = ff(valueD, valueA, valueB, valueC, blocks[idx +  1], 12, -389564586)
-                valueC = ff(valueC, valueD, valueA, valueB, blocks[idx +  2], 17,  606105819)
-                valueB = ff(valueB, valueC, valueD, valueA, blocks[idx +  3], 22, -1044525330)
-                valueA = ff(valueA, valueB, valueC, valueD, blocks[idx +  4], 7 , -176418897)
-                valueD = ff(valueD, valueA, valueB, valueC, blocks[idx +  5], 12,  1200080426)
-                valueC = ff(valueC, valueD, valueA, valueB, blocks[idx +  6], 17, -1473231341)
-                valueB = ff(valueB, valueC, valueD, valueA, blocks[idx +  7], 22, -45705983)
-                valueA = ff(valueA, valueB, valueC, valueD, blocks[idx +  8], 7 ,  1770035416)
-                valueD = ff(valueD, valueA, valueB, valueC, blocks[idx +  9], 12, -1958414417)
-                valueC = ff(valueC, valueD, valueA, valueB, blocks[idx + 10], 17, -42063)
-                valueB = ff(valueB, valueC, valueD, valueA, blocks[idx + 11], 22, -1990404162)
-                valueA = ff(valueA, valueB, valueC, valueD, blocks[idx + 12], 7 ,  1804603682)
-                valueD = ff(valueD, valueA, valueB, valueC, blocks[idx + 13], 12, -40341101)
-                valueC = ff(valueC, valueD, valueA, valueB, blocks[idx + 14], 17, -1502002290)
-                valueB = ff(valueB, valueC, valueD, valueA, blocks[idx + 15], 22,  1236535329)
-
-                valueA = gg(valueA, valueB, valueC, valueD, blocks[idx +  1], 5 , -165796510)
-                valueD = gg(valueD, valueA, valueB, valueC, blocks[idx +  6], 9 , -1069501632)
-                valueC = gg(valueC, valueD, valueA, valueB, blocks[idx + 11], 14,  643717713)
-                valueB = gg(valueB, valueC, valueD, valueA, blocks[idx], 20, -373897302)
-                valueA = gg(valueA, valueB, valueC, valueD, blocks[idx +  5], 5 , -701558691)
-                valueD = gg(valueD, valueA, valueB, valueC, blocks[idx + 10], 9 ,  38016083)
-                valueC = gg(valueC, valueD, valueA, valueB, blocks[idx + 15], 14, -660478335)
-                valueB = gg(valueB, valueC, valueD, valueA, blocks[idx +  4], 20, -405537848)
-                valueA = gg(valueA, valueB, valueC, valueD, blocks[idx +  9], 5 ,  568446438)
-                valueD = gg(valueD, valueA, valueB, valueC, blocks[idx + 14], 9 , -1019803690)
-                valueC = gg(valueC, valueD, valueA, valueB, blocks[idx +  3], 14, -187363961)
-                valueB = gg(valueB, valueC, valueD, valueA, blocks[idx +  8], 20,  1163531501)
-                valueA = gg(valueA, valueB, valueC, valueD, blocks[idx + 13], 5 , -1444681467)
-                valueD = gg(valueD, valueA, valueB, valueC, blocks[idx +  2], 9 , -51403784)
-                valueC = gg(valueC, valueD, valueA, valueB, blocks[idx +  7], 14,  1735328473)
-                valueB = gg(valueB, valueC, valueD, valueA, blocks[idx + 12], 20, -1926607734)
-
-                valueA = hh(valueA, valueB, valueC, valueD, blocks[idx +  5], 4 , -378558)
-                valueD = hh(valueD, valueA, valueB, valueC, blocks[idx +  8], 11, -2022574463)
-                valueC = hh(valueC, valueD, valueA, valueB, blocks[idx + 11], 16,  1839030562)
-                valueB = hh(valueB, valueC, valueD, valueA, blocks[idx + 14], 23, -35309556)
-                valueA = hh(valueA, valueB, valueC, valueD, blocks[idx +  1], 4 , -1530992060)
-                valueD = hh(valueD, valueA, valueB, valueC, blocks[idx +  4], 11,  1272893353)
-                valueC = hh(valueC, valueD, valueA, valueB, blocks[idx +  7], 16, -155497632)
-                valueB = hh(valueB, valueC, valueD, valueA, blocks[idx + 10], 23, -1094730640)
-                valueA = hh(valueA, valueB, valueC, valueD, blocks[idx + 13], 4 ,  681279174)
-                valueD = hh(valueD, valueA, valueB, valueC, blocks[idx], 11, -358537222)
-                valueC = hh(valueC, valueD, valueA, valueB, blocks[idx +  3], 16, -722521979)
-                valueB = hh(valueB, valueC, valueD, valueA, blocks[idx +  6], 23,  76029189)
-                valueA = hh(valueA, valueB, valueC, valueD, blocks[idx +  9], 4 , -640364487)
-                valueD = hh(valueD, valueA, valueB, valueC, blocks[idx + 12], 11, -421815835)
-                valueC = hh(valueC, valueD, valueA, valueB, blocks[idx + 15], 16,  530742520)
-                valueB = hh(valueB, valueC, valueD, valueA, blocks[idx +  2], 23, -995338651)
-
-                valueA = ii(valueA, valueB, valueC, valueD, blocks[idx], 6 , -198630844)
-                valueD = ii(valueD, valueA, valueB, valueC, blocks[idx +  7], 10,  1126891415)
-                valueC = ii(valueC, valueD, valueA, valueB, blocks[idx + 14], 15, -1416354905)
-                valueB = ii(valueB, valueC, valueD, valueA, blocks[idx +  5], 21, -57434055)
-                valueA = ii(valueA, valueB, valueC, valueD, blocks[idx + 12], 6 ,  1700485571)
-                valueD = ii(valueD, valueA, valueB, valueC, blocks[idx +  3], 10, -1894986606)
-                valueC = ii(valueC, valueD, valueA, valueB, blocks[idx + 10], 15, -1051523)
-                valueB = ii(valueB, valueC, valueD, valueA, blocks[idx +  1], 21, -2054922799)
-                valueA = ii(valueA, valueB, valueC, valueD, blocks[idx +  8], 6 ,  1873313359)
-                valueD = ii(valueD, valueA, valueB, valueC, blocks[idx + 15], 10, -30611744)
-                valueC = ii(valueC, valueD, valueA, valueB, blocks[idx +  6], 15, -1560198380)
-                valueB = ii(valueB, valueC, valueD, valueA, blocks[idx + 13], 21,  1309151649)
-                valueA = ii(valueA, valueB, valueC, valueD, blocks[idx +  4], 6 , -145523070)
-                valueD = ii(valueD, valueA, valueB, valueC, blocks[idx + 11], 10, -1120210379)
-                valueC = ii(valueC, valueD, valueA, valueB, blocks[idx +  2], 15,  718787259)
-                valueB = ii(valueB, valueC, valueD, valueA, blocks[idx +  9], 21, -343485551)
-
-                valueA = add(valueA, oldA)
-                valueB = add(valueB, oldB)
-                valueC = add(valueC, oldC)
-                valueD = add(valueD, oldD)
+            for (idx = 64; idx <= data.length; idx += 64) {
+                cycle(state, stringToBlocks(data.substring(idx - 64, idx)))
             }
 
-            return numberToHex(valueA) + numberToHex(valueB) + numberToHex(valueC) + numberToHex(valueD)
+            data = data.substring(idx - 64)
+            let tail = [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0];
+            for (idx = 0; idx < data.length; idx++) {
+                tail[idx >> 2] |= data.charCodeAt(idx) << ((idx % 4) << 3)
+            }
+            tail[idx >> 2] |= 0x80 << ((idx % 4) << 3)
+            if (idx > 55) {
+                cycle(state, tail);
+                for (idx = 0; idx < 16; idx++) {
+                    tail[idx] = 0
+                }
+            }
+            tail[14] = data_length * 8
+            cycle(state, tail)
+
+            return blocksToHex(state)
         }
 
         /**** Privileged Methods *************************************************************************************/
 
         this.calculate = function (data) { return calculate(data) }
     }
-
-    /**** Prototype Methods ******************************************************************************************/
-
 }
 
 export default md5

@@ -1,8 +1,8 @@
 'use strict'
 
 import Queue from './queue'
-// import MD5 from './md5'
-import md5 from 'md5'
+import MD5 from './md5'
+// import md5 from 'md5'
 
 // TODO: need this to be WebWorker Working
 const channel = class ChannelClass {
@@ -299,10 +299,11 @@ const channel = class ChannelClass {
         function processListenersQueue() {
             if (!isProcessingQueue()) {
                 startQueueProcessing()
+                let md5 = new MD5()
                 let hash = null
                 let listenerInfo = listenerQ.next()
                 while (listenerInfo !== null) {
-                    hash = md5(listenerInfo.toString())
+                    hash = md5.calculate(listenerInfo.toString())
                     let item = {id: hash, qid: listenerInfo.id, data: listenerInfo.data}
                     hookList.push(item)
                     listenerInfo = listenerQ.next()
