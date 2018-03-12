@@ -72,7 +72,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/impulsesjs/lib.git"
+    "url": "https://github.com/impulsesjs/impulses.git"
   },
   "keywords": [
     "bus",
