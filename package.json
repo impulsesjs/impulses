@@ -94,9 +94,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/impulsesjs/lib/issues"
+    "url": "https://github.com/impulsesjs/impulses/issues"
   },
-  "homepage": "https://github.com/impulsesjs/lib",
+  "homepage": "https://github.com/impulsesjs/impulses",
   "dependencies": {},
   "config": {
     "commitizen": {
