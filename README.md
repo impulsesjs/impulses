@@ -13,7 +13,6 @@
 Impulses (pronounced /'ɪmpʌls/ (singular), from latin impulsus) is a modular event system library. It was designed from the beginning to be easy to integrate. It consists of an approachable core library that focuses on basic functions to allow communication between senders and receivers.
 
 ## Supporting Impulses
-
 Impulses.js is an MIT-licensed open source project. It's an independent project with its ongoing development made possible entirely thanks to the support by these awesome [backers](https://github.com/impulsesjs/impulses/blob/dev/BACKERS.md). If you'd like to join them, please consider:
 
 - [Become a backer or sponsor on Patreon](https://www.patreon.com/joaocorreia).
@@ -21,14 +20,12 @@ Impulses.js is an MIT-licensed open source project. It's an independent project 
 - One-time donation via PayPal or crypto-currencies (It will be linked soon) or, simply [buy me a coffee](https://www.buymeacoffee.com/correia)... 
 
 #### What's the difference between Patreon and OpenCollective?
-
 Funds donated via Patreon go directly to support Joao Correia full-time work on impulses.js and many other ideas. Funds donated via OpenCollective are managed with transparent expenses and will be used for compensating work and expenses for core team members or sponsoring community events. Your name/logo will receive proper recognition and exposure by donating on either platform.
 
 ## Documentation
 To check out live examples (in development) and docs, visit [impulses.disp.work](https://impulses.disp.work)(soon).
 
 ## Questions
-
 -- To be done --
 
 ## Issues
@@ -38,7 +35,6 @@ Please make sure to read the Issue Reporting Checklist (available very soon) bef
 Detailed changes for each release are documented in the [release notes](https://github.com/impulsesjs/impulses/releases).
 
 ## Stay In Touch
-
 -- To be done --
 
 ## Contribution
