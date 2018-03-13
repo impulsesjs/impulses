@@ -12,7 +12,7 @@
 # Impulses
 Impulses (pronounced /'ɪmpʌls/ (singular), from latin impulsus) is a modular event system library. It was designed from the beginning to be easy to integrate. It consists of an approachable core library that focuses on basic functions to allow communication between senders and receivers.
 
-<p align="center"><img width="100" src="https://github.com/impulsesjs/impulses/blob/doc/images/birds_eye_view.jpg" alt="Impulses Bird's Eye View"></p>
+![Bird's Eye View](https://github.com/impulsesjs/impulses/raw/dev/doc/images/birds_eye_view.jpg)
 
 ## Supporting Impulses
 Impulses.js is an MIT-licensed open source project. It's an independent project with its ongoing development made possible entirely thanks to the support by these awesome [backers](https://github.com/impulsesjs/impulses/blob/dev/BACKERS.md). If you'd like to join them, please consider:
