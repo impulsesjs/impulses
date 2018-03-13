@@ -72,8 +72,6 @@ The default test script will do the following: lint with ESLint -> unit tests wi
 
 - **`lib`**: contains built files for distribution. Note this directory is only updated when a release happens; they do not reflect the latest changes in development branches.
 
-  See [lib/README.md](https://github.com/impulsesjs/impulses/blob/dev/lib/README.md) for more details on dist files.
-
 - **`test`**: contains all tests. The unit tests are written with [Jasmine](http://jasmine.github.io/2.3/introduction.html) and run with [Karma](http://karma-runner.github.io/0.13/index.html). The e2e tests are written for and run with [Nightwatch.js](http://nightwatchjs.org/).
 
 - **`src`**: contains the source code, obviously. The codebase is written in ES2015.
