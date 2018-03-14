@@ -10,9 +10,20 @@
 </p>
 
 # Impulses
-Impulses (pronounced /'ɪmpʌls/ (singular), from latin impulsus) is a modular event system library. It was designed from the beginning to be easy to integrate. It consists of an approachable core library that focuses on basic functions to allow communication between senders and receivers.
+Impulses (pronounced /'ɪmpʌls/ [singular], from latin impulsus) is a modular event system library. It was designed from the beginning to be easy to integrate. It consists of an approachable core library that focuses on basic functions to allow communication between senders and receivers.
 
 ![Bird's Eye View](https://github.com/impulsesjs/impulses/raw/dev/doc/images/birds_eye_view.jpg)
+
+In a fast mode explanation, this project aims to provide a communication system that
+* allows Event-driven Architecture Pattern or Saga Pattern (microservices), 
+* prevents bugs in client side (no fatal errors on console),
+* allows feature testing without breaking functionality,
+* allows message tracing (for debug)
+* allows parallel execution out-of-the-box by using (WebWorkers)
+* allows easy integration with none or close to none change on code already existing
+* allows multi layer event system architecture to hide/protect functionality from being exposed
+* allows message queuing
+* allows flow control, local and overall 
 
 ## Supporting Impulses
 Impulses.js is an MIT-licensed open source project. It's an independent project with its ongoing development made possible entirely thanks to the support by these awesome [backers](https://github.com/impulsesjs/impulses/blob/dev/BACKERS.md). If you'd like to join them, please consider:
