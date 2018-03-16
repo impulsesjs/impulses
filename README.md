@@ -3,11 +3,15 @@
 <p align="center">
   <a href="https://circleci.com/gh/impulsesjs/impulses/tree/dev"><img src="https://img.shields.io/circleci/project/impulsesjs/impulses/dev.svg" alt="Build Status"></a>
   <a href="https://codecov.io/gh/impulsesjs/impulses?branch=dev"><img src="https://codecov.io/gh/impulsesjs/impulses/branch/dev/graph/badge.svg" alt="Coverage Status"></a>
+<a href="https://app.fossa.io/projects/git%2Bgithub.com%2Fimpulsesjs%2Fimpulses?ref=badge_shield" alt="FOSSA Status"><img src="https://app.fossa.io/api/projects/git%2Bgithub.com%2Fimpulsesjs%2Fimpulses.svg?type=shield"/></a>
   <a href="https://www.npmjs.com/package/impulses"><img src="https://img.shields.io/github/size/impulsesjs/impulses/lib/impulses.min.js.svg" alt="Size"></a>
   <a href="https://www.npmjs.com/package/impulses"><img src="https://img.shields.io/npm/dm/impulses.svg" alt="Downloads"></a>
   <a href="https://www.npmjs.com/package/impulses"><img src="https://img.shields.io/npm/v/impulses.svg" alt="Version"></a>
   <a href="https://www.npmjs.com/package/impulses"><img src="https://img.shields.io/npm/l/impulses.svg" alt="License"></a>
 </p>
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fimpulsesjs%2Fimpulses.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fimpulsesjs%2Fimpulses?ref=badge_large)
 
 # Impulses
 Impulses (pronounced /'ɪmpʌls/ [singular], from latin impulsus) is a modular event system library. It was designed from the beginning to be easy to integrate. It consists of an approachable core library that focuses on basic functions to allow communication between senders and receivers.
