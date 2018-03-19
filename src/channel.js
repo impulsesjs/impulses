@@ -184,15 +184,21 @@ const channel = class ChannelClass {
          */
         function cancelHook (id) {
             try {
-                for (let idx = 0; idx < hookList.length; idx++) {
-                    if (hookList[idx].qid === id) {
-                        hookList.splice(idx, 1)
-                        break
-                    }
+                let idx = hookList.findIndex((item) => {
+                    return item.qid === id
+                })
+                if (idx >= 0) {
+                    hookList.splice(idx, 1)
                 }
+                // for (let idx = 0; idx < hookList.length; idx++) {
+                //     if (hookList[idx].qid === id) {
+                //         hookList.splice(idx, 1)
+                //         break
+                //     }
+                // }
             }
             catch (e) {
-                // something went wrong probably list length change due to cancellation / activity
+                // something went wrong probably list length change due to concurrent cancellation / activity
             }
         }
 
@@ -208,10 +214,11 @@ const channel = class ChannelClass {
             endQueueProcessing()
             if (toReturn === null) {
                 try {
-                    for (let idx = 0; idx < hookList.length; idx++) {
-                        if (hookList[idx].qid === id) {
-                            toReturn = hookList[idx].data
-                        }
+                    let obj = hookList.find((item) => {
+                        return item.qid === id
+                    })
+                    if (typeof obj !== 'undefined') {
+                        toReturn = obj.data
                     }
                 }
                 catch (e) {
@@ -231,22 +238,17 @@ const channel = class ChannelClass {
          */
         function processMessage (message) {
             try {
-                let idx = 0;
-                let length = hookList.length
-                for (; idx < length; idx++) {
-                    if (typeof hookList[idx].data.listener !== 'undefined') {
-
-                        hookList[idx].data.listener(message)
-                        if (hookList[idx].data.times > 0) {
-                            hookList[idx].data.times--
-                        }
-
-                        if (hookList[idx].data.times < 1) {
-                            hookList.splice(idx, 1)
-                            idx--
+                hookList.forEach((item) => {
+                    if (typeof item.data.listener !== 'undefined') {
+                        item.data.listener(message)
+                        if (item.data.times > 0) {
+                            item.data.times--
                         }
                     }
-                }
+                })
+                hookList = hookList.filter((item) => {
+                    return typeof item.data === 'undefined' || typeof item.data.times === 'undefined' || item.data.times !== 0
+                })
             }
             catch (e) {
                 // something went wrong probably list length change due to cancellation / activity
