@@ -3,6 +3,10 @@
 <p align="center">
   <a href="https://circleci.com/gh/impulsesjs/impulses/tree/dev"><img src="https://img.shields.io/circleci/project/impulsesjs/impulses/dev.svg" alt="Build Status"></a>
   <a href="https://codecov.io/gh/impulsesjs/impulses?branch=dev"><img src="https://codecov.io/gh/impulsesjs/impulses/branch/dev/graph/badge.svg" alt="Coverage Status"></a>
+  <a href="https://nodesecurity.io/orgs/impulses/projects/3d9d9b79-d4f0-49f1-80a4-d351bf6ede2b#nightly"><img src="https://nodesecurity.io/orgs/impulses/projects/3d9d9b79-d4f0-49f1-80a4-d351bf6ede2b/badge" alt="NSP Vulnerabilities"></a>
+  <a href="https://app.fossa.io/projects/git%2Bgithub.com%2Fimpulsesjs%2Fimpulses?ref=badge_shield" alt="FOSSA Status"><img src="https://app.fossa.io/api/projects/git%2Bgithub.com%2Fimpulsesjs%2Fimpulses.svg?type=shield" alt="FOSSA Status"/></a>
+</p>
+<p align="center">
   <a href="https://www.npmjs.com/package/impulses"><img src="https://img.shields.io/github/size/impulsesjs/impulses/lib/impulses.min.js.svg" alt="Size"></a>
   <a href="https://www.npmjs.com/package/impulses"><img src="https://img.shields.io/npm/dm/impulses.svg" alt="Downloads"></a>
   <a href="https://www.npmjs.com/package/impulses"><img src="https://img.shields.io/npm/v/impulses.svg" alt="Version"></a>
