@@ -114,10 +114,11 @@ const md5 = class MD5 {
          * @returns {string}
          */
         function blocksToHex(blocks) {
-            for (let idx = 0; idx < blocks.length; idx++) {
-                blocks[idx] = numberToHex(blocks[idx])
-            }
-            return blocks.join('');
+            let hex_result = []
+            blocks.forEach((block) => {
+                hex_result.push(numberToHex(block))
+            })
+            return hex_result.join('')
         }
 
         /**
@@ -228,10 +229,12 @@ const md5 = class MD5 {
             }
             tail[idx >> 2] |= 0x80 << ((idx % 4) << 3)
             if (idx > 55) {
+                // TODO: Test, the next two lines aren't covered by the tests
                 cycle(state, tail);
-                for (idx = 0; idx < 16; idx++) {
-                    tail[idx] = 0
-                }
+                tail.fill(0, 0, 15)
+                // TODO: Remove this comments after tests are in place and working correctly
+                // Updated for vulnerability prevention warning raise from original code
+                // for (idx = 0; idx < 16; idx++) { tail[idx] = 0 }
             }
             tail[14] = data_length * 8
             cycle(state, tail)

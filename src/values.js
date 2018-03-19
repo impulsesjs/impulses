@@ -35,9 +35,9 @@ const Values = class ValuesClass {
          *
          * @returns {boolean}
          */
-        // function isValid () {
-        //     return (Date.now() / 1000) < eol
-        // }
+        function isValid () {
+            return (Date.now() / 1000) < eol
+        }
 
         /**
          * Resolve and returns the reference for the provided variable path
@@ -48,20 +48,18 @@ const Values = class ValuesClass {
         function getPointerTo (fullPath) {
             let varPath = fullPath.split('.')
             let level = value
-            for (let idx = 0; idx < varPath.length; idx++) {
-                let name = varPath[idx]
+            varPath.forEach((name) => {
                 if (level.hasOwnProperty(name)) {
-                    level = level[name]
+                    level = Reflect.getOwnPropertyDescriptor(level, name).value
                 } else {
                     level = null
-                    break
                 }
-            }
+            })
             return level
         }
 
         /**
-         * Delets a specified variable
+         * Deletes a specified variable
          *
          * @param {string} fullPath Object notation 'some.variable.name'
          * @returns {boolean}
@@ -72,17 +70,16 @@ const Values = class ValuesClass {
             if (previousPathToDestroy.length > 1) {
                 let pathToDestroy = previousPathToDestroy[previousPathToDestroy.length-1]
                 previousPathToDestroy.splice(previousPathToDestroy.length-1, 1)
-                // delete previousPathToDestroy[previousPathToDestroy.length-1]
 
                 let holder = getPointerTo(previousPathToDestroy.join('.'))
                 if (holder.hasOwnProperty(pathToDestroy)) {
-                    delete holder[pathToDestroy]
+                    Reflect.deleteProperty(holder, pathToDestroy)
                 } else {
                     return false
                 }
             } else if (previousPathToDestroy.length > 0) {
-                if (value.hasOwnProperty(previousPathToDestroy)) {
-                    delete value[previousPathToDestroy]
+                if (value.hasOwnProperty(previousPathToDestroy[0])) {
+                    Reflect.deleteProperty(value, previousPathToDestroy[0])
                 } else {
                     return false
                 }
@@ -102,19 +99,21 @@ const Values = class ValuesClass {
             let varPath = fullPath.split('.')
             let level = value
             let returnValue = null
-            for (let idx = 0; idx < varPath.length; idx++) {
-                let name = varPath[idx]
-                if (level.hasOwnProperty(name)) {
+            let ended = false
+
+            varPath.forEach((name, idx) => {
+                if (!ended && level.hasOwnProperty(name)) {
                     if (idx < varPath.length - 1) {
-                        level = level[name]
+                        level = Reflect.getOwnPropertyDescriptor(level, name).value
                     } else {
-                        returnValue = level[name]
-                        break
+                        returnValue = Reflect.getOwnPropertyDescriptor(level, name).value
+                        ended = true
                     }
                 } else {
-                    break
+                    ended = true
                 }
-            }
+            })
+
             return returnValue
         }
 
@@ -129,10 +128,10 @@ const Values = class ValuesClass {
             let level = value
             varPath.forEach(function (name, idx) {
                 if (idx < varPath.length - 1) {
-                    level[name] = {}
-                    level = level[name]
+                    Reflect.set(level, name, {})
+                    level = Reflect.getOwnPropertyDescriptor(level, name).value
                 } else {
-                    level[name] = valueToSet
+                    Reflect.set(level, name, valueToSet)
                     setDirty()
                 }
             })
