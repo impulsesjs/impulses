@@ -32,15 +32,25 @@ const CommBus = class CommBusClass {
          * @returns {boolean}
          */
         function isValidChannelInformation (channelInfo) {
+            // let forbiddenChars = /[\{\(]*/
+
+
             /* attribute entity registers tha responsible entity*/
             if (typeof channelInfo.entity === 'undefined' ) {
                 return false
             }
+            // console.log(channelInfo.entity, forbiddenChars)
+            // if (forbiddenChars.test(channelInfo.entity)) {
+            //     return false
+            // }
 
             /* attribute name must exist and represent the channel name */
             if (typeof channelInfo.name === 'undefined' ) {
                 return false
             }
+            // if (forbiddenChars.test(channelInfo.name)) {
+            //     return false
+            // }
 
             /* require field must be an string array with the required attributes expressed as a string */
             return (typeof channelInfo.require === 'undefined' || channelInfo.require.constructor === Array);
@@ -60,31 +70,33 @@ const CommBus = class CommBusClass {
                 channels = [channels]
             }
 
-            let idx = 0,
-                amount = channels.length
+            // let idx = 0,
+            //     amount = channels.length
 
-            for (; idx < amount; idx++) {
-                if (isValidChannelInformation(channels[idx])) {
-                    let channelInfo = Object.assign({}, channels[idx])
+            channels.forEach((channel) => {
+                if (isValidChannelInformation(channel)) {
+                    let channelInfo = Object.assign({}, channel)
                     let entity = channelInfo.entity
                     let name = channelInfo.name
                     delete channelInfo.entity
                     delete channelInfo.name
                     channelInfo.channel = new Channel(name)
 
-                    if (typeof channelsInfo[entity] === 'undefined') {
-                        channelsInfo[entity] = {}
+                    if (!channelsInfo.hasOwnProperty(entity)) {
+                        Reflect.set(channelsInfo, entity, {})
                     }
-
-                    if (typeof channelsInfo[entity][name] === 'undefined') {
-                        channelsInfo[entity][name] = channelInfo
+                    let entityObj = Reflect.getOwnPropertyDescriptor(channelsInfo, entity).value
+                    if (!entityObj.hasOwnProperty(name)) {
+                        Reflect.set(entityObj, name, channelInfo)
                         registeredChannels.push(`${entity}.${name}`)
                     }
                 }
-            }
+            })
 
             return registeredChannels
         }
+
+        // function
 
         /**
          * Check if a entity channel list and / or a specific channel exists
@@ -94,7 +106,7 @@ const CommBus = class CommBusClass {
          * @returns {boolean}
          */
         function exists (entity, channelName) {
-            if (typeof channelsInfo[entity] !== 'undefined') {
+            if (channelsInfo.hasOwnProperty(entity)) {
                 if (channelName !== null) {
                     return get(entity, channelName) !== null
                 } else {
@@ -112,9 +124,10 @@ const CommBus = class CommBusClass {
          * @returns {ChannelClass|null}
          */
         function get (entity, channelName) {
-            if (typeof channelsInfo[entity] !== 'undefined') {
-                if (typeof channelsInfo[entity][channelName] !== 'undefined') {
-                    return channelsInfo[entity][channelName].channel
+            if (channelsInfo.hasOwnProperty(entity)) {
+                let entityInfo = Reflect.getOwnPropertyDescriptor(channelsInfo, entity).value
+                if (entityInfo.hasOwnProperty(channelName)) {
+                    return Reflect.getOwnPropertyDescriptor(entityInfo, channelName).value.channel
                 }
             }
             return null
