@@ -16,40 +16,11 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 
   if [[ -z $SKIP_TESTS ]]; then
     npm run lint
-##    npm run flow
     npm run test:cov
-##    npm run test:e2e
-##    npm run test:ssr
   fi
-
-  # Sauce Labs tests has a decent chance of failing
-  # so we usually manually run them before running the release script.
-
-  # if [[ -z $SKIP_SAUCE ]]; then
-  #   export SAUCE_BUILD_ID=$VERSION:`date +"%s"`
-  #   npm run test:sauce
-  # fi
 
   # build
   VERSION=$VERSION npm run build && npm run build:norm
-  # update packages
-#  cd packages/vue-template-compiler
-#  npm version $VERSION
-#  if [[ -z $RELEASE_TAG ]]; then
-#    npm publish
-#  else
-#    npm publish --tag $RELEASE_TAG
-#  fi
-#  cd -
-#
-#  cd packages/vue-server-renderer
-#  npm version $VERSION
-#  if [[ -z $RELEASE_TAG ]]; then
-#    npm publish
-#  else
-#    npm publish --tag $RELEASE_TAG
-#  fi
-#  cd -
 
   # commit
   # TODO: update with required files
