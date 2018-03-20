@@ -1,13 +1,6 @@
 'use strict'
 
-import Values from './values'
-import Queue from './queue'
-
-class CommBus {
-    constructor () {
-        this.val = new Values()
-        this.queue = new Queue()
-    }
-}
+// TODO: This will require change once API is built
+import CommBus from './bus'
 
 module.exports = new CommBus()

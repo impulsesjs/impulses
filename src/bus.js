@@ -70,9 +70,6 @@ const CommBus = class CommBusClass {
                 channels = [channels]
             }
 
-            // let idx = 0,
-            //     amount = channels.length
-
             channels.forEach((channel) => {
                 if (isValidChannelInformation(channel)) {
                     let channelInfo = Object.assign({}, channel)
@@ -95,8 +92,6 @@ const CommBus = class CommBusClass {
 
             return registeredChannels
         }
-
-        // function
 
         /**
          * Check if a entity channel list and / or a specific channel exists
