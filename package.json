@@ -1,6 +1,6 @@
 {
   "name": "impulses",
-  "version": "0.1.5",
+  "version": "1.0.0-alpha.1",
   "description": "Non-Obstructive Modular Event System",
   "main": "lib/impulses.js",
   "unpkg": "lib/impulses.js",
