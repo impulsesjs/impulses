@@ -42,20 +42,14 @@ Funds donated via Patreon go directly to support Joao Correia full-time work on 
 ## Documentation
 To check out live examples (in development) and docs, visit [impulses.disp.work](https://impulses.disp.work)(soon).
 
-## Questions
--- To be done --
-
 ## Issues
 Please make sure to read the Issue Reporting Checklist (available very soon) before opening an issue. Issues not conforming to the guidelines may be closed immediately.
 
 ## Changelog
 Detailed changes for each release are documented in the [release notes](https://github.com/impulsesjs/impulses/releases).
 
-## Stay In Touch
--- To be done --
-
 ## Contribution
-Please make sure to read the Contributing Guide (available very soon) before making a pull request.
+Please make sure to read the [Contributing Guide](https://github.com/impulsesjs/impulses/blob/dev/.github/CONTRIBUTING.md) before making a pull request.
 
 ## License
 
