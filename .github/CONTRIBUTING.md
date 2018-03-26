@@ -7,10 +7,6 @@ Before submitting your contribution, please make sure to take a moment and read 
 - [Development Setup](#development-setup)
 - [Project Structure](#project-structure)
 
-## Issue Reporting Guidelines
-
-- Always use [https://impulses.vuejs.org/](https://new-issue.vuejs.org/) to create new issues.
-
 ## Pull Request Guidelines
 
 - The `master` branch is basically just a snapshot of the latest stable release. All development should be done in dedicated branches. **Do not submit PRs against the `master` branch.**
