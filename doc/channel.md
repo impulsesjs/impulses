@@ -63,12 +63,14 @@ let listenerId = chan.addListener(listenerInformationObj)
 
 #### Remove Listener
 Remove a listener hooked on this channel with the specified id.
+
 ```js
 chan.removeListener(listenerId)
 ```
 
 #### Listener Information
 Gets the information about a listener hooked on this channel with the specified id.
+
 ```js
 chan.listenerInfo(listenerId)
 ```
@@ -76,6 +78,7 @@ chan.listenerInfo(listenerId)
 ### Message
 #### Send
 Sends a message
+
 ```js
 let messageId = chan.send(messageObj)
 ```
@@ -83,12 +86,14 @@ let messageId = chan.send(messageObj)
 #### Send And Listen
 Send a message and set up a listener so it will get the reply. The idea here is to hook a listener to get the reply 
 and then be automatically removed. The listener information will be pre-defined to have this behaviour if nothing is set.
+
 ```js
 let messageId = chan.sendAndListen(messageObj, listenerInformationObj)
 ```
 
 #### Information
 Gets the information on a listener installed in this channel by its id.
+
 ```js
 chan.messageInfo(messageId)
 ```
