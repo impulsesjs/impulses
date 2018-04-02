@@ -114,7 +114,7 @@ const Queue = class QueueClass {
          *
          * @returns {*|null} Value or null if not present
          */
-        this.next = () => { return next() }
+        this.next = () => next()
 
         /**
          * Adds a new data to the queue
@@ -122,7 +122,7 @@ const Queue = class QueueClass {
          * @param {*} data Any structure or simple type allowed
          * @returns {string}
          */
-        this.add = (data) => { return add(data) }
+        this.add = (data) => add(data)
 
         /**
          * Cancel a queued data, by removing it from the queue and from the data
@@ -130,7 +130,7 @@ const Queue = class QueueClass {
          * @param {string} id Queued Data identifier
          * @returns {boolean}
          */
-        this.cancel = (id) => { return cancel(id) }
+        this.cancel = (id) => cancel(id)
 
         /**
          * Gets the value of a specific id (if present)
@@ -138,7 +138,7 @@ const Queue = class QueueClass {
          * @param {string} id Queued Data identifier
          * @returns {*|null} Value or null if not present
          */
-        this.get = (id) => { return get(id) }
+        this.get = (id) => get(id)
     }
 
     /**** Prototype Methods ******************************************************************************************/

@@ -32,30 +32,19 @@ const CommBus = class CommBusClass {
          * @returns {boolean}
          */
         function isValidChannelInformation (channelInfo) {
-            // let forbiddenChars = /[\{\(]*/
-
 
             /* attribute entity registers tha responsible entity*/
             if (typeof channelInfo.entity === 'undefined' ) {
                 return false
             }
-            // console.log(channelInfo.entity, forbiddenChars)
-            // if (forbiddenChars.test(channelInfo.entity)) {
-            //     return false
-            // }
 
             /* attribute name must exist and represent the channel name */
             if (typeof channelInfo.name === 'undefined' ) {
                 return false
             }
-            // if (forbiddenChars.test(channelInfo.name)) {
-            //     return false
-            // }
 
             /* require field must be an string array with the required attributes expressed as a string */
             return (typeof channelInfo.require === 'undefined' || channelInfo.require.constructor === Array);
-
-
         }
 
         /**
@@ -135,7 +124,7 @@ const CommBus = class CommBusClass {
          *
          * @param {ChannelsInfo} channelsInfo
          */
-        this.register = function (channelsInfo = []) { return register(channelsInfo) }
+        this.register = (channelsInfo = []) => register(channelsInfo)
 
         /**
          * Check if a entity channel list and / or a specific channel exists
@@ -144,7 +133,7 @@ const CommBus = class CommBusClass {
          * @param {string|null} channelName Channel name to search for
          * @returns {boolean}
          */
-        this.exists = function (entity, channelName = null) { return exists(entity, channelName) }
+        this.exists = (entity, channelName = null) => exists(entity, channelName)
 
         /**
          * Get a channel to work with
@@ -153,7 +142,7 @@ const CommBus = class CommBusClass {
          * @param {string=} channelName Channel name to search for
          * @returns {ChannelClass|null}
          */
-        this.get = function (entity, channelName) { return get (entity, channelName) }
+        this.get = (entity, channelName) => get (entity, channelName)
     }
 
     /**** Prototype Methods ******************************************************************************************/

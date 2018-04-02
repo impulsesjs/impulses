@@ -69,7 +69,7 @@ const channel = class ChannelClass {
         }
 
         function startQueueProcessing() {
-            while (isProcessingQueue()) {}
+            while (isProcessingQueue()) {} // stays here until stops processing
             processingQueue = true
         }
 
@@ -239,11 +239,9 @@ const channel = class ChannelClass {
         function processMessage (message) {
             try {
                 hookList.forEach((item) => {
-                    if (typeof item.data.listener !== 'undefined') {
-                        item.data.listener(message)
-                        if (item.data.times > 0) {
-                            item.data.times--
-                        }
+                    item.data.listener(message) // No need to check here since we are ensuring its existence when coming from the queue
+                    if (item.data.times > 0) {
+                        item.data.times--
                     }
                 })
                 hookList = hookList.filter((item) => {
@@ -269,19 +267,23 @@ const channel = class ChannelClass {
          *
          * @param {object} message
          * @param {object} listenerInfo
+         *
+         * @return {object} listenerInfo
          */
         function sendAndListen (message, listenerInfo) {
-            addListener(listenerInfo)
+            let id = addListener(listenerInfo)
             send(message)
+            return id
         }
 
         /**
          * Get a message information for the provided id
          *
          * @param {string} id Message ID
+         * @returns {*}
          */
         function getMessageInfo (id) {
-            return messageQ.get(id)
+            return messageQ.get(id).data
         }
 
         /**
@@ -305,9 +307,11 @@ const channel = class ChannelClass {
                 let hash = null
                 let listenerInfo = listenerQ.next()
                 while (listenerInfo !== null) {
-                    hash = md5.calculate(listenerInfo.toString())
-                    let item = {id: hash, qid: listenerInfo.id, data: listenerInfo.data}
-                    hookList.push(item)
+                    if (typeof listenerInfo.data.listener === 'function') {
+                        hash = md5.calculate(listenerInfo.toString())
+                        let item = {id: hash, qid: listenerInfo.id, data: listenerInfo.data}
+                        hookList.push(item)
+                    }
                     listenerInfo = listenerQ.next()
                 }
                 endQueueProcessing()
@@ -330,29 +334,29 @@ const channel = class ChannelClass {
 
         /**** Privileged Methods *************************************************************************************/
 
-        this.getName = function () { return getName() }
+        this.getName = () => getName()
 
-        this.getStatus = function () { return getStatus() }
+        this.getStatus = () => getStatus()
 
-        this.open = function () { return open() }
+        this.open = () => open()
 
-        this.close = function () { return close() }
+        this.close = () => close()
 
-        this.hold = function () { return hold() }
+        this.hold = () => hold()
 
-        this.resume = function () { return resume() }
+        this.resume = () => resume()
 
-        this.addListener = function (listenerInfo) { return addListener(listenerInfo) }
+        this.addListener = (listenerInfo) => addListener(listenerInfo)
 
-        this.removeListener = function (id) { return removeListener(id) }
+        this.removeListener = (id) => removeListener(id)
 
-        this.listenerInfo = function (id) { return getListenerInfo(id) }
+        this.listenerInfo = (id) => getListenerInfo(id)
 
-        this.send = function (message) { return send(message) }
+        this.send = (message) => send(message)
 
-        this.sendAndListen = function (message, listenerInfo) { return sendAndListen(message, listenerInfo) }
+        this.sendAndListen = (message, listenerInfo) => sendAndListen(message, listenerInfo)
 
-        this.messageInfo = function (id) { return getMessageInfo(id) }
+        this.messageInfo = (id) => getMessageInfo(id)
 
     }
 
