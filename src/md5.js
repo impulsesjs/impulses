@@ -122,6 +122,26 @@ const md5 = class MD5 {
         }
 
         /**
+         * Run the cycle calculation
+         *
+         * @param {int[]} blocks
+         * @param {object} settings
+         */
+        function runCyclesCalc(blocks, settings) {
+            settings.cycles
+                .reduce((currentState, cycleInfo) => {
+                    /** @property {function} cycleInfo.method */
+                    /** @property {int[]} cycleInfo.blockMap */
+                    /** @property {int[]} cycleInfo.extra */
+                    cycleInfo.blockMap.forEach((pos, idx) => {
+                        currentState[0] = cycleInfo.method(...[...currentState, blocks[pos], ...cycleInfo.extra[idx]])
+                        currentState.unshift(currentState.pop())
+                    })
+                    return currentState
+                }, settings.runState)
+        }
+
+        /**
          * Cycle through blocks
          *
          * @param {int[]} state
@@ -133,78 +153,36 @@ const md5 = class MD5 {
             let val_c = state[2]
             let val_d = state[3]
 
-            val_a = ff(val_a, val_b, val_c, val_d, blocks[0], 7, -680876936)
-            val_d = ff(val_d, val_a, val_b, val_c, blocks[1], 12, -389564586)
-            val_c = ff(val_c, val_d, val_a, val_b, blocks[2], 17,  606105819)
-            val_b = ff(val_b, val_c, val_d, val_a, blocks[3], 22, -1044525330)
-            val_a = ff(val_a, val_b, val_c, val_d, blocks[4], 7, -176418897)
-            val_d = ff(val_d, val_a, val_b, val_c, blocks[5], 12,  1200080426)
-            val_c = ff(val_c, val_d, val_a, val_b, blocks[6], 17, -1473231341)
-            val_b = ff(val_b, val_c, val_d, val_a, blocks[7], 22, -45705983)
-            val_a = ff(val_a, val_b, val_c, val_d, blocks[8], 7,  1770035416)
-            val_d = ff(val_d, val_a, val_b, val_c, blocks[9], 12, -1958414417)
-            val_c = ff(val_c, val_d, val_a, val_b, blocks[10], 17, -42063)
-            val_b = ff(val_b, val_c, val_d, val_a, blocks[11], 22, -1990404162)
-            val_a = ff(val_a, val_b, val_c, val_d, blocks[12], 7,  1804603682)
-            val_d = ff(val_d, val_a, val_b, val_c, blocks[13], 12, -40341101)
-            val_c = ff(val_c, val_d, val_a, val_b, blocks[14], 17, -1502002290)
-            val_b = ff(val_b, val_c, val_d, val_a, blocks[15], 22,  1236535329)
+            let settings = {
+                runState: [val_a, val_b, val_c, val_d],
+                cycles: [{method: ff, blockMap: [0,1,2,3, 4,5,6,7, 8,9,10,11, 12,13,14,15], extra: [
+                    [7, -680876936],  [12, -389564586],  [17,  606105819],  [22, -1044525330],
+                    [7, -176418897],  [12, 1200080426],  [17, -1473231341], [22, -45705983],
+                    [7, 1770035416],  [12, -1958414417], [17, -42063],      [22, -1990404162],
+                    [7, 1804603682],  [12, -40341101],   [17, -1502002290], [22,  1236535329]]
+                }, {method: gg, blockMap: [1,6,11,0, 5,10,15,4, 9,14,3,8, 13,2,7,12], extra: [
+                    [5, -165796510],  [9, -1069501632],  [14, 643717713],   [20, -373897302],
+                    [5, -701558691],  [9, 38016083],     [14, -660478335],  [20, -405537848],
+                    [5, 568446438],   [9, -1019803690],  [14, -187363961],  [20, 1163531501],
+                    [5, -1444681467], [9, -51403784],    [14, 1735328473],  [20, -1926607734]]
+                }, {method: hh, blockMap: [5,8,11,14, 1,4,7,10, 13,0,3,6, 9,12,15,2], extra: [
+                    [4, -378558],     [11, -2022574463], [16, 1839030562],  [23, -35309556],
+                    [4, -1530992060], [11, 1272893353],  [16, -155497632],  [23, -1094730640],
+                    [4, 681279174],   [11, -358537222],  [16, -722521979],  [23, 76029189],
+                    [4, -640364487],  [11, -421815835],  [16, 530742520],   [23, -995338651]]
+                }, {method: ii, blockMap: [0,7,14,5, 12,3,10,1, 8,15,6,13, 4,11,2,9], extra: [
+                    [6, -198630844],  [10, 1126891415],  [15, -1416354905], [21, -57434055],
+                    [6, 1700485571],  [10, -1894986606], [15, -1051523],    [21, -2054922799],
+                    [6, 1873313359],  [10, -30611744],   [15, -1560198380], [21, 1309151649],
+                    [6, -145523070],  [10, -1120210379], [15, 718787259],   [21, -343485551]]
+                }]
+            }
+            runCyclesCalc(blocks, settings)
 
-            val_a = gg(val_a, val_b, val_c, val_d, blocks[1], 5, -165796510)
-            val_d = gg(val_d, val_a, val_b, val_c, blocks[6], 9, -1069501632)
-            val_c = gg(val_c, val_d, val_a, val_b, blocks[11], 14,  643717713)
-            val_b = gg(val_b, val_c, val_d, val_a, blocks[0], 20, -373897302)
-            val_a = gg(val_a, val_b, val_c, val_d, blocks[5], 5, -701558691)
-            val_d = gg(val_d, val_a, val_b, val_c, blocks[10], 9,  38016083)
-            val_c = gg(val_c, val_d, val_a, val_b, blocks[15], 14, -660478335)
-            val_b = gg(val_b, val_c, val_d, val_a, blocks[4], 20, -405537848)
-            val_a = gg(val_a, val_b, val_c, val_d, blocks[9], 5,  568446438)
-            val_d = gg(val_d, val_a, val_b, val_c, blocks[14], 9, -1019803690)
-            val_c = gg(val_c, val_d, val_a, val_b, blocks[3], 14, -187363961)
-            val_b = gg(val_b, val_c, val_d, val_a, blocks[8], 20,  1163531501)
-            val_a = gg(val_a, val_b, val_c, val_d, blocks[13], 5, -1444681467)
-            val_d = gg(val_d, val_a, val_b, val_c, blocks[2], 9, -51403784)
-            val_c = gg(val_c, val_d, val_a, val_b, blocks[7], 14,  1735328473)
-            val_b = gg(val_b, val_c, val_d, val_a, blocks[12], 20, -1926607734)
-
-            val_a = hh(val_a, val_b, val_c, val_d, blocks[5], 4, -378558)
-            val_d = hh(val_d, val_a, val_b, val_c, blocks[8], 11, -2022574463)
-            val_c = hh(val_c, val_d, val_a, val_b, blocks[11], 16,  1839030562)
-            val_b = hh(val_b, val_c, val_d, val_a, blocks[14], 23, -35309556)
-            val_a = hh(val_a, val_b, val_c, val_d, blocks[1], 4, -1530992060)
-            val_d = hh(val_d, val_a, val_b, val_c, blocks[4], 11,  1272893353)
-            val_c = hh(val_c, val_d, val_a, val_b, blocks[7], 16, -155497632)
-            val_b = hh(val_b, val_c, val_d, val_a, blocks[10], 23, -1094730640)
-            val_a = hh(val_a, val_b, val_c, val_d, blocks[13], 4,  681279174)
-            val_d = hh(val_d, val_a, val_b, val_c, blocks[0], 11, -358537222)
-            val_c = hh(val_c, val_d, val_a, val_b, blocks[3], 16, -722521979)
-            val_b = hh(val_b, val_c, val_d, val_a, blocks[6], 23,  76029189)
-            val_a = hh(val_a, val_b, val_c, val_d, blocks[9], 4, -640364487)
-            val_d = hh(val_d, val_a, val_b, val_c, blocks[12], 11, -421815835)
-            val_c = hh(val_c, val_d, val_a, val_b, blocks[15], 16,  530742520)
-            val_b = hh(val_b, val_c, val_d, val_a, blocks[2], 23, -995338651)
-
-            val_a = ii(val_a, val_b, val_c, val_d, blocks[0], 6, -198630844)
-            val_d = ii(val_d, val_a, val_b, val_c, blocks[7], 10,  1126891415)
-            val_c = ii(val_c, val_d, val_a, val_b, blocks[14], 15, -1416354905)
-            val_b = ii(val_b, val_c, val_d, val_a, blocks[5], 21, -57434055)
-            val_a = ii(val_a, val_b, val_c, val_d, blocks[12], 6,  1700485571)
-            val_d = ii(val_d, val_a, val_b, val_c, blocks[3], 10, -1894986606)
-            val_c = ii(val_c, val_d, val_a, val_b, blocks[10], 15, -1051523)
-            val_b = ii(val_b, val_c, val_d, val_a, blocks[1], 21, -2054922799)
-            val_a = ii(val_a, val_b, val_c, val_d, blocks[8], 6,  1873313359)
-            val_d = ii(val_d, val_a, val_b, val_c, blocks[15], 10, -30611744)
-            val_c = ii(val_c, val_d, val_a, val_b, blocks[6], 15, -1560198380)
-            val_b = ii(val_b, val_c, val_d, val_a, blocks[13], 21,  1309151649)
-            val_a = ii(val_a, val_b, val_c, val_d, blocks[4], 6, -145523070)
-            val_d = ii(val_d, val_a, val_b, val_c, blocks[11], 10, -1120210379)
-            val_c = ii(val_c, val_d, val_a, val_b, blocks[2], 15,  718787259)
-            val_b = ii(val_b, val_c, val_d, val_a, blocks[9], 21, -343485551)
-
-            state[0] = add(val_a, state[0])
-            state[1] = add(val_b, state[1])
-            state[2] = add(val_c, state[2])
-            state[3] = add(val_d, state[3])
+            state[0] = add(settings.runState[0], state[0])
+            state[1] = add(settings.runState[1], state[1])
+            state[2] = add(settings.runState[2], state[2])
+            state[3] = add(settings.runState[3], state[3])
         }
 
         /**
@@ -244,7 +222,7 @@ const md5 = class MD5 {
 
         /**** Privileged Methods *************************************************************************************/
 
-        this.calculate = function (data) { return calculate(data) }
+        this.calculate = (data) => calculate(data)
     }
 }
 

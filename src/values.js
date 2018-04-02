@@ -15,7 +15,7 @@ const Values = class ValuesClass {
         // let ttl = ttlToSet || null
         let dirty = values !== null
         let value = values || {}
-        let eol = null
+        // let eol = null
 
         // if (ttl !== null && !isNaN(ttl)) {
         //     eol = (Date.now() / 1000) + ttl
@@ -31,13 +31,20 @@ const Values = class ValuesClass {
         }
 
         /**
+         * Sets the dirty flag to inform that the data was changed
+         */
+        function unsetDirty () {
+            dirty = false
+        }
+
+        /**
          * Checks if the data is valid (if its not deprecated by ttl)
          *
          * @returns {boolean}
          */
-        function isValid () {
-            return (Date.now() / 1000) < eol
-        }
+        // function isValid () {
+        //     return (Date.now() / 1000) < eol
+        // }
 
         /**
          * Resolve and returns the reference for the provided variable path
@@ -45,17 +52,10 @@ const Values = class ValuesClass {
          * @param {string} fullPath Object notation 'some.variable.name'
          * @returns {Object|{}}
          */
-        function getPointerTo (fullPath) {
-            let varPath = fullPath.split('.')
-            let level = value
-            varPath.forEach((name) => {
-                if (level.hasOwnProperty(name)) {
-                    level = Reflect.getOwnPropertyDescriptor(level, name).value
-                } else {
-                    level = null
-                }
-            })
-            return level
+        function getPointerTo (fullPath = '') {
+            if (fullPath === '')
+                return value
+            return fullPath.split('.').reduce((valuesIn, currentPath) => valuesIn[currentPath] || null, value)
         }
 
         /**
@@ -65,28 +65,13 @@ const Values = class ValuesClass {
          * @returns {boolean}
          */
         function destroy (fullPath) {
-            let previousPathToDestroy = fullPath.split('.')
-
-            if (previousPathToDestroy.length > 1) {
-                let pathToDestroy = previousPathToDestroy[previousPathToDestroy.length-1]
-                previousPathToDestroy.splice(previousPathToDestroy.length-1, 1)
-
-                let holder = getPointerTo(previousPathToDestroy.join('.'))
-                if (holder.hasOwnProperty(pathToDestroy)) {
-                    Reflect.deleteProperty(holder, pathToDestroy)
-                } else {
-                    return false
-                }
-            } else if (previousPathToDestroy.length > 0) {
-                if (value.hasOwnProperty(previousPathToDestroy[0])) {
-                    Reflect.deleteProperty(value, previousPathToDestroy[0])
-                } else {
-                    return false
-                }
-            } else {
-                return false
+            let holder_path = fullPath.split('.')
+            let to_delete = holder_path.splice(-1, 1)[0]
+            let holder = getPointerTo(holder_path.join('.'))
+            if (holder.hasOwnProperty(to_delete)) {
+                return Reflect.deleteProperty(holder, to_delete)
             }
-            return true
+            return false
         }
 
         /**
@@ -96,25 +81,7 @@ const Values = class ValuesClass {
          * @returns {*}
          */
         function get (fullPath) {
-            let varPath = fullPath.split('.')
-            let level = value
-            let returnValue = null
-            let ended = false
-
-            varPath.forEach((name, idx) => {
-                if (!ended && level.hasOwnProperty(name)) {
-                    if (idx < varPath.length - 1) {
-                        level = Reflect.getOwnPropertyDescriptor(level, name).value
-                    } else {
-                        returnValue = Reflect.getOwnPropertyDescriptor(level, name).value
-                        ended = true
-                    }
-                } else {
-                    ended = true
-                }
-            })
-
-            return returnValue
+            return getPointerTo(fullPath)
         }
 
         /**
@@ -124,17 +91,16 @@ const Values = class ValuesClass {
          * @param {*} valueToSet Values to be stored
          */
         function set (fullPath, valueToSet) {
-            let varPath = fullPath.split('.')
-            let level = value
-            varPath.forEach(function (name, idx) {
-                if (idx < varPath.length - 1) {
-                    Reflect.set(level, name, {})
-                    level = Reflect.getOwnPropertyDescriptor(level, name).value
-                } else {
-                    Reflect.set(level, name, valueToSet)
-                    setDirty()
+            let full_path = fullPath.split('.')
+            let ptr = full_path.reduce((valuePtr, block, idx) => {
+                if (!valuePtr.hasOwnProperty(block)) {
+                    Reflect.set(valuePtr, block, {})
                 }
-            })
+                return (idx === full_path.length - 1) ? valuePtr : valuePtr[block]
+            }, value)
+            if (Reflect.set(ptr, full_path.pop(), valueToSet) === true) {
+                setDirty()
+            }
         }
 
         /**
@@ -150,32 +116,28 @@ const Values = class ValuesClass {
         /**** Privileged Methods *************************************************************************************/
 
         /**
-         * Check if the data was set
-         *
-         * @returns {boolean}
-         */
-        this.isSet = () => { return value !== null }
-
-        /**
          * Checks if the data was changed
          *
          * @returns {boolean}
          */
-        this.isDirty = () => { return dirty }
+        this.isDirty = () => dirty
 
         /**
          * Checks if the data is valid (if its not deprecated by ttl)
          *
          * @returns {boolean}
          */
-        this.isValid = () => { return isValid() }
+        // this.isValid = () => isValid()
 
         /**
          * Export all the data as it is
          *
          * @returns {object}
          */
-        this.export = () => { return value }
+        this.export = () => {
+            unsetDirty()
+            return Object.assign({}, value)
+        }
 
         /**
          * Adds a value to the data
@@ -191,7 +153,7 @@ const Values = class ValuesClass {
          * @param {string} fullPath Object notation 'some.variable.name.to.check'
          * @returns {boolean}
          */
-        this.isSet = (fullPath) => { return isSet(fullPath) }
+        this.isSet = (fullPath) => isSet(fullPath)
 
         /**
          * Get a specific value
@@ -199,7 +161,7 @@ const Values = class ValuesClass {
          * @param {string} fullPath Object notation 'some.variable.name.to.fetch'
          * @returns {*}
          */
-        this.get = (fullPath) => { return get(fullPath) }
+        this.get = (fullPath) => get(fullPath)
 
         /**
          * Destroy a specific variable
@@ -207,7 +169,7 @@ const Values = class ValuesClass {
          * @param {string} fullPath Object notation 'some.variable.name.to.fetch'
          * @returns {boolean}
          */
-        this.destroy = (fullPath) => { return destroy(fullPath) }
+        this.destroy = (fullPath) => destroy(fullPath)
     }
 
     /**** Prototype Methods ******************************************************************************************/

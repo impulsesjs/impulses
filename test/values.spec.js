@@ -15,6 +15,9 @@ describe('Given an instance of values', () => {
     })
 
     describe('After I have instantiated values with a object of values', () => {
+        it('It should be dirty', () => {
+            expect(lib.isDirty()).to.be.equal(true)
+        })
         it('it should be possible to get a single simple value', () => {
             expect(lib.get('preset1')).to.be.equal('psv1')
         })
@@ -26,6 +29,19 @@ describe('Given an instance of values', () => {
             let exp = lib.export()
             expect(exp.preset1).to.be.equal('psv1')
             expect(exp.preset2.name1).to.be.equal('valuePS1')
+        })
+
+        it('it should be possible to check if there is any value', () => {
+            let set = lib.isSet()
+            expect(set).to.be.equal(true)
+        })
+        it('it should be possible to check if a specific value exists with success', () => {
+            let set = lib.isSet('preset2.name1')
+            expect(set).to.be.equal(true)
+        })
+        it('it should be possible to check if a specific value exists with no success', () => {
+            let set = lib.isSet('preset2.name2')
+            expect(set).to.be.equal(false)
         })
     })
 
@@ -44,6 +60,10 @@ describe('Given an instance of values', () => {
             let exp = lib.export()
             expect(exp.name1).to.be.equal('value1')
             expect(exp.name2.with.several.levels).to.be.equal('value2')
+        })
+
+        it('It should not be dirty anymore', () => {
+            expect(lib.isDirty()).to.be.equal(false)
         })
     })
 
@@ -66,6 +86,10 @@ describe('Given an instance of values', () => {
     })
 
     describe('When I need to delete a simple value', () => {
+        it('it should return false when trying to remove an unexisting value', () => {
+            expect(lib.destroy('poop')).to.be.equal(false)
+        })
+
         it('it should be possible to set a single value', () => {
             lib.destroy('name1')
             expect(lib.get('name1')).to.be.equal(null)
