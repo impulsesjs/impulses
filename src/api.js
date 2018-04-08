@@ -243,6 +243,16 @@ const api = class ApiClass {
          */
         this.sendPublic = (entity, channel, message) => sendMessage(entity, channel, message, pubBus)
 
+        /**
+         * Send a message to the private BUS
+         *
+         * @param  {String} entity  Entity name
+         * @param  {String} channel Channel name
+         * @param  {Object} message Message to be sent
+         *
+         * @return {int|false}      Registered Id or False
+         */
+        this.sendPrivate = (entity, channel, message) => sendMessage(entity, channel, message, privBus)
     }
 
     /**** Prototype Methods ******************************************************************************************/

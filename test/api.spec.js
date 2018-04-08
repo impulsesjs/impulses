@@ -13,6 +13,9 @@ let lib, pbBus, prBus
 let message1 = ['ENTITY_NAME', 'CHANNEL_1', {field1: 'field1 value'}]
 let errMessage1 = ['ENTITY_NAME', 'CHANNEL_11', {field1: 'field1 value'}]
 
+let privateMessage1 = ['ENTITY_NAME_PRIVATE', 'CHANNEL_1_PRIVATE', {field1: 'field1 value'}]
+let privateErrMessage1 = ['ENTITY_NAME_PRIVATE', 'CHANNEL_11_PRIVATE', {field1: 'field1 value'}]
+
 let channelConfig = {
   entity: 'ENTITY_NAME',
   channels: [
@@ -248,11 +251,25 @@ describe('After I have an API instance with Public and Private BUS set and Chann
         expect(lib.sendPublic(...message1)).to.be.false
     })
 
-    it('it should not be possible to send a public message to an unexinting channel', () => {
+    it('it should not be possible to send a public message to an unexisting channel', () => {
         expect(lib.sendPublic(...errMessage1)).to.be.false
     })
 
     it('it should be possible to send a public message', () => {
         expect(lib.sendPublic(...message1)).to.not.be.false
     })
+
+    it('it should not be possible to send a private message without a private BUS', () => {
+        lib = new Api({}, pbBus, null)
+        expect(lib.sendPrivate(...privateMessage1)).to.be.false
+    })
+
+    it('it should not be possible to send a private message to an unexisting channel', () => {
+        expect(lib.sendPrivate(...privateErrMessage1)).to.be.false
+    })
+
+    it('it should be possible to send a private message', () => {
+        expect(lib.sendPrivate(...privateMessage1)).to.not.be.false
+    })
+
 })
