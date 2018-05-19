@@ -66,7 +66,10 @@ const CommBus = class CommBusClass {
                     let name = channelInfo.name
                     delete channelInfo.entity
                     delete channelInfo.name
-                    channelInfo.channel = new Channel(name)
+                    channelInfo.channel = new Channel(entity, name)
+                    if (typeof channelInfo.listener !== 'undefined') {
+                        channelInfo.channel.addListener(channelInfo.listener)
+                    }
 
                     if (!channelsInfo.hasOwnProperty(entity)) {
                         Reflect.set(channelsInfo, entity, {})
@@ -87,7 +90,7 @@ const CommBus = class CommBusClass {
          *
          * @param {string} entity Entity name to search for
          * @param {string|null} channelName Channel name to search for
-         * @returns {boolean}
+         * @returns {boolean|ChannelClass}
          */
         function exists (entity, channelName) {
             if (channelsInfo.hasOwnProperty(entity)) {
@@ -131,7 +134,7 @@ const CommBus = class CommBusClass {
          *
          * @param {string} entity Entity name to search for
          * @param {string|null} channelName Channel name to search for
-         * @returns {boolean}
+         * @returns {boolean|ChannelClass}
          */
         this.exists = (entity, channelName = null) => exists(entity, channelName)
 

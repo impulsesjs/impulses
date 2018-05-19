@@ -10,15 +10,15 @@ const channel = class ChannelClass {
     /**
      * Creates and initializes a Channel Object
      */
-    constructor (channelName, initOnHold = false) {
+    constructor (entityName, channelName, initOnHold = false) {
 
         /**** Private Attributes *************************************************************************************/
-
         const CLOSED_STATUS = 0
         const OPEN_STATUS = 1
         const ON_HOLD_STATUS = 2
 
         let processingQueue = false
+        let entity = entityName
         let name = channelName
         let statusOpen = true
         let statusHold = initOnHold || false
@@ -37,6 +37,11 @@ const channel = class ChannelClass {
             return name
         }
 
+        /**
+         * Check if the queue is being proccessed
+         *
+         * @return {Boolean}
+         */
         function isProcessingQueue() {
             return processingQueue
         }
@@ -68,11 +73,17 @@ const channel = class ChannelClass {
             return statusOpen && !statusHold
         }
 
+        /**
+         * Starts or restart the queue process
+         */
         function startQueueProcessing() {
             while (isProcessingQueue()) {} // stays here until stops processing
             processingQueue = true
         }
 
+        /**
+         * End the queue processing
+         */
         function endQueueProcessing() {
             processingQueue = false
         }
@@ -232,6 +243,19 @@ const channel = class ChannelClass {
         }
 
         /**
+         * Add a reply Information to the message
+         *
+         * @param {Object} message Message object
+         */
+        function addReplyInfo(message) {
+            let reply_stack = {entity: entity, name: name}
+            if (typeof message.reply_stack === 'undefined') {
+                message.reply_stack = []
+            }
+            message.reply_stack.push(reply_stack)
+        }
+
+        /**
          * Processes a message and send it to all registered hook
          *
          * @param {object} message
@@ -239,6 +263,8 @@ const channel = class ChannelClass {
         function processMessage (message) {
             try {
                 hookList.forEach((item) => {
+                    addReplyInfo(message)
+                    console.log('Dispatching message', message, item.data.listener)
                     item.data.listener(message) // No need to check here since we are ensuring its existence when coming from the queue
                     if (item.data.times > 0) {
                         item.data.times--
@@ -259,7 +285,7 @@ const channel = class ChannelClass {
          * @param {object} message
          */
         function send (message) {
-            return messageQ.add(message)
+            return messageQ.add(Object.assign({}, message))
         }
 
         /**
@@ -307,6 +333,7 @@ const channel = class ChannelClass {
                 let hash = null
                 let listenerInfo = listenerQ.next()
                 while (listenerInfo !== null) {
+                  console.log(listenerInfo.data)
                     if (typeof listenerInfo.data.listener === 'function') {
                         hash = md5.calculate(listenerInfo.toString())
                         let item = {id: hash, qid: listenerInfo.id, data: listenerInfo.data}
@@ -334,28 +361,93 @@ const channel = class ChannelClass {
 
         /**** Privileged Methods *************************************************************************************/
 
+        /**
+         * Get the channel name
+         *
+         * @returns {string}
+         */
         this.getName = () => getName()
 
+        /**
+         * Get the channel status
+         *
+         * @returns {number}
+         */
         this.getStatus = () => getStatus()
 
+        /**
+         * Open the channel activity (if not active)
+         *
+         * @returns {boolean}
+         */
         this.open = () => open()
 
+        /**
+         * Closes the channel activity (if open)
+         *
+         * @returns {boolean}
+         */
         this.close = () => close()
 
+        /**
+         * Freezes the channel activity (if active)
+         *
+         * @returns {boolean}
+         */
         this.hold = () => hold()
 
+        /**
+         * Resume the channel activity (if on hold)
+         *
+         * @returns {boolean}
+         */
         this.resume = () => resume()
 
+        /**
+         * Add a listener to the channel
+         *
+         * @param {object} listenerInfo
+         */
         this.addListener = (listenerInfo) => addListener(listenerInfo)
 
+        /**
+         * Remove a listener from the channel
+         *
+         * @param {string} id listener ID
+         */
         this.removeListener = (id) => removeListener(id)
 
+        /**
+         * Gets a listener information for the provided ID
+         *
+         * @param {string} id listener ID
+         * @returns {*}
+         */
         this.listenerInfo = (id) => getListenerInfo(id)
 
+        /**
+         * Send a messagr to the channel
+         *
+         * @param {object} message
+         */
         this.send = (message) => send(message)
 
+        /**
+         * Sends a message to the channel and makes the listener hear
+         *
+         * @param {object} message
+         * @param {object} listenerInfo
+         *
+         * @return {object} listenerInfo
+         */
         this.sendAndListen = (message, listenerInfo) => sendAndListen(message, listenerInfo)
 
+        /**
+         * Get a message information for the provided id
+         *
+         * @param {string} id Message ID
+         * @returns {*}
+         */
         this.messageInfo = (id) => getMessageInfo(id)
 
     }

@@ -16,7 +16,7 @@ let message1 = {id: 0, message: 'test1'}
 
 describe('Given an instance of channel', () => {
     before(() => {
-        lib = new Channel('CHANNEL.NAME')
+        lib = new Channel('ENTITY.NAME', 'CHANNEL.NAME')
     })
 
     describe('After I have instantiated queue', () => {
@@ -30,7 +30,7 @@ describe('Given an instance of channel', () => {
 
     describe('After I have instantiated a channel on hold', () => {
         it('should not start automatically', () => {
-            let special = new Channel('CHANNEL.NAME', true)
+            let special = new Channel('ENTITY.NAME', 'CHANNEL.NAME', true)
             expect(special.getStatus()).to.be.equal(2)
         })
     })
@@ -101,7 +101,7 @@ describe('Given an instance of channel', () => {
         })
 
         it('it should be possible to get the message information', () => {
-            expect(lib.messageInfo(id)).to.be.equal(message1)
+            expect(lib.messageInfo(id)).to.include(message1)
         })
 
     })
@@ -130,7 +130,7 @@ describe('Given an instance of channel', () => {
 
         it('it should receive a message', (done) => {
             listenerDynamic.listener = function (message) {
-                expect(message).to.be.equal(message1)
+                expect(message).to.include(message1)
                 done()
             }
             id = lib.addListener(listenerDynamic)
@@ -162,7 +162,7 @@ describe('Given an instance of channel', () => {
 
         it('should work 2 times but not 3 (1#2)',  (done) => {
             listenerDynamic1.listener = function (message) {
-                expect(message).to.be.equal(message1)
+                expect(message).to.include(message1)
                 done()
             }
             id = lib.addListener(listenerDynamic1)
@@ -172,7 +172,7 @@ describe('Given an instance of channel', () => {
         it('should work 2 times but not 3 (2#2)', (done) => {
             lib.removeListener(id) // removing the previous hook
             listenerDynamic1.listener = function (message) {
-                expect(message).to.be.equal(message1)
+                expect(message).to.include(message1)
                 done()
             }
             id = lib.addListener(listenerDynamic1)
@@ -191,7 +191,7 @@ describe('Given an instance of channel', () => {
         it('should work 1 time only',  (done) => {
             listenerDynamic1.times = 1
             listenerDynamic1.listener = function (message) {
-                expect(message).to.be.equal(message1)
+                expect(message).to.include(message1)
                 done()
             }
             id = lib.sendAndListen(message1, listenerDynamic1)
@@ -212,4 +212,3 @@ describe('Given an instance of channel', () => {
     //     })
     // })
 })
-

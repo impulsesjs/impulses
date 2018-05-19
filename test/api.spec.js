@@ -54,6 +54,11 @@ describe('After I have an API instance', () => {
 
     // TODO: we must add configuration mode
 
+    it('it should have a different id from another', () => {
+        let b = new Api()
+        expect(lib.getId() === b.getId()).to.be.false
+    })
+
     it('it should be possible to set a public BUS', () => {
         let b = new Bus()
         lib.setPublicBus(b)
@@ -270,6 +275,41 @@ describe('After I have an API instance with Public and Private BUS set and Chann
 
     it('it should be possible to send a private message', () => {
         expect(lib.sendPrivate(...privateMessage1)).to.not.be.false
+    })
+})
+
+describe('After I have an API instance with Public and Private BUS set and Channels set', () => {
+    beforeEach(() => {
+        pbBus = new Bus()
+        prBus = new Bus()
+        lib = new Api({}, pbBus, prBus)
+        let localChannelConfig = Object.assign({}, channelConfig)
+        let apiListener = (msg) => {
+            if (typeof msg.reply === 'undefined' || msg.reply !== true) {
+                lib.reply({message: 'This is the reply'}, msg)
+            }
+        }
+
+        localChannelConfig.channels[2].listenerInfo = {id: 100, listener: apiListener}
+        lib.registerPublic(localChannelConfig)
+        lib.registerPrivate(privateChannelConfig)
+    })
+
+    it('it should be able reply back through the same channel in a public BUS', (done) => {
+        let chn = pbBus.get('ENTITY_NAME', 'CHANNEL_3')
+        let clientListener = (message) => {
+            if (msg.reply === true) {
+                console.log('Client Listener got message:', message)
+                expect(message).to.include(message1)
+                done()
+            }
+        }
+        if (chn !== false) {
+            let sendMessage = {message: 'Request message'}
+            chn.sendAndListen({message: 'Request message'}, {id:200, listener: clientListener})
+            //chn.send(sendMessage)
+        }
+//        expect(lib.sendPublic(...message1)).to.be.false
     })
 
 })

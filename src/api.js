@@ -1,5 +1,6 @@
 'use strict'
 
+import Md5 from './md5'
 import Bus from './bus'
 
 const api = class ApiClass {
@@ -33,8 +34,20 @@ const api = class ApiClass {
         let apiInfo = configuration
         let pubBus = publicBus
         let privBus = privateBus
+        let id = initId()
 
         /**** Private Methods ****************************************************************************************/
+
+        function initId() {
+            if (!id) {
+                return (new Md5()).calculate(JSON.stringify(this) + ('' + Math.random() * 5000))
+            }
+            return id
+        }
+
+        function getId() {
+            return id
+        }
 
         /**
          * Check if a given bus is set
@@ -143,6 +156,10 @@ const api = class ApiClass {
                         if (typeof channelInfo.require !== 'undefined') {
                             res.require = channelInfo.require
                         }
+                        if (typeof channelInfo.listenerInfo !== 'undefined') {
+                            res.listener = channelInfo.listenerInfo
+                            res.listener.id = getId()
+                        }
                         return res
                     })
                     return targetBus.register(channels)
@@ -178,7 +195,65 @@ const api = class ApiClass {
             return false
         }
 
+        /**
+         * Get the information for the reply
+         *
+         * @param  {Object} message   Message
+         * @return {Object|false}     Entity and Channel information or false if none
+         */
+        function getReplyInformation(message) {
+            if (typeof message.reply_stack !== 'undefined') {
+                return message.reply_stack.pop()
+            }
+            return false
+        }
+
+        /**
+         * Discovers the Channel in the correct BUS
+         *
+         * @param  {String} entity  Entity name
+         * @param  {String} name Channel name
+         *
+         * @return {ChannelClass|false}  False if no Channel found
+         */
+        function discoverChannel(entity, name) {
+            let channel_obj = false
+
+            if (channel_obj === false && existPublic()) {
+                channel_obj = pubBus.get(entity, name)
+            }
+
+            if (channel_obj === false && existPrivate()) {
+                channel_obj = privBus.get(entity, name)
+            }
+
+            return channel_obj
+        }
+
+        /**
+         * Reply to a given message
+         *
+         * @param  {Object} message        Message to be sent in the reply
+         * @param  {Object} requestMessage Message to reply
+         * @return {[type]}                [description]
+         */
+        function reply(message, requestMessage) {
+            let reply_to = getReplyInformation(requestMessage)
+            if (reply_to !== false) {
+                let channel_found = discoverChannel(reply_to.entity, reply_to.name)
+                if (channel_found !== false) {
+                    message.reply = true
+                    console.log('Reply with', message)
+                    channel_found.send(message)
+                    return true
+                }
+            }
+            return false
+        }
+
         /**** Privileged Methods *************************************************************************************/
+
+        this.getId = () => getId()
 
         /**
          * Checks if the public BUS is defined
@@ -253,6 +328,8 @@ const api = class ApiClass {
          * @return {int|false}      Registered Id or False
          */
         this.sendPrivate = (entity, channel, message) => sendMessage(entity, channel, message, privBus)
+
+        this.reply = (message, requestMessage) => reply(message, requestMessage)
     }
 
     /**** Prototype Methods ******************************************************************************************/
