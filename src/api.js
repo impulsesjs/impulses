@@ -243,7 +243,6 @@ const api = class ApiClass {
                 let channel_found = discoverChannel(reply_to.entity, reply_to.name)
                 if (channel_found !== false) {
                     message.reply = true
-                    console.log('Reply with', message)
                     channel_found.send(message)
                     return true
                 }

@@ -11,40 +11,41 @@ const expect = chai.expect;
 let lib, pbBus, prBus
 
 let message1 = ['ENTITY_NAME', 'CHANNEL_1', {field1: 'field1 value'}]
+let replyMessage = {message: 'This is the reply'}
 let errMessage1 = ['ENTITY_NAME', 'CHANNEL_11', {field1: 'field1 value'}]
 
 let privateMessage1 = ['ENTITY_NAME_PRIVATE', 'CHANNEL_1_PRIVATE', {field1: 'field1 value'}]
 let privateErrMessage1 = ['ENTITY_NAME_PRIVATE', 'CHANNEL_11_PRIVATE', {field1: 'field1 value'}]
 
 let channelConfig = {
-  entity: 'ENTITY_NAME',
-  channels: [
-    {name: 'CHANNEL_1', require: [ 'field1' ]},
-    {name: 'CHANNEL_2', require: [ 'field1', 'field2' ]},
-    {name: 'CHANNEL_3'},
-  ]
+    entity: 'ENTITY_NAME',
+    channels: [
+        {name: 'CHANNEL_1', require: [ 'field1' ]},
+        {name: 'CHANNEL_2', require: [ 'field1', 'field2' ]},
+        {name: 'CHANNEL_3'},
+    ]
 }
 
 let privateChannelConfig = {
-  entity: 'ENTITY_NAME_PRIVATE',
-  channels: [
-    {name: 'CHANNEL_1_PRIVATE', require: [ 'field1' ]},
-    {name: 'CHANNEL_2_PRIVATE', require: [ 'field1', 'field2' ]},
-    {name: 'CHANNEL_3_PRIVATE'},
-  ]
+    entity: 'ENTITY_NAME_PRIVATE',
+    channels: [
+        {name: 'CHANNEL_1_PRIVATE', require: [ 'field1' ]},
+        {name: 'CHANNEL_2_PRIVATE', require: [ 'field1', 'field2' ]},
+        {name: 'CHANNEL_3_PRIVATE'},
+    ]
 }
 
 let channelConfigWithInvalidChannelsProperty = {
-  entity: 'ENTITY_NAME',
-  channels: ''
+    entity: 'ENTITY_NAME',
+    channels: ''
 }
 
 let channelConfigWithInvalidEntityProperty = {
-  channels: [
-    {name: 'CHANNEL_1', require: [ 'field1' ]},
-    {name: 'CHANNEL_2', require: [ 'field1', 'field2' ]},
-    {name: 'CHANNEL_3'},
-  ]
+    channels: [
+        {name: 'CHANNEL_1', require: [ 'field1' ]},
+        {name: 'CHANNEL_2', require: [ 'field1', 'field2' ]},
+        {name: 'CHANNEL_3'},
+    ]
 }
 
 describe('After I have an API instance', () => {
@@ -286,7 +287,7 @@ describe('After I have an API instance with Public and Private BUS set and Chann
         let localChannelConfig = Object.assign({}, channelConfig)
         let apiListener = (msg) => {
             if (typeof msg.reply === 'undefined' || msg.reply !== true) {
-                lib.reply({message: 'This is the reply'}, msg)
+                lib.reply(replyMessage, msg)
             }
         }
 
@@ -297,17 +298,16 @@ describe('After I have an API instance with Public and Private BUS set and Chann
 
     it('it should be able reply back through the same channel in a public BUS', (done) => {
         let chn = pbBus.get('ENTITY_NAME', 'CHANNEL_3')
-        let clientListener = (message) => {
-            if (msg.reply === true) {
-                console.log('Client Listener got message:', message)
-                expect(message).to.include(message1)
+        const clientListener = (message) => {
+            if (message.reply === true) {
+                expect(message).to.include(replyMessage)
                 done()
             }
         }
         if (chn !== false) {
             let sendMessage = {message: 'Request message'}
             chn.sendAndListen({message: 'Request message'}, {id:200, listener: clientListener})
-            //chn.send(sendMessage)
+            // chn.send(sendMessage)
         }
 //        expect(lib.sendPublic(...message1)).to.be.false
     })

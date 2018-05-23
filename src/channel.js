@@ -6,9 +6,12 @@ import MD5 from './md5'
 
 // TODO: need this to be WebWorker Working
 const channel = class ChannelClass {
-
     /**
-     * Creates and initializes a Channel Object
+     * @constructor ChannelClass
+     * 
+     * @param {string} entityName 
+     * @param {string} channelName 
+     * @param {boolean} initOnHold 
      */
     constructor (entityName, channelName, initOnHold = false) {
 
@@ -264,7 +267,6 @@ const channel = class ChannelClass {
             try {
                 hookList.forEach((item) => {
                     addReplyInfo(message)
-                    console.log('Dispatching message', message, item.data.listener)
                     item.data.listener(message) // No need to check here since we are ensuring its existence when coming from the queue
                     if (item.data.times > 0) {
                         item.data.times--
@@ -333,7 +335,6 @@ const channel = class ChannelClass {
                 let hash = null
                 let listenerInfo = listenerQ.next()
                 while (listenerInfo !== null) {
-                  console.log(listenerInfo.data)
                     if (typeof listenerInfo.data.listener === 'function') {
                         hash = md5.calculate(listenerInfo.toString())
                         let item = {id: hash, qid: listenerInfo.id, data: listenerInfo.data}
