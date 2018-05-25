@@ -1,6 +1,6 @@
 'use strict'
 
 // TODO: This will require change once API is built
-import CommBus from './bus'
+import Api from './bus'
 
-module.exports = new CommBus()
+module.exports = new Api()
