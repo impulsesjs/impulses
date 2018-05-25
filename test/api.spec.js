@@ -63,26 +63,26 @@ describe('After I have an API instance', () => {
     it('it should be possible to set a public BUS', () => {
         let b = new Bus()
         lib.setPublicBus(b)
-        expect(lib.existPublic()).to.be.true
+        expect(lib.hasPublic()).to.be.true
     })
 
     it('it should be possible to set a private BUS', () => {
         let b = new Bus()
         lib.setPrivateBus(b)
-        expect(lib.existPrivate()).to.be.true
+        expect(lib.hasPrivate()).to.be.true
     })
 
     it('it should show false when we try to set a non BUS to its public side', () => {
         lib = new Api()
         let set_public = () => {lib.setPublicBus({})}
         expect(set_public).to.throw(TypeError)
-        expect(lib.existPublic()).to.be.false
+        expect(lib.hasPublic()).to.be.false
     })
 
     it('it should show false when we try to set a non BUS to its private side', () => {
         let set_private = () => {lib.setPrivateBus({})}
         expect(set_private).to.throw(TypeError)
-        expect(lib.existPrivate()).to.be.false
+        expect(lib.hasPrivate()).to.be.false
     })
 
     it('it should be possible to define public channels through a configuration', () => {
@@ -219,7 +219,7 @@ describe('When intantiating a new Entity API', () => {
         let pubBus = new Bus()
         let localLib = new Api({}, pubBus)
         expect(localLib).to.be.an.instanceof(Api)
-        expect(localLib.existPublic()).to.be.true
+        expect(localLib.hasPublic()).to.be.true
     })
 
     it('it should not be possible to instatiate it with a non public BUS', () => {
@@ -232,7 +232,7 @@ describe('When intantiating a new Entity API', () => {
         let privBus = new Bus()
         let localLib = new Api({}, null, privBus)
         expect(localLib).to.be.an.instanceof(Api)
-        expect(localLib.existPrivate()).to.be.true
+        expect(localLib.hasPrivate()).to.be.true
     })
 
     it('it should not be possible to instatiate it with a non private BUS', () => {
