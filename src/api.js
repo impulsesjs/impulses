@@ -38,13 +38,18 @@ const api = class ApiClass {
 
         /**** Private Methods ****************************************************************************************/
 
-        function initId() {
+        function initId () {
             if (!id) {
                 return (new Md5()).calculate(JSON.stringify(this) + ('' + Math.random() * 5000))
             }
             return id
         }
 
+        /**
+         * Gets the API id
+         * 
+         * @return {string}
+         */
         function getId() {
             return id
         }
@@ -64,18 +69,18 @@ const api = class ApiClass {
          *
          * @return {boolean} True if the public bus is set
          */
-         function existPublic() {
-             return isBusSet(pubBus)
-         }
+        function existPublic() {
+            return isBusSet(pubBus)
+        }
 
          /**
           * Checks if the private BUS is defined
           *
           * @return {boolean} True if the private bus is set
           */
-         function existPrivate() {
-             return isBusSet(privBus)
-         }
+        function existPrivate() {
+            return isBusSet(privBus)
+        }
 
          /**
           * Validates if a given object is a valid bus object
@@ -83,9 +88,9 @@ const api = class ApiClass {
           * @param  {Bus} bus Object to be validated
           * @return {boolean} True if the bus is valid
           */
-         function isBus(bus) {
+        function isBus(bus) {
             return bus.constructor === Bus
-         }
+        }
 
         /**
          * Sets the public BUS
@@ -217,25 +222,47 @@ const api = class ApiClass {
          * @return {ChannelClass|false}  False if no Channel found
          */
         function discoverChannel(entity, name) {
-            let channel_obj = false
-
-            if (channel_obj === false && existPublic()) {
-                channel_obj = pubBus.get(entity, name)
-            }
-
-            if (channel_obj === false && existPrivate()) {
-                channel_obj = privBus.get(entity, name)
-            }
-
-            return channel_obj
+            return discovePublicChannel(entity, name) || discovePrivateChannel(entity, name)
         }
 
         /**
+         * Discover if a channel exists in the public bus
+         * 
+         * @param {String} entityName Entity name
+         * @param {String} cahnnelName Channel name
+         * 
+         * @return {ChannelClass|false}  False if no Channel found
+         */
+        function discovePublicChannel(entityName, cahnnelName) {
+            if (existPublic()) {
+                return pubBus.get(entityName, cahnnelName)
+            }
+            return false
+        }
+
+        /**
+         * Discover if a channel exists in the private bus
+         * 
+         * @param {String} entityName Entity name
+         * @param {String} cahnnelName Channel name
+         * 
+         * @return {ChannelClass|false}  False if no Channel found
+         */
+        function discovePrivateChannel(entityName, cahnnelName) {
+            if (existPrivate()) {
+                return privBus.get(entityName, cahnnelName)
+            }
+            return false
+        }
+        
+        /**
          * Reply to a given message
+         * 
+         * TODO: need to make the reply for a specific message ID.
          *
          * @param  {Object} message        Message to be sent in the reply
          * @param  {Object} requestMessage Message to reply
-         * @return {[type]}                [description]
+         * @return {boolean}               True if replied successfully
          */
         function reply(message, requestMessage) {
             let reply_to = getReplyInformation(requestMessage)
@@ -252,6 +279,11 @@ const api = class ApiClass {
 
         /**** Privileged Methods *************************************************************************************/
 
+        /**
+         * Get the API id
+         * 
+         * @return {string} 
+         */
         this.getId = () => getId()
 
         /**
@@ -259,14 +291,14 @@ const api = class ApiClass {
          *
          * @return {boolean} True if the public bus is set
          */
-        this.existPublic = () => existPublic()
+        this.hasPublic = () => existPublic()
 
         /**
          * Checks if the private BUS is defined
          *
          * @return {boolean} True if the public bus is set
          */
-        this.existPrivate = () => existPrivate()
+        this.hasPrivate = () => existPrivate()
 
         /**
          * Sets the public BUS
@@ -309,25 +341,58 @@ const api = class ApiClass {
         /**
          * Send a message to the public BUS
          *
-         * @param  {String} entity  Entity name
-         * @param  {String} channel Channel name
+         * @param  {String} entityName  Entity name
+         * @param  {String} channelName Channel name
          * @param  {Object} message Message to be sent
          *
          * @return {int|false}      Registered Id or False
          */
-        this.sendPublic = (entity, channel, message) => sendMessage(entity, channel, message, pubBus)
+        this.sendPublic = (entityName, channelName, message) => sendMessage(entityName, channelName, message, pubBus)
 
         /**
          * Send a message to the private BUS
          *
-         * @param  {String} entity  Entity name
-         * @param  {String} channel Channel name
+         * @param  {String} entityName  Entity name
+         * @param  {String} channelName Channel name
          * @param  {Object} message Message to be sent
          *
          * @return {int|false}      Registered Id or False
          */
-        this.sendPrivate = (entity, channel, message) => sendMessage(entity, channel, message, privBus)
+        this.sendPrivate = (entityName, channelName, message) => sendMessage(entityName, channelName, message, privBus)
 
+        /**
+         * check If the channel exists
+         * 
+         * @param {String} entityName Entity name
+         * @param {String} channelName Channel name
+         * @return {boolean}
+         */
+        this.exists = (entityName, channelName) => !!discoverChannel(entityName, channelName)
+
+        /**
+         * check If the channel exists as public
+         * 
+         * @param {String} entityName Entity name
+         * @param {String} channelName Channel name
+         * @return {boolean}
+         */
+        this.existsPublic = (entityName, channelName) => !!discovePublicChannel(entityName, channelName)
+
+        /**
+         * check If the channel exists as private
+         * 
+         * @param {String} entityName Entity name
+         * @param {String} channelName Channel name
+         * @return {boolean}
+         */
+        this.existsPrivate = (entityName, channelName) => !!discovePrivateChannel(entityName, channelName)
+
+        /**
+         * Reply to a message using the same channel
+         * 
+         * @param {Object} message 
+         * @param {Object} requestMessage 
+         */
         this.reply = (message, requestMessage) => reply(message, requestMessage)
     }
 
