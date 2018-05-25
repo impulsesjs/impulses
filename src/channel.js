@@ -176,6 +176,7 @@ const channel = class ChannelClass {
          * Add a listener to the channel
          *
          * @param {object} listenerInfo
+         * @return {string} Listener ID
          */
         function addListener (listenerInfo) {
             return listenerQ.add(listenerInfo)
@@ -407,7 +408,8 @@ const channel = class ChannelClass {
         /**
          * Add a listener to the channel
          *
-         * @param {object} listenerInfo
+         * @param {Object} listenerInfo
+         * @return {string} Listener ID
          */
         this.addListener = (listenerInfo) => addListener(listenerInfo)
 
