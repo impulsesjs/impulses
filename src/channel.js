@@ -176,10 +176,31 @@ const channel = class ChannelClass {
          * Add a listener to the channel
          *
          * @param {object} listenerInfo
-         * @return {string} Listener ID
+         * @return {string|false} Listener ID
          */
         function addListener (listenerInfo) {
-            return listenerQ.add(listenerInfo)
+            if (isValidListener(listenerInfo)) {
+                return listenerQ.add(listenerInfo)
+            }
+            return false
+        }
+
+        function isValidListener (listenerInfo, validCallback) {
+            // { id: 1, listener: () => {} }
+            // Checking required attributes and respective types
+            if (!listenerInfo) {
+                return false
+            }
+
+            if (typeof listenerInfo.id === 'undefined') {
+                return false                
+            } 
+
+            if (typeof listenerInfo.listener === 'undefined' || typeof listenerInfo.listener !== 'function') {
+                return false
+            }
+
+            return true
         }
 
         /**
@@ -221,29 +242,36 @@ const channel = class ChannelClass {
          * Gets a listener information for the provided ID
          *
          * @param {string} id listener ID
-         * @returns {*}
+         * @returns {object|null}
          */
         function getListenerInfo (id) {
-            startQueueProcessing()
-            let toReturn = listenerQ.get(id)
-            endQueueProcessing()
-            if (toReturn === null) {
-                try {
-                    let obj = hookList.find((item) => {
-                        return item.qid === id
-                    })
-                    if (typeof obj !== 'undefined') {
-                        toReturn = obj.data
-                    }
-                }
-                catch (e) {
-                    // something went wrong probably list length change due to cancellation / activity
-                }
-            } else {
-                toReturn = toReturn.data
-            }
+            return findListenerInQueue(id, () => {
+                const listenerFound = hookList.find((item) => {
+                    return item.qid === id
+                })
+                return listenerFound ? listenerFound.data : null
+            })
+        }
 
-            return toReturn
+        /**
+         * Finds a listener in the listener queue
+         * @param {string} id 
+         * @param {function} callback 
+         * @returns {object|null}
+         */
+        function findListenerInQueue (id, callback) {
+            if (!id) return null
+            startQueueProcessing()
+            const listener = listenerQ.get(id)
+            endQueueProcessing()
+            if (listener === null) {
+                if (typeof callback === 'function') {
+                    return callback()
+                }
+                return null
+            } else {
+                return listener.data
+            }
         }
 
         /**

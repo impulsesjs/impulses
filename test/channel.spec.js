@@ -146,9 +146,10 @@ describe('Given an instance of channel', () => {
     describe('After I have added an invalid listener while channel is active', () => {
         let id
 
-        it('it should return an queue id', () => {
+        it('it should not return an queue id', () => {
             id = lib.addListener(invalidListener_noListener)
-            expect(id).to.be.a('string')
+            console.log(id, typeof id);
+            expect(id).to.be.equal(false)
         })
 
         it('it should not place it in the listeners hook list', () => {
