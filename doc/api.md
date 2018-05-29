@@ -1,10 +1,45 @@
-# Class Bus
+# Class Api
 It is intended with this class to provide a mechanism that allows a way to prepare and map an API internally to the entity.  
 
 ## Functionality
 This class will be responsible to provide methods as registration, send messages and reply to messages.
 
 ### Configurations
+
+### Signals/Message Structure
+
+#### Currently 
+Currently the message structure is very simple and it is just composed by the message itself. The channel and entity are requested through the method arguments.
+```js
+{message: ...}
+```
+
+#### Near Future
+It is our intention to make the message a little more structured and allowing other capabilities like traceability and encryption.
+
+For this we will need to have ready the message class that will be responsible for the message structure and capabilities.
+```js
+{
+    head: {
+        id: <*>
+        from: <hash>
+        to: {
+            entity: <name>
+            channel: <name>
+        }
+        encryption: <tbd>
+    }
+    message: {
+        ...
+    }
+    debug: {
+        trace: [
+            {time: <datetime>, head: ..., message: ...},
+            ...
+        ]
+    }
+}
+```
 
 ### Registration
 It is possible to prepare the new instance by configuration or interactively

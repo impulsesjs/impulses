@@ -40,6 +40,7 @@ const api = class ApiClass {
 
         function initId () {
             if (!id) {
+                // TODO: Make the hash more unique
                 return (new Md5()).calculate(JSON.stringify(this) + ('' + Math.random() * 5000))
             }
             return id

@@ -148,7 +148,6 @@ describe('Given an instance of channel', () => {
 
         it('it should not return an queue id', () => {
             id = lib.addListener(invalidListener_noListener)
-            console.log(id, typeof id);
             expect(id).to.be.equal(false)
         })
 
