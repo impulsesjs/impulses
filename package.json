@@ -11,6 +11,7 @@
     "build:watch": "webpack -w --config webpack.config.js",
     "test": "mocha --compilers js:babel-core/register --colors ./test/*.spec.js",
     "test:watch": "mocha --compilers js:babel-core/register --colors -w ./test/*.spec.js",
+    "test:watch:spec": "mocha --compilers js:babel-core/register --colors -w",
     "test:cov": "babel-node ./node_modules/.bin/babel-istanbul cover _mocha ./test/*.spec.js",
     "test:karma": "karma start ./karma.config.js",
     "test:export": "mkdir -p output-test && mocha --compilers js:babel-register --recursive > output-test/index.txt",

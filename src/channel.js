@@ -175,7 +175,7 @@ const channel = class ChannelClass {
         /**
          * Add a listener to the channel
          *
-         * @param {object} listenerInfo
+         * @param {Object} listenerInfo
          * @return {string|false} Listener ID
          */
         function addListener (listenerInfo) {
@@ -242,7 +242,7 @@ const channel = class ChannelClass {
          * Gets a listener information for the provided ID
          *
          * @param {string} id listener ID
-         * @returns {object|null}
+         * @returns {Object|null}
          */
         function getListenerInfo (id) {
             return findListenerInQueue(id, () => {
@@ -257,7 +257,7 @@ const channel = class ChannelClass {
          * Finds a listener in the listener queue
          * @param {string} id 
          * @param {function} callback 
-         * @returns {object|null}
+         * @returns {Object|null}
          */
         function findListenerInQueue (id, callback) {
             if (!id) return null
@@ -290,7 +290,7 @@ const channel = class ChannelClass {
         /**
          * Processes a message and send it to all registered hook
          *
-         * @param {object} message
+         * @param {Object} message
          */
         function processMessage (message) {
             try {
@@ -313,7 +313,9 @@ const channel = class ChannelClass {
         /**
          * Send a messagr to the channel
          *
-         * @param {object} message
+         * @param {Object} message
+         * 
+         * @return {string}
          */
         function send (message) {
             return messageQ.add(Object.assign({}, message))
@@ -322,10 +324,10 @@ const channel = class ChannelClass {
         /**
          * Sends a message to the channel and makes the listener hear
          *
-         * @param {object} message
-         * @param {object} listenerInfo
+         * @param {Object} message
+         * @param {Object} listenerInfo
          *
-         * @return {object} listenerInfo
+         * @return {Object} listenerInfo
          */
         function sendAndListen (message, listenerInfo) {
             let id = addListener(listenerInfo)
@@ -459,17 +461,19 @@ const channel = class ChannelClass {
         /**
          * Send a messagr to the channel
          *
-         * @param {object} message
+         * @param {Object} message
+         * 
+         * @returns {string}
          */
         this.send = (message) => send(message)
 
         /**
          * Sends a message to the channel and makes the listener hear
          *
-         * @param {object} message
-         * @param {object} listenerInfo
+         * @param {Object} message
+         * @param {Object} listenerInfo
          *
-         * @return {object} listenerInfo
+         * @return {Object} listenerInfo
          */
         this.sendAndListen = (message, listenerInfo) => sendAndListen(message, listenerInfo)
 

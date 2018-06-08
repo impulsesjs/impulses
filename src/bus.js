@@ -134,6 +134,7 @@ const CommBus = class CommBusClass {
          *
          * @param {string} entity Entity name to search for
          * @param {string|null} channelName Channel name to search for
+         * 
          * @returns {boolean|ChannelClass}
          */
         this.exists = (entity, channelName = null) => exists(entity, channelName)
