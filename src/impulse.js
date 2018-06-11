@@ -47,7 +47,7 @@ const impulse = class ImpulseClass {
      * @param {string} entityName 
      * @param {string} channelName 
      */
-    constructor (emitterId = null, entityName = null, channelName = null) {
+    constructor (/* emitterId = null, entityName = null, channelName = null */) {
 
         /**** Private Attributes *************************************************************************************/
 
@@ -71,6 +71,7 @@ const impulse = class ImpulseClass {
                 encryption: false,
             },
             content: {},
+            history: {},
         }
 
         /** @type {ImpulseCommunicationFlowEntity} */
@@ -119,6 +120,22 @@ const impulse = class ImpulseClass {
         }
 
         /**
+         * Set the history set if trace or debug is set
+         */
+        const setImpulseHistory = () => {
+            if (isTraceable() && isDebugable()) {
+                impulse.history = communicationFlow
+            }
+        }
+
+        /**
+         * Rollback the history set
+         */
+        const setImpulseHistoryRollBack = () => {
+            impulse.history = {}
+        }
+
+        /**
          * Sets the Emitter ID
          * 
          * @param {string} emitterId Emitter ID
@@ -127,7 +144,7 @@ const impulse = class ImpulseClass {
             impulse.info.emitter = emitterId
         }
 
-                /**
+        /**
          * Sets the current Emitter Information
          * 
          * @param {EmitterEntity} emitterInformation 
@@ -219,14 +236,18 @@ const impulse = class ImpulseClass {
             if (impulse.info.options.debug && impulse.info.options.debugContent) {
                 emitStackItem.content.debug = Object.assign({}, impulse.info.options.debugContent)
             }
-            
             communicationFlow.emitStack.push(emitStackItem)
         }
 
         /**
+         * Rollback the emitted signal from history/stack
+         */
+        const addToEmitStackRollBack = () => {
+            communicationFlow.emitStack.pop()
+        }
+
+        /**
          * Adds the emitter to the list if not present
-         * 
-         * @throws {TypeError}
          * 
          * @param {EmmiterClass} emitterObject 
          */
@@ -237,10 +258,29 @@ const impulse = class ImpulseClass {
         }
 
         /**
+         * Rollback the last addition to the emitter index
+         */
+        const addToEmitersIndexRollBack = (emitterObject) => {
+            if (isTheLastEmitterInTheIndexList(emitterObject) && !hasEmitterSentHistoryInStack(emitterObject)) {
+                communicationFlow.emitters.pop()
+            }
+        }
+
+        /**
          * Check if the current emitter is set
          */
         const hasEmitter = () => {
             return !!getEmitter()
+        }
+
+        /**
+         * Check if there is any message sent by the provided emitter
+         * 
+         * @param {EmitterObject} emitterObject 
+         * @return {boolean}
+         */
+        const hasEmitterSentHistoryInStack = (emitterObject) => {
+            return !!communicationFlow.emitStack.find(emit => areTheSameEmitters(emit.info.emitter, emitterObject))
         }
 
         /**
@@ -309,6 +349,20 @@ const impulse = class ImpulseClass {
          */
         const isEmitterPresentInTheEmittersIndex = (emitterObject) => {
             return !!communicationFlow.emitters.find(emitter => areTheSameEmitters(emitter, emitterObject))
+        }
+
+        /**
+         * Check if it is the last emitter in the list
+         * 
+         * @param {EmitterObject} emitterObject 
+         * @return {boolean}
+         */
+        const isTheLastEmitterInTheIndexList = (emitterObject) => {
+            const lastAddedPos = communicationFlow.emitters.length - 1
+            if (areTheSameEmitters(communicationFlow.emitters[lastAddedPos], emitterObject)) {
+                return true
+            }
+            return false
         }
 
         /**
@@ -464,40 +518,75 @@ const impulse = class ImpulseClass {
         }
 
         /**
-         * Dispatch the impulse to all defined frequencies and collect the impulseId for each one
+         * Return the number of emittions
+         * 
+         * @return {number}
          */
-        const dispatch = () => {
+        const getEmitCount = () => {
+            return communicationFlow.emitStack.length
+        }
+
+        const serilizeImpulse = () => {
+            impulse.history = Object.assign({}, communicationFlow);
+            return JSON.stringify(impulse)
+        }
+
+        /**
+         * Dispatch the impulse to all defined frequencies and collect the impulseId for each one
+         * 
+         * @param {function} rollback Rollback function so we undo the actions
+         * @returns {boolean}
+         */
+        const dispatch = (rollback) => {
+            let emitted = 0;
+            impulse.history = Object.assign({}, communicationFlow);
             /** @property {CommunicationBus} connectedBus */
             getLastEmitInfo(false).info.frequencies.forEach((freq) => {
                 const entity = freq.entity
                 const channel = freq.channel
-                if (connectedBus.exists(entity, channel)) {
+                if (!!connectedBus.exists(entity, channel)) {
                     const channelObj = connectedBus.get(entity, channel)
                     freq.impulseId = channelObj.send(impulse)
+                    emitted++
                 }
             })
+
+            if (!emitted) {
+                rollback()
+                return false
+            }
+            return true
+        }
+
+        const executeTransaction = (action, rollback) => {
+            if (hasBus() && isFrequencySet() && hasEmitter()) {
+                setEmitterId(currentEmitter.emitter)
+                addToEmitersIndex(currentEmitter)
+                setImpulseSignature()
+                setImpulseHistory()
+                addToEmitStack()
+                return action(rollback)
+            }
+            return false
+        }
+
+        const transactionRollBack = () => {
+            addToEmitStackRollBack()
+            setImpulseHistoryRollBack()
+            addToEmitersIndexRollBack(currentEmitter)
         }
 
         const emit = () => {
-            if (hasBus() && isFrequencySet() && hasEmitter()) {
-                try {
-                    addToEmitersIndex(currentEmitter)
-                    setEmitterId(currentEmitter.emitter)
-                    setImpulseSignature()
-                    addToEmitStack()
-                    dispatch()
-                    return true
-                } catch (e) {
-                    // Need to deal with exception rollback
-                }
-            }
-            return false
+            return executeTransaction(dispatch, transactionRollBack)
         }
 
         const emitReply = () => {
         }
 
         const emitAndListen = () => {
+            // TODO: Prepare and Set a function to get the reply
+            // TODO: Create a new impukse with the returned message
+            // TODO: call back the method so we can provide the impulse
         }
 
         /**** Privileged Methods *************************************************************************************/
@@ -527,6 +616,7 @@ const impulse = class ImpulseClass {
         this.clearContent = () => clearContent()
         
         this.emit = () => emit()
+        this.getEmitCount = () => getEmitCount()
         this.getLastEmitInfo = () => getLastEmitInfo()
     }
 
