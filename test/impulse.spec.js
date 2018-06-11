@@ -28,6 +28,13 @@ const emitter_1 = {
     version: '1.0.0',
 }
 
+const emitter_2 = {
+    emitter: 'NAME2',
+    entity: 'ENTITY2',
+    channel: 'CHANNEL2',
+    version: '1.0.0',
+}
+
 const traceContent = {traceInfo: 'TRACE_INFO'}
 const debugContent = {debugInfo: 'DEBUG_INFO'}
 
@@ -311,9 +318,88 @@ describe('IMPULSE', () => {
                     })
                     describe('with a Frequency set', () => {
                         beforeEach(() => {
+                            busExistsFail = false
                             lib.addFrequency('ENTITY', 'CHANNEL')
                         })
-    
+
+                        describe('and the frequency was removed after', () => {
+                            it ('it should not emit any impulse', () => {
+                                busExistsFail = true
+                                const result = lib.emit()
+                                const emitCount = lib.getEmitCount()
+                                const emitters = lib.getKnownEmitters()
+                                expect(result).to.be.equal(false)
+                                expect(emitCount).to.be.equal(0)
+                                expect(emitters.length).to.be.equal(0)
+                            })
+
+                            describe('and a new emitter is set', () => {
+                                it ('it should not emit any impulse', () => {
+                                    lib.setEmitter(emitter_2)
+                                    busExistsFail = true
+                                    const result = lib.emit()
+                                    const emitCount = lib.getEmitCount()
+                                    const emitters = lib.getKnownEmitters()
+                                    expect(result).to.be.equal(false)
+                                    expect(emitCount).to.be.equal(0)
+                                    expect(emitters.length).to.be.equal(0)
+                                })
+                            })    
+
+                            describe('and a the emitter was used before (not the last)', () => {
+                                it ('it should not emit any impulse', () => {
+                                    lib.emit()
+                                    const emitCount1 = lib.getEmitCount()
+                                    const emitters1 = lib.getKnownEmitters()
+                                    expect(emitCount1).to.be.equal(1)
+                                    expect(emitters1.length).to.be.equal(1)
+
+                                    lib.setEmitter(emitter_2)
+                                    lib.emit()
+                                    const emitCount2 = lib.getEmitCount()
+                                    const emitters2 = lib.getKnownEmitters()
+                                    expect(emitCount2).to.be.equal(2)
+                                    expect(emitters2.length).to.be.equal(2)
+
+                                    lib.setEmitter(emitter_1)
+                                    busExistsFail = true
+                                    const result = lib.emit()
+                                    const emitCount3 = lib.getEmitCount()
+                                    const emitters3 = lib.getKnownEmitters()
+                                    expect(result).to.be.equal(false)
+                                    expect(emitCount3).to.be.equal(2)
+                                    expect(emitters3.length).to.be.equal(2)
+                                })
+                            })    
+                        })
+
+                        describe('and we try to send it twice', () => {
+                            it ('it should not add the same emitter twice in the index', () => {
+                                lib.emit()
+                                const emitCount1 = lib.getEmitCount()
+                                const result = lib.emit()
+                                const emitCount2 = lib.getEmitCount()
+                                const emitters = lib.getKnownEmitters()
+                                expect(result).to.be.equal(true)
+                                expect(emitters.length).to.be.equal(1)
+                                expect(emitCount2).to.be.equal(emitCount1 + 1)
+                            })
+                        })
+
+                        describe('and we try to send it twice and the frequency is removed after the first', () => {
+                            it ('it should not add the same emitter twice in the index', () => {
+                                lib.emit()
+                                const emitCount1 = lib.getEmitCount()
+                                busExistsFail = true
+                                const result = lib.emit()
+                                const emitCount2 = lib.getEmitCount()
+                                const emitters = lib.getKnownEmitters()
+                                expect(result).to.be.equal(false)
+                                expect(emitters.length).to.be.equal(1)
+                                expect(emitCount2).to.be.equal(emitCount1)
+                            })
+                        })
+                        
                         describe('trace and debug flag are off', () => {
                             it('it should not add any trace or debug to the content', () => {
                                 const result = lib.emit()
