@@ -43,16 +43,14 @@ const impulse = class ImpulseClass {
     /**
      * @constructor ImpulseClass
      * 
-     * @param {string} emitterId 
-     * @param {string} entityName 
-     * @param {string} channelName 
+     * @param {ImpulseEntity} incommingImpulse
      */
-    constructor (/* emitterId = null, entityName = null, channelName = null */) {
+    constructor (incommingImpulse = undefined) {
 
         /**** Private Attributes *************************************************************************************/
 
         /** @type {ImpulseEntity} impulse */
-        const impulse = {
+        const impulse = incommingImpulse || {
             id: null, // Internal impulse ID / signature
             info: {
                 emitter: null, // External ID from the emitter
@@ -87,6 +85,43 @@ const impulse = class ImpulseClass {
         let connectedBus = undefined;
 
         /**** Private Methods ****************************************************************************************/
+
+        const importImpulse = (rawImpulse) => {
+
+        }
+
+        const importImpulseInfoReply = (toImport) => {
+            importImpulsePart(
+                toImport, 
+                impulse.info.reply, 
+                {
+                    impulse: ['string'],
+                    emitter: ['string'],
+                    stack: ['number', 'exists'], 
+                })
+        }
+
+        const importImpulseInfoOptions = (toImport) => {
+            importImpulsePart(
+                toImport, 
+                impulse.info.options, 
+                {
+                    trace: ['boolean'],
+                    traceContent: ['string'],
+                    debug: ['boolean'],
+                    debugContent: ['string'],
+                })
+        }
+
+        const importImpulsePart = (toImport, destination, validation) => {
+            destination.keys().forEach(name => {
+                if (validation[name] && toImport[name]) {
+                    if (validation[name].indexOf(typeof toImport[name]) >= 0 || validation[name].indexOf('exists') >= 0) {
+                        destination[name] = toImport[name]
+                    }
+                }
+            })
+        }
 
         /**
          * Generate the Unique ID for the provided target
@@ -585,7 +620,7 @@ const impulse = class ImpulseClass {
 
         const emitAndListen = () => {
             // TODO: Prepare and Set a function to get the reply
-            // TODO: Create a new impukse with the returned message
+            // TODO: Create a new impulse with the returned message
             // TODO: call back the method so we can provide the impulse
         }
 
