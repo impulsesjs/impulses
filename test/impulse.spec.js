@@ -1,9 +1,8 @@
 /* global describe, it, before */
 
-import chai from 'chai';
+import chai from 'chai'
 // import Bus from '../src/bus';
-import Impulse from '../src/impulse';
-import { emit } from 'cluster';
+import Impulse from '../src/impulse'
 
 chai.expect();
 
