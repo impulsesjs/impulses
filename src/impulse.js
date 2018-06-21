@@ -50,7 +50,7 @@ const impulse = class ImpulseClass {
         /**** Private Attributes *************************************************************************************/
 
         /** @type {ImpulseEntity} impulse */
-        const impulse = incommingImpulse || {
+        const impulse =  {
             id: null, // Internal impulse ID / signature
             info: {
                 emitter: null, // External ID from the emitter
@@ -84,43 +84,75 @@ const impulse = class ImpulseClass {
         /** @type {CommunicationBus} */
         let connectedBus = undefined;
 
+        if (incommingImpulse) {
+            importImpulse(incommingImpulse)
+        }
+
         /**** Private Methods ****************************************************************************************/
 
         const importImpulse = (rawImpulse) => {
+            const validate = {
+                id: ['string'],
+                content: ['exists'],
+                history: ['exists'],
+            }
 
+            if (importImpulsePart(toImport, impulse, validate) && rawImpulse.info) {
+                return importImpulseInfo(rawImpulse.info)
+            }
+            return false;
+        }
+
+        const importImpulseInfo = (toImport) => {
+            const validate = {
+                emitter: ['string'],
+                frequencies: ['exists'],
+                encryption: ['boolean'],
+            }
+
+            if (importImpulsePart(toImport, impulse.info, validate) && toImport.reply && toImport.options) {
+                if (importImpulseInfoReply(toImport.reply)) {
+                    return importImpulseInfoOptions(toImport.options)
+                }
+            }
+            return false;
         }
 
         const importImpulseInfoReply = (toImport) => {
-            importImpulsePart(
-                toImport, 
-                impulse.info.reply, 
-                {
-                    impulse: ['string'],
-                    emitter: ['string'],
-                    stack: ['number', 'exists'], 
-                })
+            const validate = {
+                impulse: ['string'],
+                emitter: ['string'],
+                stack: ['number', 'exists'], 
+            }
+
+            return importImpulsePart(toImport, impulse.info.reply, validate)
         }
 
         const importImpulseInfoOptions = (toImport) => {
-            importImpulsePart(
-                toImport, 
-                impulse.info.options, 
-                {
-                    trace: ['boolean'],
-                    traceContent: ['string'],
-                    debug: ['boolean'],
-                    debugContent: ['string'],
-                })
+            const validate = {
+                trace: ['boolean'],
+                traceContent: ['string'],
+                debug: ['boolean'],
+                debugContent: ['string'],
+            }
+
+            return importImpulsePart(toImport, impulse.info.options, validate)
         }
 
         const importImpulsePart = (toImport, destination, validation) => {
+            let failed = false;
+
             destination.keys().forEach(name => {
                 if (validation[name] && toImport[name]) {
                     if (validation[name].indexOf(typeof toImport[name]) >= 0 || validation[name].indexOf('exists') >= 0) {
                         destination[name] = toImport[name]
+                    } else {
+                        failed = true;
                     }
                 }
             })
+
+            return failed
         }
 
         /**
