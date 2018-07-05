@@ -139,6 +139,17 @@ const Queue = class QueueClass {
          * @returns {*|null} Value or null if not present
          */
         this.get = (id) => get(id)
+
+        /**** Test Area **********************************************************************************************/
+
+        if (process.env.NODE_ENV === 'test') {
+            // Allow unit test mocking
+            this.__test__ = {
+                queuedData: queuedData,
+                queue: queue,
+            }
+        }
+
     }
 
     /**** Prototype Methods ******************************************************************************************/
