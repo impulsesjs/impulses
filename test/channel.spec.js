@@ -27,44 +27,23 @@ describe('Given an instance of channel', () => {
         md5Mock = new MockHelper(lib.__test__.md5)
         md5Mock.return.calculate = 'MD5_FAKE'
 
-        // const mockReturnForMessageQ = {next: []}
-        mockMessageQ = new MockHelper(lib.__test__.messageQ
-            // ,{
-            //     next: {
-            //         func: () => mockReturnForMessageQ.next.length ? mockReturnForMessageQ.next.shift() : null,
-            //         debug: false
-            //     }
-            // },
-            // mockReturnForMessageQ
-        )
-        mockMessageQ.method = Object.assign(mockMessageQ.method, {
+        mockMessageQ = new MockHelper(lib.__test__.messageQ)
+        mockMessageQ.__updateMethods__({
             next: {
                 func: () => (mockMessageQ.return.next.length ? mockMessageQ.return.next.shift() : null),
                 debug: false
             }
         })
         mockMessageQ.return.next = [];
-        // mockMessageQ.return.next = null
-        // console.log(mockMessageQ.return.next, mockMessageQ.method.next.func)
 
-        // const mockReturnForListenerQ = {next: []}
-        mockListenerQ = new MockHelper(lib.__test__.listenerQ
-            // ,{
-            //     next: {
-            //         func: () => mockReturnForListenerQ.next.length ? mockReturnForListenerQ.next.shift() : null,
-            //         debug: false
-            //     }
-            // },
-            // mockReturnForListenerQ
-        )
-        mockListenerQ.method = Object.assign(mockListenerQ.method, {
+        mockListenerQ = new MockHelper(lib.__test__.listenerQ)
+        mockListenerQ.__updateMethods__({
             next: {
                 func: () => (mockListenerQ.return.next.length ? mockListenerQ.return.next.shift() : null),
                 debug: false
             }
         })
         mockListenerQ.return.next = [];
-        // mockListenerQ.return.next = null
     })
 
     describe('After I have instantiated queue', () => {

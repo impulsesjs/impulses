@@ -108,15 +108,8 @@ class MockHelper {
                     if (typeof this.return[name] === 'undefined') {
                         this.return[name] = undefined
                     }
-    
+
                     refreshMethod(name)
-                    // if (isMethod(name)) {
-                    //     if (spyExists(name)) {
-                    //         this.spy[name].restore()
-                    //     }
-                    //     this.spy[name] = sinon.stub(targetObject, name)
-                    //     this.spy[name].callsFake(getMethodToCall(name))
-                    // }
                 })
             }
         }
@@ -134,7 +127,15 @@ class MockHelper {
         }
 
         const getMethodToCall = (methodName) => {
-            return method[methodName].func || wrapingMockFunction
+            if (typeof method[methodName] === 'function') {
+                return method[methodName]
+            }
+
+            if (typeof method[methodName] === 'object' && typeof method[methodName].func === 'function') {
+                return method[methodName].func
+            }
+
+            return wrapingMockFunction
         }
 
         /**
@@ -205,6 +206,10 @@ class MockHelper {
          * Toggle the default debug status
          */
         this.__toggleDebug__ = () => toggleDebug()
+
+        this.__updateMethods__ = (methods) => {
+            this.method = Object.assign(this.method, methods)
+        }
     }
 
 }
