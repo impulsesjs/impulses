@@ -268,4 +268,8 @@ describe('Given an instance of channel', () => {
     //         expect(lib.messageInfo(msgId)).to.be.equal(null)
     //     })
     // })
+
+    after(() => {
+        lib.close()
+    })
 })
