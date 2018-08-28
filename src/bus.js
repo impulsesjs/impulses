@@ -147,6 +147,18 @@ const CommBus = class CommBusClass {
          * @returns {ChannelClass|null}
          */
         this.get = (entity, channelName) => get (entity, channelName)
+
+        /**** Test Area **********************************************************************************************/
+
+        if (process.env.NODE_ENV === 'test') {
+
+
+            // Allow unit test mocking
+            this.__test__ = {
+                channelsInfo: channelsInfo,
+            }
+        }
+
     }
 
     /**** Prototype Methods ******************************************************************************************/
