@@ -31,7 +31,7 @@ const CommBus = class CommBusClass {
          * @param {ChannelInfo} channelInfo
          * @returns {boolean}
          */
-        function isValidChannelInformation (channelInfo) {
+        function isValidChannelInformation(channelInfo) {
 
             /* attribute entity registers tha responsible entity*/
             if (typeof channelInfo.entity === 'undefined' ) {
@@ -53,7 +53,7 @@ const CommBus = class CommBusClass {
          * @param {ChannelInfo[]} channels
          * @returns {String[]} List of the registered channels (entity.name)
          */
-        function register (channels) {
+        function register(channels) {
             let registeredChannels = []
             if (channels.constructor !== Array) {
                 channels = [channels]
@@ -90,9 +90,9 @@ const CommBus = class CommBusClass {
          *
          * @param {string} entity Entity name to search for
          * @param {string|null} channelName Channel name to search for
-         * @returns {boolean|ChannelClass}
+         * @returns {boolean}
          */
-        function exists (entity, channelName) {
+        function exists(entity, channelName) {
             if (channelsInfo.hasOwnProperty(entity)) {
                 if (channelName !== null) {
                     return get(entity, channelName) !== null
@@ -110,7 +110,7 @@ const CommBus = class CommBusClass {
          * @param {string=} channelName Channel name to search for
          * @returns {ChannelClass|null}
          */
-        function get (entity, channelName) {
+        function get(entity, channelName) {
             if (channelsInfo.hasOwnProperty(entity)) {
                 let entityInfo = Reflect.getOwnPropertyDescriptor(channelsInfo, entity).value
                 if (entityInfo.hasOwnProperty(channelName)) {
@@ -135,7 +135,7 @@ const CommBus = class CommBusClass {
          * @param {string} entity Entity name to search for
          * @param {string|null} channelName Channel name to search for
          * 
-         * @returns {boolean|ChannelClass}
+         * @returns {boolean}
          */
         this.exists = (entity, channelName = null) => exists(entity, channelName)
 
@@ -146,7 +146,17 @@ const CommBus = class CommBusClass {
          * @param {string=} channelName Channel name to search for
          * @returns {ChannelClass|null}
          */
-        this.get = (entity, channelName) => get (entity, channelName)
+        this.get = (entity, channelName) => get(entity, channelName)
+
+        /**** Test Area **********************************************************************************************/
+
+        if (process.env.NODE_ENV === 'test') {
+            // Allow unit test mocking
+            this.__test__ = {
+                channelsInfo: channelsInfo,
+            }
+        }
+
     }
 
     /**** Prototype Methods ******************************************************************************************/
