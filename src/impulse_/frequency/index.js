@@ -11,8 +11,8 @@ const frequencyClass = class FequencyClass {
 
         /**** Private Attributes *************************************************************************************/
 
-        const entityName = entity
-        const channelName = channel
+        let entityName = entity
+        let channelName = channel
 
         /**** Private Methods ****************************************************************************************/
 
@@ -66,10 +66,10 @@ const frequencyClass = class FequencyClass {
         /**
          * Reset the frequency information to the intital state
          */
-        const resetFrequency = () => {
-            entityName = undefined
-            channelName = undefined
-        }
+        // const resetFrequency = () => {
+        //     entityName = undefined
+        //     channelName = undefined
+        // }
 
         /**
          * Validates it the provided value is a string
@@ -77,7 +77,7 @@ const frequencyClass = class FequencyClass {
          * @param {*} value Value to be validated
          * @returns {boolean}
          */
-        const validateStringType = value => value.constructor === String
+        // const validateStringType = value => value.constructor === String
 
         /**
          * Validates if the provided value is a valid entity name
@@ -85,7 +85,7 @@ const frequencyClass = class FequencyClass {
          * @param {*} value 
          * @returns {boolean}
          */
-        const validateEntity = value => validateStringType(value)
+        // const validateEntity = value => validateStringType(value)
 
         /**
          * Validates if the provided value is a valid channel name
@@ -93,7 +93,7 @@ const frequencyClass = class FequencyClass {
          * @param {*} value 
          * @returns {boolean}
          */
-        const validateChannel = value => validateStringType(value)
+        // const validateChannel = value => validateStringType(value)
 
         /**
          * Set the entity frequency name
@@ -101,13 +101,13 @@ const frequencyClass = class FequencyClass {
          * @param {string} name Frequency Entity Name with format ENTITY.CHANNEL
          * @returns {boolean}
          */
-        const setEntity = (name) => {
-            if (validateEntity(name)) {
-                entityName = name
-                return true
-            }
-            return false
-        }
+        // const setEntity = (name) => {
+        //     if (validateEntity(name)) {
+        //         entityName = name
+        //         return true
+        //     }
+        //     return false
+        // }
 
         /**
          * Set the channel frequency name
@@ -115,13 +115,13 @@ const frequencyClass = class FequencyClass {
          * @param {string} name Frequency Channel Name
          * @returns {boolean}
          */
-        const setChannel = (name) => {
-            if (validateChannel(name)) {
-                channelName = name
-                return true
-            }
-            return false
-        }
+        // const setChannel = (name) => {
+        //     if (validateChannel(name)) {
+        //         channelName = name
+        //         return true
+        //     }
+        //     return false
+        // }
 
         /**
          * Set the frequency information
@@ -130,14 +130,14 @@ const frequencyClass = class FequencyClass {
          * @param {string} channel Channel Name
          * @returns {boolean}
          */
-        const setFrequency = (entity, channel) => {
-            if (validateEntity(entity) && validateChannel(channel)) {
-                setEntity(entity)
-                setChannel(channel)
-                return true;
-            }
-            return false;
-        }
+        // const setFrequency = (entity, channel) => {
+        //     if (validateEntity(entity) && validateChannel(channel)) {
+        //         setEntity(entity)
+        //         setChannel(channel)
+        //         return true;
+        //     }
+        //     return false;
+        // }
 
         /**
          * Set the frequency information based on a composed string
@@ -145,14 +145,14 @@ const frequencyClass = class FequencyClass {
          * @param {string} name Frequency composed name
          * @returns {boolean}
          */
-        const setFrequencyFromString = name => {
-            const {entity, channel} = frequencyClass.parseFrequency(name)
-            if (entity !== false) {
-                setFrequency(entity, channel)
-                return true
-            }
-            return false
-        }
+        // const setFrequencyFromString = name => {
+        //     const {entity, channel} = frequencyClass.parseFrequency(name)
+        //     if (entity !== false) {
+        //         setFrequency(entity, channel)
+        //         return true
+        //     }
+        //     return false
+        // }
 
         /**
          * Parses the frequency information from a composed string
@@ -160,13 +160,13 @@ const frequencyClass = class FequencyClass {
          * @param {string} name Composed frequency name
          * @returns {FrequencyEntity|false}
          */
-        const parseFrequency = name => {
-            if (name.indexOf('.') > 0) {
-                const {entity, channel} = name.split('.', 2)
-                return {entity, channel}
-            }
-            return false
-        }
+        // const parseFrequency = name => {
+        //     if (name.indexOf('.') > 0) {
+        //         const {entity, channel} = name.split('.', 2)
+        //         return {entity, channel}
+        //     }
+        //     return false
+        // }
         
         /**** Privileged Methods *************************************************************************************/
 
