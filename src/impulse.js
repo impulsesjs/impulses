@@ -1,7 +1,17 @@
 'use strict'
 
 import Md5 from './md5'
+import FrequencyCollectionClass from './impulse_/frequency-collection'
+import FrequencyClass from '../frequency'
+
 /**
+ * 
+ * @typedef {Object} ImpulseFrequency
+ * @prop {function} getEntity 
+ * @prop {function} getChannel
+ * @prop {function} is
+ * @prop {function} isEqual
+ * 
  * @typedef {Object} ImpulseInfoReplyEntity
  * @prop {string|null} [impulse=?] Internal impulse ID / signature
  * @prop {string|null} [emitter=?] External ID from the emitter
@@ -39,7 +49,7 @@ import Md5 from './md5'
  * @prop {Object} info
  */
 
-const impulse = class ImpulseClass {
+const impulse = class ImpulseApiClass {
     /**
      * @constructor ImpulseClass
      * 
@@ -54,7 +64,7 @@ const impulse = class ImpulseClass {
             id: null, // Internal impulse ID / signature
             info: {
                 emitter: null, // External ID from the emitter
-                frequencies: [],
+                frequencies: new FrequencyCollectionClass(),
                 reply: { // Set if the impulse is a reply impulse
                     impulse: null, // Internal impulse ID / signature
                     emitter: null, // External ID from the emitter
@@ -264,14 +274,8 @@ const impulse = class ImpulseClass {
         const addFrequency = (entityName, channelName) => {
             if (hasBus()) {
                 if (!!connectedBus.exists(entityName, channelName)) {
-                    const newFrequency = {
-                        entity: entityName,
-                        channel: channelName,
-                    }
-                    if (!hasFrequency(newFrequency)) {
-                        impulse.info.frequencies.push(newFrequency)
-                        return true
-                    }
+                    const newFrequency = new FrequencyClass(entityName, channelName)
+                    return impulse.info.frequencies.add(newFrequency)
                 }
             }
             return false
@@ -353,13 +357,11 @@ const impulse = class ImpulseClass {
         /**
          * Check if the provided frequency is already in the list
          * 
-         * @param {Object} frequencyObject 
+         * @param {ImpulseFrequency} frequencyObject 
          * @returns {boolean}
          */
         const hasFrequency = (frequencyObject) => {
-            return !!impulse.info.frequencies.find(frequency => {
-                return JSON.stringify(frequency) === JSON.stringify(frequencyObject)
-            })
+            return !!impulse.info.frequencies.has(frequencyObject)
         }
 
         /**
@@ -371,10 +373,7 @@ const impulse = class ImpulseClass {
          * @returns {boolean}
          */
         const hasFrequencyFromBasic = (entityName, channelName) => {
-            const newFrequency = {
-                entity: entityName,
-                channel: channelName,
-            }
+            const newFrequency = new FrequencyClass(entityName, channelName)
             return hasFrequency(newFrequency)
         }
 
@@ -405,7 +404,7 @@ const impulse = class ImpulseClass {
          * Check if there are any frequencies set
          */
         const isFrequencySet = () => {
-            return impulse.info.frequencies.length > 0
+            return impulse.info.frequencies.count() > 0
         }
 
         /**
