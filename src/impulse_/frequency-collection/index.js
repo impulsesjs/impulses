@@ -1,37 +1,40 @@
 'use strict'
 
-import FrequencyClass from './frequency'
+import FrequencyClass from '../frequency'
 
-const frequencyCollectionClass = class FequencyColelctionClass {
+const frequencyCollectionClass = class FequencyCollectionClass {
 
     constructor (config) {
 
         /**** Private Attributes *************************************************************************************/
 
-        const configuration = {
-            find: undefined,
-        }
+        config = config || {}
 
-        const collection = new Set()
+        // const configuration = Object.assign({}, config)
+
+        const collection = []
 
         /**** Private Methods ****************************************************************************************/
 
         /**
          * Add a frequency for the impulse to be sent
          * 
-         * @param {string} entityName 
-         * @param {string} channelName 
+         * @param {frequencyClass} itemToBeAdded 
+         * 
+         * @returns {boolean}
          */
         const add = (itemToBeAdded) => {
             if (!has(itemToBeAdded)) {
                 collection.push(itemToBeAdded)
+                return true
             }
+            return false
         }
 
         /**
          * Check if the provided item is already in the list
          * 
-         * @param {*} itemToSearch
+         * @param {frequencyClass} itemToSearch
          * 
          * @returns {boolean}
          */
@@ -40,22 +43,29 @@ const frequencyCollectionClass = class FequencyColelctionClass {
         /**
          * Search for the provided item in the list
          * 
-         * @param {*} itemToBeFound
+         * @param {frequencyClass} frequencyToFind
          * 
-         * @returns {*}
+         * @returns {frequencyClass}
          */
-        const find = itemToBeFound => {
-            if (!configuration.find) {
-                configuration.find = (item) => {
-                    return JSON.stringify(item) === JSON.stringify(itemToBeFound)
-                }
-            }
-
-            return collection.find(configuration.find)
+        const find = frequencyToFind => {
+            return collection.find(frequency => {
+                return frequency.getEntity() === frequencyToFind.getEntity() && frequency.getChannel() === frequencyToFind.getChannel()
+            })
         }
+
+        const count = () => {
+            return collection.length
+        }
+
+        const each = (workingfunction) => collection.forEach(workingfunction)
         
         /**** Privileged Methods *************************************************************************************/
 
+        this.add = (newItem) => add(newItem)
+        this.has = (itemToSearch) => has(itemToSearch)
+        // this.find = (itemToSearch) => find(itemToSearch)
+        this.count = () => count()
+        this.each = (workingfunction) => each(workingfunction)
 
     }
 
