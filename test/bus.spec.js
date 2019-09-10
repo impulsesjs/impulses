@@ -26,10 +26,22 @@ let channelTypeFail2 = {
     entity: 'TYPE1',
 }
 
+let channelsInfo = {}
+
 describe('Given an instance of bus', () => {
     describe('After I have an instance', () => {
         before(() => {
             lib = new Bus()
+
+            // channelsInfo = lib.__test__.channelsInfo
+            // mockChannel = new MockHelper(lib.__test__.channelsInfo)
+            // mockChannel.__updateMethods__({
+            //     next: {
+            //         func: () => (mockChannel.return.next.length ? mockChannel.return.next.shift() : null),
+            //         debug: false
+            //     }
+            // })
+            // mockChannel.return.next = [];
         })
 
         it('it should not have any entity registered', () => {
@@ -40,24 +52,30 @@ describe('Given an instance of bus', () => {
             expect(lib.exists(channelType1.entity, channelType1.name)).to.be.equal(false)
         })
 
-        it('it should be possible to register a single channel', () => {
-            lib.register(channelType1)
-            expect(lib.exists(channelType1.entity, channelType1.name)).to.be.equal(true)
-        })
+        describe('After registering a channel', () => {
+            before(() => {
+                lib.register(channelType1)
+            })
 
-        it('it should have the registered entity', () => {
-            expect(lib.exists(channelType1.entity)).to.be.equal(true)
-        })
-
-        it('it should have the registered channel', () => {
-            expect(lib.exists(channelType1.entity, channelType1.name)).to.be.equal(true)
-        })
-
-        it('it should not have an unregistered channel', () => {
-            expect(lib.exists(channelType1.entity, channelType1.name + 'A')).to.be.equal(false)
+            it('it should be possible to register a single channel', () => {
+                expect(lib.exists(channelType1.entity, channelType1.name)).to.be.equal(true)
+            })
+    
+            it('it should have the registered entity', () => {
+                expect(lib.exists(channelType1.entity)).to.be.equal(true)
+            })
+/*
+            it('it should have the registered channel', () => {
+                expect(lib.exists(channelType1.entity, channelType1.name)).to.be.equal(true)
+            })
+    
+            it('it should not have an unregistered channel', () => {
+                expect(lib.exists(channelType1.entity, channelType1.name + 'A')).to.be.equal(false)
+            })
+*/
         })
     })
-
+/*
     describe('After I have a clean instance', () => {
         before(() => {
             lib = new Bus()
@@ -137,5 +155,6 @@ describe('Given an instance of bus', () => {
             expect(lib.get(channelType2.entity, channelType2.name)).not.null
         })
     })
+*/
 })
 
