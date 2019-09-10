@@ -1,6 +1,12 @@
 'use strict'
 import Md5 from './md5'
 
+/**
+* @typedef {Object} EmitterEntity
+* @prop {String} emitter Emitter signature / name
+* @prop {String} version Emitter verison
+*/
+
 const emitterClass = class EmitterClass {
 
     constructor (emitterInfo) {
@@ -16,16 +22,29 @@ const emitterClass = class EmitterClass {
         /**** Private Methods ****************************************************************************************/
 
         /**
+         * Checks if the information is valid / as expected
+         * 
+         * @param {EmitterEntity} info 
+         * @returns {Boolean}
+         */
+        const isValid = (info) => {
+            if (typeof info !== 'object') return false
+            if (!info.emitter || typeof info.emitter !== 'string') return false
+            if (!info.version || typeof info.version !== 'string') return false
+
+            return true;
+        }
+
+        /**
          * Generate the Unique ID
          *
          * @returns {string} Generated Unique ID
          */
         const generateGenericId = () => {
-            const serializedImpulse = JSON.stringify(impulse)
-            const randomValue = Math.random() * 5000
+            const randomValue1 = Math.random() * 5000
             const timeValue = Date.now()
-
-            return (new Md5()).calculate(`${serializedImpulse}${randomValue}${timeValue}`)
+            const randomValue2 = Math.random() * 5000
+            return (new Md5()).calculate(`${randomValue1}.${timeValue}.${randomValue2}`)
         }
 
         /**
@@ -35,6 +54,8 @@ const emitterClass = class EmitterClass {
          */
         const generateId = () => `i.${generateGenericId()}`
 
+        const getId = () => internalId
+
         /**
          * Initializes the internal ID
          */
@@ -43,22 +64,17 @@ const emitterClass = class EmitterClass {
         }
 
         /**
-         * Set the ID
-         * 
-         * @param {string} newId
-         */
-        const setId = newId => internalId = newId
-
-        const initEmit = newEmitterInfo => {
-            info = Object.assign({}, newEmitterInfo)
-        }
-        /**
          * Set the emitter information
          * 
-         * @param {Object} newEmitterInfo
+         * @param {EmitterEntity} newEmitterInfo
+         * @returns {Boolean}
          */
         const setEmitter = newEmitterInfo => {
+            if (!isValid(newEmitterInfo)) {
+                return false
+            }
             info = Object.assign({}, newEmitterInfo)
+            return true
         } 
 
         /**
@@ -66,9 +82,7 @@ const emitterClass = class EmitterClass {
          * 
          * @returns {Object}
          */
-        const getEmitter = () => info
-
-        const getEmitterCopy = () => Object.assign({}, info)
+        const getEmitter = () => Object.assign({}, info)
 
         isEqual = infoCheck => {
             let testValue;
@@ -90,16 +104,28 @@ const emitterClass = class EmitterClass {
         /**** Privileged Methods *************************************************************************************/
 
         /**
+         * Set the Emitter info
+         * 
+         * @returns {Boolean}
+         */
+        this.setEmitter = (emitterInfo) => setEmitter(emitterInfo)
+
+        /**
+         * Get the emitter internal ID
+         */
+        this.getId = () => getId()
+
+        /**
          * Get the Emitter info
          * 
          * @returns {*}
          */
-        this.getEmitter = () => this.getEmitter()
+        this.getEmitter = () => getEmitter()
 
         /**
          * Check if the current Frequency is the same as the provided one
          * 
-         * @param {EmitterClass} freq
+         * @param {EmitterClass}emitter
          * @returns {boolean}
          */
         this.isEqual = emitter => isEqual(emitter)
