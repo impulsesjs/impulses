@@ -10,7 +10,7 @@
     "build:norm": "webpack",
     "build:watch": "webpack -w --config webpack.config.js",
     "test": "mocha --require babel-core/register --colors --exit ./test/*.spec.js",
-    "test:spec": "mocha --require babel-core/register --colors --exit",
+    "test:spec": "mocha --require babel-core/register --colors",
     "test:watch": "mocha --require babel-core/register --colors -w ./test/*.spec.js",
     "test:watch:spec": "mocha --require babel-core/register --colors -w",
     "test:cov": "./node_modules/.bin/nyc --reporter=html --hook-run-in-this-context=true npm test",
