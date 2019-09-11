@@ -1,5 +1,5 @@
 'use strict'
-import Md5 from './md5'
+import Md5 from '../../md5'
 
 /**
 * @typedef {Object} EmitterEntity
@@ -13,11 +13,8 @@ const emitterClass = class EmitterClass {
 
         /**** Private Attributes *************************************************************************************/
 
-        const internalId = undefined
-        const info = undefined
-
-        initInternalId()
-        setEmitter(emitterInfo)
+        let internalId = undefined
+        let info = {}
 
         /**** Private Methods ****************************************************************************************/
 
@@ -82,25 +79,34 @@ const emitterClass = class EmitterClass {
          * 
          * @returns {Object}
          */
-        const getEmitter = () => Object.assign({}, info)
+        const getEmitter = () => {
+            return Object.assign({}, info)
+        }
 
-        isEqual = infoCheck => {
-            let testValue;
+        const isEqual = infoCheck => {
+            let equal = true
             if (info.size !== infoCheck.size) {
-                return false;
+                return false
             }
 
-            for (let [name, value] of info) {
-                testValue = infoCheck.get(name);
-                // in cases of an undefined value, make sure the key
-                // actually exists on the object so there are no false positives
-                if (testValue !== value || (testValue === undefined && !infoCheck.has(name))) {
-                    return false;
+            Object.keys(info).forEach(attribute => {
+                if (!infoCheck[attribute] || info[attribute] !== infoCheck[attribute]) {
+                    equal = false;
                 }
-            }
-            return true;
+            })
+
+            Object.keys(infoCheck).forEach(attribute => {
+                if (!info[attribute] || info[attribute] !== infoCheck[attribute]) {
+                    equal = false;
+                }
+            })
+
+            return equal;
         }
         
+        initInternalId()
+        setEmitter(emitterInfo)
+
         /**** Privileged Methods *************************************************************************************/
 
         /**
