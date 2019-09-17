@@ -1,15 +1,14 @@
 /* global describe, it, before */
 
 import chai from 'chai'
-// import spies from 'chai-spies'
-// import Bus from '../src/bus';
+import spies from 'chai-spies'
 import classToTest from '../src/impulse_/emitter'
 
-// chai.use(spies);
+chai.use(spies);
 chai.expect();
 
 const expect = chai.expect;
-// const sandbox = chai.spy.sandbox();
+const sandbox = chai.spy.sandbox();
 
 let lib
 
@@ -21,6 +20,7 @@ const EMITTER = {
         },
     ],
     BAD: [
+        {},
         {
             emitter: 'EMITTER_TITLE',
         },
@@ -37,26 +37,15 @@ const EMITTER = {
         },
     ]
 }
-// const ENTITY = {
-//     CORRECT: 'CORRECT_ENTITY',
-//     WRONG: 'WRONG_ENTITY',
-// }
-
-// const CHANNEL = {
-//     CORRECT: 'CORRECT_CHANNEL',
-//     WRONG: 'WRONG_CHANNEL',
-// }
-
-// let objFrequencyEntityCorrect = true
-// let objFrequencyChannelCorrect = true
-// const objFrequency = {
-//     getEntity: () => objFrequencyEntityCorrect ? ENTITY.CORRECT : ENTITY.WRONG,
-//     getChannel: () => objFrequencyChannelCorrect ? CHANNEL.CORRECT: CHANNEL.WRONG,
-// };
 
 describe('IMPULSE-EMITTER', () => {
     beforeEach(() => {
         lib = new classToTest()
+        sandbox.on(lib.__test__.validator, ['validateEmitter']);
+    })
+
+    afterEach(() => {
+        sandbox.restore()
     })
 
     describe('After I have an instance', () => {
@@ -83,11 +72,13 @@ describe('IMPULSE-EMITTER', () => {
             EMITTER.BAD.forEach(emitter => {
                 const test = lib.setEmitter(emitter)
                 expect(test).to.be.equal(false)
+                expect(lib.__test__.validator.validateEmitter).to.have.been.called.with(emitter)
             })
         })
         it('it return true when trying to set an valid emitter format', () => {
             const test = lib.setEmitter(EMITTER.GOOD[0])
             expect(test).to.be.equal(true)
+            expect(lib.__test__.validator.validateEmitter).to.have.been.called.with(EMITTER.GOOD[0])
         })
 
         describe('After having set a valid emitter', () => {
@@ -99,6 +90,74 @@ describe('IMPULSE-EMITTER', () => {
                 expect(test).to.eql(EMITTER.GOOD[0])
             })
     
+        })
+    })
+
+    EMITTER.BAD.forEach(emitterInfo => {
+        describe(`After I have an instance with invalid information (${JSON.stringify(emitterInfo)})`, () => {
+            beforeEach(() => {
+                lib = new classToTest(emitterInfo)
+                sandbox.on(lib.__test__.validator, ['validateEmitter']);
+            })
+    
+            afterEach(() => {
+                sandbox.restore()
+            })
+        
+            it('it should provide an empty object when the info is requested', () => {
+                const test = lib.getEmitter()
+                expect(test).to.eql({})
+            })
+            it('it return true when checked as an empty object', () => {
+                const test = lib.isEqual({})
+                expect(test).to.be.equal(true)
+            })
+            it('it return false when checked as an non empty object', () => {
+                const test = lib.isEqual({version: '1.0'})
+                expect(test).to.be.equal(false)
+            })
+            it('it return false when trying to set an invalid emitter format', () => {
+                EMITTER.BAD.forEach(emitter => {
+                    const test = lib.setEmitter(emitter)
+                    expect(test).to.be.equal(false)
+                    expect(lib.__test__.validator.validateEmitter).to.have.been.called.with(emitter)
+                })
+            })
+            it('it return true when trying to set an valid emitter format', () => {
+                const test = lib.setEmitter(EMITTER.GOOD[0])
+                expect(test).to.be.equal(true)
+                expect(lib.__test__.validator.validateEmitter).to.have.been.called.with(EMITTER.GOOD[0])
+            })
+    
+            describe('After having set a valid emitter', () => {
+                beforeEach(() => {
+                    lib.setEmitter(EMITTER.GOOD[0])
+                })
+                it('it should provide the good emitter information', () => {
+                    const test = lib.getEmitter()
+                    expect(test).to.eql(EMITTER.GOOD[0])
+                })
+        
+            })
+        })
+    })
+
+    describe('After I have an instance with valid information', () => {
+        beforeEach(() => {
+            lib = new classToTest(EMITTER.GOOD[0])
+        })
+
+        it('it should provide the correct information object when the info is requested', () => {
+            const test = lib.getEmitter()
+            expect(test).to.eql(EMITTER.GOOD[0])
+        })
+        it('it return true when checked as an empty object', () => {
+            const test = lib.isEqual({})
+            expect(test).to.be.equal(false)
+        })
+        it('it return false when checked as an non empty and different object', () => {
+            const test = lib.isEqual({version: '1.0'})
+            expect(test).to.be.equal(false)
         })
     })
 })

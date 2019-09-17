@@ -1,5 +1,6 @@
 'use strict'
 import Md5 from '../../md5'
+import ImpulseValidator from '../../impulse-validator'
 
 /**
 * @typedef {Object} EmitterEntity
@@ -13,24 +14,11 @@ const emitterClass = class EmitterClass {
 
         /**** Private Attributes *************************************************************************************/
 
+        const validator = new ImpulseValidator();
         let internalId = undefined
         let info = {}
 
         /**** Private Methods ****************************************************************************************/
-
-        /**
-         * Checks if the information is valid / as expected
-         * 
-         * @param {EmitterEntity} info 
-         * @returns {Boolean}
-         */
-        const isValid = (info) => {
-            if (typeof info !== 'object') return false
-            if (!info.emitter || typeof info.emitter !== 'string') return false
-            if (!info.version || typeof info.version !== 'string') return false
-
-            return true;
-        }
 
         /**
          * Generate the Unique ID
@@ -67,7 +55,7 @@ const emitterClass = class EmitterClass {
          * @returns {Boolean}
          */
         const setEmitter = newEmitterInfo => {
-            if (!isValid(newEmitterInfo)) {
+            if (!validator.validateEmitter(newEmitterInfo)) {
                 return false
             }
             info = Object.assign({}, newEmitterInfo)
@@ -135,6 +123,16 @@ const emitterClass = class EmitterClass {
          * @returns {boolean}
          */
         this.isEqual = emitter => isEqual(emitter)
+
+        /**** Test Area **********************************************************************************************/
+
+        if (process.env.NODE_ENV === 'test') {
+            // Allow unit test mocking
+            this.__test__ = {
+                validator: validator,
+            }
+        }
+
     }
 
     /**** Prototype Methods ******************************************************************************************/
