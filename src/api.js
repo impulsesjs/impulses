@@ -74,21 +74,21 @@ const api = class ApiClass {
             return isBusSet(pubBus)
         }
 
-         /**
-          * Checks if the private BUS is defined
-          *
-          * @return {boolean} True if the private bus is set
-          */
+        /**
+         * Checks if the private BUS is defined
+         *
+         * @return {boolean} True if the private bus is set
+         */
         function existPrivate() {
             return isBusSet(privBus)
         }
 
-         /**
-          * Validates if a given object is a valid bus object
-          *
-          * @param  {Bus} bus Object to be validated
-          * @return {boolean} True if the bus is valid
-          */
+        /**
+         * Validates if a given object is a valid bus object
+         *
+         * @param  {Bus} bus Object to be validated
+         * @return {boolean} True if the bus is valid
+         */
         function isBus(bus) {
             return bus.constructor === Bus
         }
