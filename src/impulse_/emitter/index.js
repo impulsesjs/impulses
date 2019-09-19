@@ -73,18 +73,22 @@ const emitterClass = class EmitterClass {
 
         const isEqual = infoCheck => {
             let equal = true
-            if (info.size !== infoCheck.size) {
+            if (Object.keys(info).length !== Object.keys(infoCheck).length) {
                 return false
             }
 
             Object.keys(info).forEach(attribute => {
+                console.log('### HERE 1!!!', attribute)
                 if (!infoCheck[attribute] || info[attribute] !== infoCheck[attribute]) {
+                    console.log('### INSIDE 1!!!', attribute)
                     equal = false;
                 }
             })
 
             Object.keys(infoCheck).forEach(attribute => {
+                console.log('### HERE 2!!!', attribute)
                 if (!info[attribute] || info[attribute] !== infoCheck[attribute]) {
+                    console.log('### INSIDE 2!!!', attribute)
                     equal = false;
                 }
             })

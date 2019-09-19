@@ -61,8 +61,10 @@ describe('IMPULSE-EMITTER', () => {
             expect(test).to.eql({})
         })
         it('it return true when checked as an empty object', () => {
-            const test = lib.isEqual({})
-            expect(test).to.be.equal(true)
+            const test1 = lib.isEqual({})
+            const test2 = lib.isEqual({version: '1.0'})
+            expect(test1).to.be.equal(true)
+            expect(test2).to.be.equal(false)
         })
         it('it return false when checked as an non empty object', () => {
             const test = lib.isEqual({version: '1.0'})
@@ -93,7 +95,7 @@ describe('IMPULSE-EMITTER', () => {
         })
     })
 
-    EMITTER.BAD.forEach(emitterInfo => {
+    EMITTER.BAD.forEach((emitterInfo, index) => {
         describe(`After I have an instance with invalid information (${JSON.stringify(emitterInfo)})`, () => {
             beforeEach(() => {
                 lib = new classToTest(emitterInfo)
@@ -109,8 +111,10 @@ describe('IMPULSE-EMITTER', () => {
                 expect(test).to.eql({})
             })
             it('it return true when checked as an empty object', () => {
-                const test = lib.isEqual({})
-                expect(test).to.be.equal(true)
+                const test1 = lib.isEqual({})
+                const test2 = lib.isEqual({att1: '1', att3: '2', att3: '3'})
+                expect(test1).to.be.equal(true)
+                expect(test2).to.be.equal(false)
             })
             it('it return false when checked as an non empty object', () => {
                 const test = lib.isEqual({version: '1.0'})
@@ -156,8 +160,10 @@ describe('IMPULSE-EMITTER', () => {
             expect(test).to.be.equal(false)
         })
         it('it return false when checked as an non empty and different object', () => {
-            const test = lib.isEqual({version: '1.0'})
-            expect(test).to.be.equal(false)
+            EMITTER.BAD.forEach(emitter => {
+                const test = lib.isEqual(emitter)
+                expect(test).to.be.equal(false)
+            })
         })
     })
 })
