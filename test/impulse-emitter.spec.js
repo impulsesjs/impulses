@@ -112,7 +112,7 @@ describe('IMPULSE-EMITTER', () => {
             })
             it('it return true when checked as an empty object', () => {
                 const test1 = lib.isEqual({})
-                const test2 = lib.isEqual({att1: '1', att3: '2', att3: '3'})
+                const test2 = lib.isEqual({att1: '1', att2: '2', att3: '3'})
                 expect(test1).to.be.equal(true)
                 expect(test2).to.be.equal(false)
             })
