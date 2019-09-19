@@ -17,7 +17,7 @@ const impulseValidationHelper = class ImpulseValidationHelperClass {
     
         const validateInfo = info => {
             if (!info.emitter || info.emitter !== null || typeof info.emitter !== 'string') return false
-            if (!info.frequencies || typeof info.frequencies !== 'array') return false
+            if (!info.frequencies || !Array.isArray(info.frequencies)) return false
             if (!info.reply || typeof info.reply !== 'object') return false
             if (!info.options || typeof info.options !== 'object') return false
             if (!info.encryption || typeof info.encryption !== 'boolean') return false
@@ -62,8 +62,8 @@ const impulseValidationHelper = class ImpulseValidationHelperClass {
         }
 
         const validateInfoHistory = history => {
-            if (!history.emitStack || typeof history.emitStack !== 'array') return false
-            if (!history.emitters || typeof history.emitters !== 'array') return false
+            if (!history.emitStack || !Array.isArray(history.emitStack)) return false
+            if (!history.emitters || !Array.isArray(history.emitters)) return false
 
             return validateInfoHistoryEmits(history.emitStack) && validateInfoHistoryEmitters(history.emitters)
         }
