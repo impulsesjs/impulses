@@ -2,7 +2,7 @@
 
 import Md5 from './md5'
 import FrequencyCollectionClass from './impulse_/frequency-collection'
-import FrequencyClass from '../frequency'
+import FrequencyClass from './impulse_/frequency'
 
 /**
  * 
