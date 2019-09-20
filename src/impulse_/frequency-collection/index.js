@@ -1,7 +1,5 @@
 'use strict'
 
-import FrequencyClass from '../frequency'
-
 const frequencyCollectionClass = class FequencyCollectionClass {
 
     constructor (config) {

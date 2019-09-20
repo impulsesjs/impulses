@@ -31,11 +31,12 @@ const api = class ApiClass {
 
         /**** Private Attributes *************************************************************************************/
 
-        let apiInfo = configuration
+        // let apiInfo = configuration
         let pubBus = publicBus
         let privBus = privateBus
-        let id = initId()
+        let id = undefined
 
+        id = initId()
         /**** Private Methods ****************************************************************************************/
 
         function initId () {

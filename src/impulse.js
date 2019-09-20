@@ -94,10 +94,6 @@ const impulse = class ImpulseApiClass {
         /** @type {CommunicationBus} */
         let connectedBus = undefined;
 
-        if (incommingImpulse) {
-            importImpulse(incommingImpulse)
-        }
-
         /**** Private Methods ****************************************************************************************/
 
         const importImpulse = (rawImpulse) => {
@@ -592,10 +588,10 @@ const impulse = class ImpulseApiClass {
             return communicationFlow.emitStack.length
         }
 
-        const serilizeImpulse = () => {
-            impulse.history = Object.assign({}, communicationFlow);
-            return JSON.stringify(impulse)
-        }
+        // const serilizeImpulse = () => {
+        //     impulse.history = Object.assign({}, communicationFlow);
+        //     return JSON.stringify(impulse)
+        // }
 
         /**
          * Dispatch the impulse to all defined frequencies and collect the impulseId for each one
@@ -646,20 +642,24 @@ const impulse = class ImpulseApiClass {
             return executeTransaction(dispatch, transactionRollBack)
         }
 
-        const emitReply = () => {
-        }
+        // const emitReply = () => {
+        // }
 
-        const emitAndListen = () => {
-            // TODO: Prepare and Set a function to get the reply
-            // TODO: Create a new impulse with the returned message
-            // TODO: call back the method so we can provide the impulse
+        // const emitAndListen = () => {
+        //     // TODO: Prepare and Set a function to get the reply
+        //     // TODO: Create a new impulse with the returned message
+        //     // TODO: call back the method so we can provide the impulse
+        // }
+
+        if (incommingImpulse) {
+            importImpulse(incommingImpulse)
         }
 
         /**** Privileged Methods *************************************************************************************/
 
         this.setEmitter = (emitterInfo) => setEmitter(emitterInfo)
         this.hasEmitter = () => hasEmitter()
-        this.getEmitter = (id) => getEmitter(id)
+        this.getEmitter = () => getEmitter()
         this.getKnownEmitters = () => getKnownEmitters()
 
         this.setBus = (bus) => setBus(bus)

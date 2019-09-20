@@ -16,7 +16,7 @@ const impulseValidationHelper = class ImpulseValidationHelperClass {
         }
     
         const validateInfo = info => {
-            if (!info.emitter || info.emitter !== null || typeof info.emitter !== 'string') return false
+            if (!info.emitter || typeof info.emitter !== 'string') return false
             if (!info.frequencies || !Array.isArray(info.frequencies)) return false
             if (!info.reply || typeof info.reply !== 'object') return false
             if (!info.options || typeof info.options !== 'object') return false
