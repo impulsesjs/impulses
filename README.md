@@ -3,6 +3,7 @@
 <p align="center">
   <a href="https://circleci.com/gh/impulsesjs/impulses/tree/dev"><img src="https://img.shields.io/circleci/project/impulsesjs/impulses/dev.svg" alt="Build Status"></a>
   <a href="https://codecov.io/gh/impulsesjs/impulses?branch=dev"><img src="https://codecov.io/gh/impulsesjs/impulses/branch/dev/graph/badge.svg" alt="Coverage Status"></a>
+  <a href="https://www.codacy.com/manual/joaocac/impulses?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=impulsesjs/impulses&amp;utm_campaign=Badge_Grade"><img src="https://api.codacy.com/project/badge/Grade/cf61e57e8f7e4eca898bb3c6efdb5d3f" alt="Codacity Code Grade"></a>
   <a href="https://snyk.io//test/github/impulsesjs/impulses?targetFile=package.json"><img src="https://snyk.io//test/github/impulsesjs/impulses/badge.svg?targetFile=package.json" alt="Known Vulnerabilities" data-canonical-src="https://snyk.io//test/github/impulsesjs/impulses?targetFile=package.json" style="max-width:100%;"></a>
   <a href="https://app.fossa.io/projects/git%2Bgithub.com%2Fimpulsesjs%2Fimpulses?ref=badge_shield" alt="FOSSA Status"><img src="https://app.fossa.io/api/projects/git%2Bgithub.com%2Fimpulsesjs%2Fimpulses.svg?type=shield" alt="FOSSA Status"/></a>
 </p>

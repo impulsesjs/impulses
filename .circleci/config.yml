@@ -6,8 +6,12 @@ version: 2
 
 defaults: &defaults
   working_directory: ~/project/lib
+  environment:
+      NODE_ENV: test
   docker:
     - image: circleci/node:8
+      environment:
+          NODE_ENV: test
 
 jobs:
   install:

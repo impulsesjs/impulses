@@ -2,7 +2,6 @@
 
 import Queue from './queue'
 import MD5 from './md5'
-// import md5 from 'md5'
 
 // TODO: need this to be WebWorker Working
 const channel = class ChannelClass {
@@ -19,6 +18,8 @@ const channel = class ChannelClass {
         const CLOSED_STATUS = 0
         const OPEN_STATUS = 1
         const ON_HOLD_STATUS = 2
+
+        const md5 = new MD5()
 
         let processingQueue = false
         let entity = entityName
@@ -175,7 +176,7 @@ const channel = class ChannelClass {
         /**
          * Add a listener to the channel
          *
-         * @param {object} listenerInfo
+         * @param {Object} listenerInfo
          * @return {string|false} Listener ID
          */
         function addListener (listenerInfo) {
@@ -242,7 +243,7 @@ const channel = class ChannelClass {
          * Gets a listener information for the provided ID
          *
          * @param {string} id listener ID
-         * @returns {object|null}
+         * @returns {Object|null}
          */
         function getListenerInfo (id) {
             return findListenerInQueue(id, () => {
@@ -257,7 +258,7 @@ const channel = class ChannelClass {
          * Finds a listener in the listener queue
          * @param {string} id 
          * @param {function} callback 
-         * @returns {object|null}
+         * @returns {Object|null}
          */
         function findListenerInQueue (id, callback) {
             if (!id) return null
@@ -290,7 +291,7 @@ const channel = class ChannelClass {
         /**
          * Processes a message and send it to all registered hook
          *
-         * @param {object} message
+         * @param {Object} message
          */
         function processMessage (message) {
             try {
@@ -313,7 +314,9 @@ const channel = class ChannelClass {
         /**
          * Send a messagr to the channel
          *
-         * @param {object} message
+         * @param {Object} message
+         * 
+         * @return {string}
          */
         function send (message) {
             return messageQ.add(Object.assign({}, message))
@@ -322,10 +325,10 @@ const channel = class ChannelClass {
         /**
          * Sends a message to the channel and makes the listener hear
          *
-         * @param {object} message
-         * @param {object} listenerInfo
+         * @param {Object} message
+         * @param {Object} listenerInfo
          *
-         * @return {object} listenerInfo
+         * @return {Object} listenerInfo
          */
         function sendAndListen (message, listenerInfo) {
             let id = addListener(listenerInfo)
@@ -360,7 +363,6 @@ const channel = class ChannelClass {
         function processListenersQueue() {
             if (!isProcessingQueue()) {
                 startQueueProcessing()
-                let md5 = new MD5()
                 let hash = null
                 let listenerInfo = listenerQ.next()
                 while (listenerInfo !== null) {
@@ -459,17 +461,19 @@ const channel = class ChannelClass {
         /**
          * Send a messagr to the channel
          *
-         * @param {object} message
+         * @param {Object} message
+         * 
+         * @returns {string}
          */
         this.send = (message) => send(message)
 
         /**
          * Sends a message to the channel and makes the listener hear
          *
-         * @param {object} message
-         * @param {object} listenerInfo
+         * @param {Object} message
+         * @param {Object} listenerInfo
          *
-         * @return {object} listenerInfo
+         * @return {Object} listenerInfo
          */
         this.sendAndListen = (message, listenerInfo) => sendAndListen(message, listenerInfo)
 
@@ -480,6 +484,17 @@ const channel = class ChannelClass {
          * @returns {*}
          */
         this.messageInfo = (id) => getMessageInfo(id)
+
+        /**** Test Area **********************************************************************************************/
+
+        if (process.env.NODE_ENV === 'test') {
+            // Allow unit test mocking
+            this.__test__ = {
+                md5: md5,
+                listenerQ: listenerQ,
+                messageQ: messageQ,
+            }
+        }
 
     }
 

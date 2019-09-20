@@ -48,6 +48,7 @@ plugins.push(new BundleAnalyzerPlugin({
     logLevel: 'info'
   })
 )
+plugins.push(new webpack.EnvironmentPlugin(['NODE_ENV']))
 
 console.log('From Webpack:', __dirname)
 
