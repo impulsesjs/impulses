@@ -13,7 +13,7 @@
     "test:spec": "mocha --require babel-core/register --colors",
     "test:watch": "mocha --require babel-core/register --colors -w ./test/*.spec.js",
     "test:watch:spec": "mocha --require babel-core/register --colors -w",
-    "test:cov": "./node_modules/.bin/nyc --reporter=html --hook-run-in-this-context=true npm test",
+    "test:cov": "./node_modules/.bin/nyc --reporter=html --reporter=lcov --hook-run-in-this-context=true npm test",
     "test:karma": "karma start ./karma.config.js",
     "test:export": "mkdir -p output-test && mocha --require babel-register --recursive > output-test/index.txt",
     "lint": "eslint --fix src scripts test",
