@@ -57,7 +57,7 @@ describe('IMPULSE-EMITTER', () => {
 
     describe('After I have an instance without any information', () => {
         it('it should provide an empty object when the info is requested', () => {
-            const test = lib.getEmitter()
+            const test = lib.getInfo()
             expect(test).to.eql({})
         })
         it('it return true when checked as an empty object', () => {
@@ -72,23 +72,23 @@ describe('IMPULSE-EMITTER', () => {
         })
         it('it return false when trying to set an invalid emitter format', () => {
             EMITTER.BAD.forEach(emitter => {
-                const test = lib.setEmitter(emitter)
+                const test = lib.setInfo(emitter)
                 expect(test).to.be.equal(false)
                 expect(lib.__test__.validator.validateEmitter).to.have.been.called.with(emitter)
             })
         })
         it('it return true when trying to set an valid emitter format', () => {
-            const test = lib.setEmitter(EMITTER.GOOD[0])
+            const test = lib.setInfo(EMITTER.GOOD[0])
             expect(test).to.be.equal(true)
             expect(lib.__test__.validator.validateEmitter).to.have.been.called.with(EMITTER.GOOD[0])
         })
 
         describe('After having set a valid emitter', () => {
             beforeEach(() => {
-                lib.setEmitter(EMITTER.GOOD[0])
+                lib.setInfo(EMITTER.GOOD[0])
             })
             it('it should provide the good emitter information', () => {
-                const test = lib.getEmitter()
+                const test = lib.getInfo()
                 expect(test).to.eql(EMITTER.GOOD[0])
             })
     
@@ -107,7 +107,7 @@ describe('IMPULSE-EMITTER', () => {
             })
         
             it('it should provide an empty object when the info is requested', () => {
-                const test = lib.getEmitter()
+                const test = lib.getInfo()
                 expect(test).to.eql({})
             })
             it('it return true when checked as an empty object', () => {
@@ -122,23 +122,23 @@ describe('IMPULSE-EMITTER', () => {
             })
             it('it return false when trying to set an invalid emitter format', () => {
                 EMITTER.BAD.forEach(emitter => {
-                    const test = lib.setEmitter(emitter)
+                    const test = lib.setInfo(emitter)
                     expect(test).to.be.equal(false)
                     expect(lib.__test__.validator.validateEmitter).to.have.been.called.with(emitter)
                 })
             })
             it('it return true when trying to set an valid emitter format', () => {
-                const test = lib.setEmitter(EMITTER.GOOD[0])
+                const test = lib.setInfo(EMITTER.GOOD[0])
                 expect(test).to.be.equal(true)
                 expect(lib.__test__.validator.validateEmitter).to.have.been.called.with(EMITTER.GOOD[0])
             })
     
             describe('After having set a valid emitter', () => {
                 beforeEach(() => {
-                    lib.setEmitter(EMITTER.GOOD[0])
+                    lib.setInfo(EMITTER.GOOD[0])
                 })
                 it('it should provide the good emitter information', () => {
-                    const test = lib.getEmitter()
+                    const test = lib.getInfo()
                     expect(test).to.eql(EMITTER.GOOD[0])
                 })
         
@@ -152,7 +152,7 @@ describe('IMPULSE-EMITTER', () => {
         })
 
         it('it should provide the correct information object when the info is requested', () => {
-            const test = lib.getEmitter()
+            const test = lib.getInfo()
             expect(test).to.eql(EMITTER.GOOD[0])
         })
         it('it return true when checked as an empty object', () => {

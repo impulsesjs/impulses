@@ -54,7 +54,7 @@ const emitterClass = class EmitterClass {
          * @param {EmitterEntity} newEmitterInfo
          * @returns {Boolean}
          */
-        const setEmitter = newEmitterInfo => {
+        const setInfo = newEmitterInfo => {
             if (!validator.validateEmitter(newEmitterInfo)) {
                 return false
             }
@@ -67,7 +67,7 @@ const emitterClass = class EmitterClass {
          * 
          * @returns {Object}
          */
-        const getEmitter = () => {
+        const getInfo = () => {
             return Object.assign({}, info)
         }
 
@@ -93,7 +93,7 @@ const emitterClass = class EmitterClass {
         }
         
         initInternalId()
-        setEmitter(emitterInfo)
+        setInfo(emitterInfo)
 
         /**** Privileged Methods *************************************************************************************/
 
@@ -102,7 +102,7 @@ const emitterClass = class EmitterClass {
          * 
          * @returns {Boolean}
          */
-        this.setEmitter = (emitterInfo) => setEmitter(emitterInfo)
+        this.setInfo = (emitterInfo) => setInfo(emitterInfo)
 
         /**
          * Get the emitter internal ID
@@ -114,7 +114,7 @@ const emitterClass = class EmitterClass {
          * 
          * @returns {*}
          */
-        this.getEmitter = () => getEmitter()
+        this.getInfo = () => getInfo()
 
         /**
          * Check if the current Frequency is the same as the provided one
