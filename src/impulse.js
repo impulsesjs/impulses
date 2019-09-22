@@ -390,12 +390,12 @@ const impulse = class ImpulseApiClass {
          * 
          * @returns {string|boolean} missing property name or true
          */
-        const isValidEmitterInfo = (emitterInformation) => {
-            if (emitterInformation.constructor !== Object || !emitterInformation.emitter) {
-                return 'emitter'
-            }
-            return true
-        }
+        // const isValidEmitterInfo = (emitterInformation) => {
+        //     if (emitterInformation.constructor !== Object || !emitterInformation.emitter) {
+        //         return 'emitter'
+        //     }
+        //     return true
+        // }
 
         /**
          * Check if there are any frequencies set
