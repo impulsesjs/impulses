@@ -32,7 +32,7 @@ It will ignore the request if the information is not valid.
 It will return `boolean` representing the operation status.
 
 ```js
-let status = emitter1.setEmitter(emitterInfo)
+let status = emitter1.setInfo(emitterInfo)
 ```
 
 ### Get 

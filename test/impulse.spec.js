@@ -146,9 +146,9 @@ describe('IMPULSE', () => {
         })
 
         describe('When providing the wrong emitter information', () => {
-            it('it should raise an exception if the emmiter format is wrong', () => {
-                const test = () => lib.setEmitter(emitter_1_wrong)
-                expect(test).to.throw(TypeError)
+            it('it should false', () => {
+                const test = lib.setEmitter(emitter_1_wrong)
+                expect(test).to.be.equal(false)
             })
         })
 
@@ -163,7 +163,8 @@ describe('IMPULSE', () => {
             })
         
             it('it should have stored the emitter information', () => {
-                expect(lib.getEmitter()).to.be.equal(emitter_1)
+                const emitter = lib.getEmitter()
+                expect(emitter).to.be.eql(emitter_1)
             })
         })
 

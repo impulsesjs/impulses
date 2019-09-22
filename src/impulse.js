@@ -1,6 +1,7 @@
 'use strict'
 
 import Md5 from './md5'
+import EmitterClass from './impulse_/emitter'
 import FrequencyCollectionClass from './impulse_/frequency-collection'
 import FrequencyClass from './impulse_/frequency'
 
@@ -227,11 +228,11 @@ const impulse = class ImpulseApiClass {
          * @returns {true}
          */
         const setEmitter = (emitterInformation) => {
-            const validEmitterInfo = isValidEmitterInfo(emitterInformation)
-            if (validEmitterInfo !== true) {
-                throw new TypeError(`Invalid emitter information. Property ${validEmitterInfo} is missing`)
+            const emitter = new EmitterClass()
+            if (!emitter.setInfo(emitterInformation)) {
+                return false
             }
-            currentEmitter = emitterInformation
+            currentEmitter = emitter
             return true
         }
 
@@ -249,7 +250,7 @@ const impulse = class ImpulseApiClass {
          * @return {EmitterEntity|undefined}
          */
         const getEmitter = () => {
-            return currentEmitter
+            return currentEmitter ? currentEmitter.getInfo() : false;
         }
 
         /**
@@ -343,7 +344,7 @@ const impulse = class ImpulseApiClass {
         /**
          * Check if there is any message sent by the provided emitter
          * 
-         * @param {EmitterObject} emitterObject 
+         * @param {EmitterClass} emitterObject 
          * @return {boolean}
          */
         const hasEmitterSentHistoryInStack = (emitterObject) => {
@@ -389,12 +390,12 @@ const impulse = class ImpulseApiClass {
          * 
          * @returns {string|boolean} missing property name or true
          */
-        const isValidEmitterInfo = (emitterInformation) => {
-            if (emitterInformation.constructor !== Object || !emitterInformation.emitter) {
-                return 'emitter'
-            }
-            return true
-        }
+        // const isValidEmitterInfo = (emitterInformation) => {
+        //     if (emitterInformation.constructor !== Object || !emitterInformation.emitter) {
+        //         return 'emitter'
+        //     }
+        //     return true
+        // }
 
         /**
          * Check if there are any frequencies set
@@ -406,17 +407,17 @@ const impulse = class ImpulseApiClass {
         /**
          * Check if the emitter is already in the index
          * 
-         * @param {EmitterClass} emitterObject 
+         * @param {EmitterObject} emitterObject 
          * @return {boolean}
          */
         const isEmitterPresentInTheEmittersIndex = (emitterObject) => {
-            return !!communicationFlow.emitters.find(emitter => areTheSameEmitters(emitter, emitterObject))
+            return !!communicationFlow.emitters.find(emitter => emitter.isEqual(emitterObject))
         }
 
         /**
          * Check if it is the last emitter in the list
          * 
-         * @param {EmitterObject} emitterObject 
+         * @param {EmitterClass} emitterObject 
          * @return {boolean}
          */
         const isTheLastEmitterInTheIndexList = (emitterObject) => {
@@ -657,16 +658,21 @@ const impulse = class ImpulseApiClass {
 
         /**** Privileged Methods *************************************************************************************/
 
+        /** Current Emitter */
         this.setEmitter = (emitterInfo) => setEmitter(emitterInfo)
         this.hasEmitter = () => hasEmitter()
         this.getEmitter = () => getEmitter()
-        this.getKnownEmitters = () => getKnownEmitters()
 
+        /** Bus */
         this.setBus = (bus) => setBus(bus)
 
+        /** Frequenc(y/ies) management */
         this.addFrequency = (entity, channel) => addFrequency(entity, channel)
         this.hasFrequency = (entity, channel) => hasFrequencyFromBasic(entity, channel)
         this.isFrequencySet = () => isFrequencySet()
+
+        /** Emitter history (trace/log) */
+        this.getKnownEmitters = () => getKnownEmitters()
 
         this.subscribeTrace = (traceContent) => subscribeTrace(traceContent)
         this.cancelTrace = () => cancelTrace()
@@ -684,6 +690,17 @@ const impulse = class ImpulseApiClass {
         this.emit = () => emit()
         this.getEmitCount = () => getEmitCount()
         this.getLastEmitInfo = () => getLastEmitInfo()
+
+        /**** Test Area **********************************************************************************************/
+
+        if (process.env.NODE_ENV === 'test') {
+            // Allow unit test mocking
+            this.__test__ = {
+                impulse: impulse,
+                currentEmitter: currentEmitter,
+            }
+        }
+
     }
 
     /**** Prototype Methods ******************************************************************************************/
