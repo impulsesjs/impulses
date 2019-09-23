@@ -12,6 +12,7 @@ It is supposed to enable:
 - Impulse content management
 
 #### Impulse structure
+
 ```js
 {
     info: {
