@@ -119,10 +119,10 @@ const emitterClass = class EmitterClass {
         /**
          * Check if the current Frequency is the same as the provided one
          * 
-         * @param {EmitterClass}emitter
+         * @param {EmitterClass} emitter
          * @returns {boolean}
          */
-        this.isEqual = emitter => isEqual(emitter)
+        this.isEqual = emitter => isEqual(emitter.getInfo())
 
         /**** Test Area **********************************************************************************************/
 

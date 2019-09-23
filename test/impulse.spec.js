@@ -322,211 +322,212 @@ describe('IMPULSE', () => {
                             lib.addFrequency('ENTITY', 'CHANNEL')
                         })
 
-                        // describe('and the frequency was removed after', () => {
-                        //     it ('it should not emit any impulse', () => {
-                        //         busExistsFail = true
-                        //         const result = lib.emit()
-                        //         const emitCount = lib.getEmitCount()
-                        //         const emitters = lib.getKnownEmitters()
-                        //         expect(result).to.be.equal(false)
-                        //         expect(emitCount).to.be.equal(0)
-                        //         expect(emitters.length).to.be.equal(0)
-                        //     })
+                        describe('and the frequency was removed after', () => {
+                            it ('it should not emit any impulse', () => {
+                                busExistsFail = true
+                                const result = lib.emit()
+                                const emitCount = lib.getEmitCount()
+                                const emitters = lib.getKnownEmitters()
+                                expect(result).to.be.equal(false)
+                                expect(emitCount).to.be.equal(0)
+                                expect(emitters.length).to.be.equal(0)
+                            })
 
-                        //     describe('and a new emitter is set', () => {
-                        //         it ('it should not emit any impulse', () => {
-                        //             lib.setEmitter(emitter_2)
-                        //             busExistsFail = true
-                        //             const result = lib.emit()
-                        //             const emitCount = lib.getEmitCount()
-                        //             const emitters = lib.getKnownEmitters()
-                        //             expect(result).to.be.equal(false)
-                        //             expect(emitCount).to.be.equal(0)
-                        //             expect(emitters.length).to.be.equal(0)
-                        //         })
-                        //     })    
+                            describe('and a new emitter is set', () => {
+                                it ('it should not emit any impulse', () => {
+                                    lib.setEmitter(emitter_2)
+                                    busExistsFail = true
+                                    const result = lib.emit()
+                                    const emitCount = lib.getEmitCount()
+                                    const emitters = lib.getKnownEmitters()
+                                    expect(result).to.be.equal(false)
+                                    expect(emitCount).to.be.equal(0)
+                                    expect(emitters.length).to.be.equal(0)
+                                })
+                            })    
 
-                        //     describe('and a the emitter was used before (not the last)', () => {
-                        //         it ('it should not emit any impulse', () => {
-                        //             lib.emit()
-                        //             const emitCount1 = lib.getEmitCount()
-                        //             const emitters1 = lib.getKnownEmitters()
-                        //             expect(emitCount1).to.be.equal(1)
-                        //             expect(emitters1.length).to.be.equal(1)
+                            describe('and a the emitter was used before (not the last)', () => {
+                                it ('it should not emit any impulse', () => {
+                                    lib.emit()
+                                    const emitCount1 = lib.getEmitCount()
+                                    const emitters1 = lib.getKnownEmitters()
+                                    expect(emitCount1).to.be.equal(1)
+                                    expect(emitters1.length).to.be.equal(1)
 
-                        //             lib.setEmitter(emitter_2)
-                        //             lib.emit()
-                        //             const emitCount2 = lib.getEmitCount()
-                        //             const emitters2 = lib.getKnownEmitters()
-                        //             expect(emitCount2).to.be.equal(2)
-                        //             expect(emitters2.length).to.be.equal(2)
+                                    lib.setEmitter(emitter_2)
+                                    lib.emit()
+                                    const emitCount2 = lib.getEmitCount()
+                                    const emitters2 = lib.getKnownEmitters()
+                                    expect(emitCount2).to.be.equal(2)
+                                    expect(emitters2.length).to.be.equal(2)
 
-                        //             lib.setEmitter(emitter_1)
-                        //             busExistsFail = true
-                        //             const result = lib.emit()
-                        //             const emitCount3 = lib.getEmitCount()
-                        //             const emitters3 = lib.getKnownEmitters()
-                        //             expect(result).to.be.equal(false)
-                        //             expect(emitCount3).to.be.equal(2)
-                        //             expect(emitters3.length).to.be.equal(2)
-                        //         })
-                        //     })    
-                        // })
+                                    lib.setEmitter(emitter_1)
+                                    busExistsFail = true
+                                    const result = lib.emit()
+                                    const emitCount3 = lib.getEmitCount()
+                                    const emitters3 = lib.getKnownEmitters()
 
-                        // describe('and we try to send it twice', () => {
-                        //     it ('it should not add the same emitter twice in the index', () => {
-                        //         lib.emit()
-                        //         const emitCount1 = lib.getEmitCount()
-                        //         const result = lib.emit()
-                        //         const emitCount2 = lib.getEmitCount()
-                        //         const emitters = lib.getKnownEmitters()
-                        //         expect(result).to.be.equal(true)
-                        //         expect(emitters.length).to.be.equal(1)
-                        //         expect(emitCount2).to.be.equal(emitCount1 + 1)
-                        //     })
-                        // })
+                                    expect(result).to.be.equal(false)
+                                    expect(emitCount3).to.be.equal(2)
+                                    expect(emitters3.length).to.be.equal(2)
+                                })
+                            })    
+                        })
 
-                        // describe('and we try to send it twice and the frequency is removed after the first', () => {
-                        //     it ('it should not add the same emitter twice in the index', () => {
-                        //         lib.emit()
-                        //         const emitCount1 = lib.getEmitCount()
-                        //         busExistsFail = true
-                        //         const result = lib.emit()
-                        //         const emitCount2 = lib.getEmitCount()
-                        //         const emitters = lib.getKnownEmitters()
-                        //         expect(result).to.be.equal(false)
-                        //         expect(emitters.length).to.be.equal(1)
-                        //         expect(emitCount2).to.be.equal(emitCount1)
-                        //     })
-                        // })
+                        describe('and we try to send it twice', () => {
+                            it ('it should not add the same emitter twice in the index', () => {
+                                lib.emit()
+                                const emitCount1 = lib.getEmitCount()
+                                const result = lib.emit()
+                                const emitCount2 = lib.getEmitCount()
+                                const emitters = lib.getKnownEmitters()
+                                expect(result).to.be.equal(true)
+                                expect(emitters.length).to.be.equal(1)
+                                expect(emitCount2).to.be.equal(emitCount1 + 1)
+                            })
+                        })
+
+                        describe('and we try to send it twice and the frequency is removed after the first', () => {
+                            it ('it should not add the same emitter twice in the index', () => {
+                                lib.emit()
+                                const emitCount1 = lib.getEmitCount()
+                                busExistsFail = true
+                                const result = lib.emit()
+                                const emitCount2 = lib.getEmitCount()
+                                const emitters = lib.getKnownEmitters()
+                                expect(result).to.be.equal(false)
+                                expect(emitters.length).to.be.equal(1)
+                                expect(emitCount2).to.be.equal(emitCount1)
+                            })
+                        })
                         
-                        // describe('trace and debug flag are off', () => {
-                        //     it('it should not add any trace or debug to the content', () => {
-                        //         const result = lib.emit()
-                        //         const content = lib.getContent()
-                        //         const emitInfo = lib.getLastEmitInfo()
-                        //         expect(result).to.be.equal(true)
-                        //         expect(JSON.stringify(content)).to.be.equal(JSON.stringify(contentBlock1))
-                        //         expect(emitInfo.content).not.to.deep.include(content)
-                        //         expect(emitInfo.content).not.to.have.keys('trace', 'debug')
-                        //     })
-                        // })
+                        describe('trace and debug flag are off', () => {
+                            it('it should not add any trace or debug to the content', () => {
+                                const result = lib.emit()
+                                const content = lib.getContent()
+                                const emitInfo = lib.getLastEmitInfo()
+                                expect(result).to.be.equal(true)
+                                expect(JSON.stringify(content)).to.be.equal(JSON.stringify(contentBlock1))
+                                expect(emitInfo.content).not.to.deep.include(content)
+                                expect(emitInfo.content).not.to.have.keys('trace', 'debug')
+                            })
+                        })
     
-                        // describe('trace flag is on', () => {
-                        //     describe('with trace content', () => {
-                        //         beforeEach(() => {
-                        //             lib.subscribeTrace(traceContent)
-                        //         })
-                        //         it('it should add the trace to the content', () => {
-                        //             const result = lib.emit()
-                        //             const content = lib.getContent()
-                        //             const emitInfo = lib.getLastEmitInfo()
-                        //             expect(result).to.be.equal(true)
-                        //             expect(JSON.stringify(content)).to.be.equal(JSON.stringify(contentBlock1))
-                        //             expect(emitInfo.content).not.to.deep.include(content)
-                        //             expect(emitInfo.content).to.have.keys('trace')
-                        //             expect(emitInfo.content).not.to.have.keys('debug')
-                        //             expect(emitInfo.content.trace).to.include(traceContent)
-                        //         })                            
-                        //     })
-                        //     describe('with no trace content', () => {
-                        //         it('it should not add any trace content', () => {
-                        //             const result = lib.emit()
-                        //             const content = lib.getContent()
-                        //             const emitInfo = lib.getLastEmitInfo()
-                        //             expect(result).to.be.equal(true)
-                        //             expect(JSON.stringify(content)).to.be.equal(JSON.stringify(contentBlock1))
-                        //             expect(emitInfo.content).not.to.deep.include(content)
-                        //             expect(emitInfo.content).not.to.have.keys('trace', 'debug')
-                        //         })
-                        //     })
-                        // })
+                        describe('trace flag is on', () => {
+                            describe('with trace content', () => {
+                                beforeEach(() => {
+                                    lib.subscribeTrace(traceContent)
+                                })
+                                it('it should add the trace to the content', () => {
+                                    const result = lib.emit()
+                                    const content = lib.getContent()
+                                    const emitInfo = lib.getLastEmitInfo()
+                                    expect(result).to.be.equal(true)
+                                    expect(JSON.stringify(content)).to.be.equal(JSON.stringify(contentBlock1))
+                                    expect(emitInfo.content).not.to.deep.include(content)
+                                    expect(emitInfo.content).to.have.keys('trace')
+                                    expect(emitInfo.content).not.to.have.keys('debug')
+                                    expect(emitInfo.content.trace).to.include(traceContent)
+                                })                            
+                            })
+                            describe('with no trace content', () => {
+                                it('it should not add any trace content', () => {
+                                    const result = lib.emit()
+                                    const content = lib.getContent()
+                                    const emitInfo = lib.getLastEmitInfo()
+                                    expect(result).to.be.equal(true)
+                                    expect(JSON.stringify(content)).to.be.equal(JSON.stringify(contentBlock1))
+                                    expect(emitInfo.content).not.to.deep.include(content)
+                                    expect(emitInfo.content).not.to.have.keys('trace', 'debug')
+                                })
+                            })
+                        })
     
-                        // describe('debug flag is on', () => {
-                        //     describe('with debug content', () => {
-                        //         beforeEach(() => {
-                        //             lib.subscribeDebug(debugContent)
-                        //         })
-                        //         it('it should add the debug to the content', () => {
-                        //             const result = lib.emit()
-                        //             const content = lib.getContent()
-                        //             const emitInfo = lib.getLastEmitInfo()
-                        //             expect(result).to.be.equal(true)
-                        //             expect(JSON.stringify(content)).to.be.equal(JSON.stringify(contentBlock1))
-                        //             expect(emitInfo.content).not.to.deep.include(content)
-                        //             expect(emitInfo.content).to.have.keys('debug')
-                        //             expect(emitInfo.content).not.to.have.keys('trace')
-                        //             expect(emitInfo.content.debug).to.include(debugContent)
-                        //         })                            
-                        //     })
-                        //     describe('with no debug content', () => {
-                        //         it('it should not add any debug content', () => {
-                        //             const result = lib.emit()
-                        //             const content = lib.getContent()
-                        //             const emitInfo = lib.getLastEmitInfo()
-                        //             expect(result).to.be.equal(true)
-                        //             expect(JSON.stringify(content)).to.be.equal(JSON.stringify(contentBlock1))
-                        //             expect(emitInfo.content).not.to.deep.include(content)
-                        //             expect(emitInfo.content).not.to.have.keys('debug', 'trace')
-                        //         })
-                        //     })
-                        // })
+                        describe('debug flag is on', () => {
+                            describe('with debug content', () => {
+                                beforeEach(() => {
+                                    lib.subscribeDebug(debugContent)
+                                })
+                                it('it should add the debug to the content', () => {
+                                    const result = lib.emit()
+                                    const content = lib.getContent()
+                                    const emitInfo = lib.getLastEmitInfo()
+                                    expect(result).to.be.equal(true)
+                                    expect(JSON.stringify(content)).to.be.equal(JSON.stringify(contentBlock1))
+                                    expect(emitInfo.content).not.to.deep.include(content)
+                                    expect(emitInfo.content).to.have.keys('debug')
+                                    expect(emitInfo.content).not.to.have.keys('trace')
+                                    expect(emitInfo.content.debug).to.include(debugContent)
+                                })                            
+                            })
+                            describe('with no debug content', () => {
+                                it('it should not add any debug content', () => {
+                                    const result = lib.emit()
+                                    const content = lib.getContent()
+                                    const emitInfo = lib.getLastEmitInfo()
+                                    expect(result).to.be.equal(true)
+                                    expect(JSON.stringify(content)).to.be.equal(JSON.stringify(contentBlock1))
+                                    expect(emitInfo.content).not.to.deep.include(content)
+                                    expect(emitInfo.content).not.to.have.keys('debug', 'trace')
+                                })
+                            })
+                        })
     
-                        // describe('trace and debug flag are bothe on', () => {
-                        //     beforeEach(() => {
-                        //         lib.subscribeTrace(traceContent)
-                        //         lib.subscribeDebug(debugContent)
-                        //     })
-                        //     it('it should add both trace and debug to the content', () => {
-                        //         const result = lib.emit()
-                        //         const content = lib.getContent()
-                        //         const emitInfo = lib.getLastEmitInfo()
-                        //         expect(result).to.be.equal(true)
-                        //         expect(JSON.stringify(content)).to.be.equal(JSON.stringify(contentBlock1))
-                        //         expect(emitInfo.content).not.to.deep.include(content)
-                        //         expect(emitInfo.content).to.have.keys('trace', 'debug')
-                        //         expect(emitInfo.content.trace).to.include(traceContent)
-                        //         expect(emitInfo.content.debug).to.include(debugContent)                            
-                        //     })
-                        // })
+                        describe('trace and debug flag are bothe on', () => {
+                            beforeEach(() => {
+                                lib.subscribeTrace(traceContent)
+                                lib.subscribeDebug(debugContent)
+                            })
+                            it('it should add both trace and debug to the content', () => {
+                                const result = lib.emit()
+                                const content = lib.getContent()
+                                const emitInfo = lib.getLastEmitInfo()
+                                expect(result).to.be.equal(true)
+                                expect(JSON.stringify(content)).to.be.equal(JSON.stringify(contentBlock1))
+                                expect(emitInfo.content).not.to.deep.include(content)
+                                expect(emitInfo.content).to.have.keys('trace', 'debug')
+                                expect(emitInfo.content.trace).to.include(traceContent)
+                                expect(emitInfo.content.debug).to.include(debugContent)                            
+                            })
+                        })
                     })
                 })
             })
 
-            // describe('when frequency does not exist (or a new bus has been set)', () => {
-            //     beforeEach(() => {
-            //         lib.setBus(bus)
-            //         lib.setEmitter(emitter_1)
-            //         lib.addFrequency('ENTITY', 'CHANNEL')
-            //         lib.setContent(contentBlock1)
-            //         busExistsFail = true
-            //     })
+            describe('when frequency does not exist (or a new bus has been set)', () => {
+                beforeEach(() => {
+                    lib.setBus(bus)
+                    lib.setEmitter(emitter_1)
+                    lib.addFrequency('ENTITY', 'CHANNEL')
+                    lib.setContent(contentBlock1)
+                    busExistsFail = true
+                })
     
-            //     it('it should not add the same emitter to the index', () => {
-            //         const test = lib.emit()
-            //         const startKnownEmitters = lib.getKnownEmitters()
-            //         const result = lib.emit()
-            //         const endKnownEmitters = lib.getKnownEmitters()
-            //         expect(JSON.stringify(startKnownEmitters)).to.be.equal(JSON.stringify(endKnownEmitters))
-            //     })
-            // })
+                it('it should not add the same emitter to the index', () => {
+                    const test = lib.emit()
+                    const startKnownEmitters = lib.getKnownEmitters()
+                    const result = lib.emit()
+                    const endKnownEmitters = lib.getKnownEmitters()
+                    expect(JSON.stringify(startKnownEmitters)).to.be.equal(JSON.stringify(endKnownEmitters))
+                })
+            })
         })
 
-        // describe('when the impulse is emitted again', () => {
-        //     beforeEach(() => {
-        //         lib.setBus(bus)
-        //         lib.setEmitter(emitter_1)
-        //         lib.addFrequency('ENTITY', 'CHANNEL')
-        //         lib.setContent(contentBlock1)
-        //         lib.emit()
-        //     })
+        describe('when the impulse is emitted again', () => {
+            beforeEach(() => {
+                lib.setBus(bus)
+                lib.setEmitter(emitter_1)
+                lib.addFrequency('ENTITY', 'CHANNEL')
+                lib.setContent(contentBlock1)
+                lib.emit()
+            })
 
-        //     it('it should not add the same emitter to the index', () => {
-        //         const startKnownEmitters = lib.getKnownEmitters()
-        //         const result = lib.emit()
-        //         const endKnownEmitters = lib.getKnownEmitters()
-        //         expect(JSON.stringify(startKnownEmitters)).to.be.equal(JSON.stringify(endKnownEmitters))
-        //     })
-        // })
+            it('it should not add the same emitter to the index', () => {
+                const startKnownEmitters = lib.getKnownEmitters()
+                const result = lib.emit()
+                const endKnownEmitters = lib.getKnownEmitters()
+                expect(JSON.stringify(startKnownEmitters)).to.be.equal(JSON.stringify(endKnownEmitters))
+            })
+        })
     })
 })
