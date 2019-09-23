@@ -89,6 +89,9 @@ const impulse = class ImpulseApiClass {
             emitters: [],
         }
 
+        /** @type {Number} temporary control for the number of emitters */
+        let emittersCountForRolbackControl = 0
+
         /** @type {EmitterClass} */
         let currentEmitter = undefined
 
@@ -320,6 +323,7 @@ const impulse = class ImpulseApiClass {
          * @param {EmmiterClass} emitterObject 
          */
         const addToEmitersIndex = (emitterObject) => {
+            emittersCountForRolbackControl = communicationFlow.emitters.length
             if (!isEmitterPresentInTheEmittersIndex(emitterObject)) {
                 communicationFlow.emitters.push(emitterObject)
             }
@@ -329,7 +333,7 @@ const impulse = class ImpulseApiClass {
          * Rollback the last addition to the emitter index
          */
         const addToEmitersIndexRollBack = (emitterObject) => {
-            if (isTheLastEmitterInTheIndexList(emitterObject) && !hasEmitterSentHistoryInStack(emitterObject)) {
+            if (isTheLastEmitterInTheIndexList(emitterObject) && !hasEmitterSentHistoryInStack(emitterObject) && emittersCountForRolbackControl < communicationFlow.emitters.length) {
                 communicationFlow.emitters.pop()
             }
         }
@@ -411,7 +415,9 @@ const impulse = class ImpulseApiClass {
          * @return {boolean}
          */
         const isEmitterPresentInTheEmittersIndex = (emitterObject) => {
-            return !!communicationFlow.emitters.find(emitter => emitter.isEqual(emitterObject))
+            return !!communicationFlow.emitters.find(emitter => {
+                return emitter.isEqual(emitterObject)
+            })
         }
 
         /**
@@ -604,15 +610,18 @@ const impulse = class ImpulseApiClass {
             let emitted = 0;
             impulse.history = Object.assign({}, communicationFlow);
             /** @property {CommunicationBus} connectedBus */
-            getLastEmitInfo(false).info.frequencies.forEach((freq) => {
-                const entity = freq.entity
-                const channel = freq.channel
-                if (!!connectedBus.exists(entity, channel)) {
-                    const channelObj = connectedBus.get(entity, channel)
-                    freq.impulseId = channelObj.send(impulse)
-                    emitted++
-                }
-            })
+            const emit = getLastEmitInfo(false)
+            if (emit && emit.info && emit.info.frequencies) {
+                emit.info.frequencies.each((freq) => {
+                    const entity = freq.getEntity()
+                    const channel = freq.getChannel()
+                    if (!!connectedBus.exists(entity, channel)) {
+                        const channelObj = connectedBus.get(entity, channel)
+                        freq.impulseId = channelObj.send(impulse)
+                        emitted++
+                    }
+                })
+            }
 
             if (!emitted) {
                 rollback()
@@ -623,7 +632,7 @@ const impulse = class ImpulseApiClass {
 
         const executeTransaction = (action, rollback) => {
             if (hasBus() && isFrequencySet() && hasEmitter()) {
-                setEmitterId(currentEmitter.emitter)
+                setEmitterId(currentEmitter.getId())
                 addToEmitersIndex(currentEmitter)
                 setImpulseSignature()
                 setImpulseHistory()
@@ -697,6 +706,7 @@ const impulse = class ImpulseApiClass {
             // Allow unit test mocking
             this.__test__ = {
                 impulse: impulse,
+                communicationFlow: communicationFlow,
                 currentEmitter: currentEmitter,
             }
         }

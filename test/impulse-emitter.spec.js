@@ -61,13 +61,13 @@ describe('IMPULSE-EMITTER', () => {
             expect(test).to.eql({})
         })
         it('it return true when checked as an empty object', () => {
-            const test1 = lib.isEqual({})
-            const test2 = lib.isEqual({version: '1.0'})
+            const test1 = lib.isEqual(new classToTest())
+            const test2 = lib.isEqual(new classToTest({version: '1.0'}))
             expect(test1).to.be.equal(true)
-            expect(test2).to.be.equal(false)
+            expect(test2).to.be.equal(true)
         })
         it('it return false when checked as an non empty object', () => {
-            const test = lib.isEqual({version: '1.0'})
+            const test = lib.isEqual(new classToTest({version: '1.0', emitter: 'ME'}))
             expect(test).to.be.equal(false)
         })
         it('it return false when trying to set an invalid emitter format', () => {
@@ -90,8 +90,7 @@ describe('IMPULSE-EMITTER', () => {
             it('it should provide the good emitter information', () => {
                 const test = lib.getInfo()
                 expect(test).to.eql(EMITTER.GOOD[0])
-            })
-    
+            })    
         })
     })
 
@@ -111,13 +110,13 @@ describe('IMPULSE-EMITTER', () => {
                 expect(test).to.eql({})
             })
             it('it return true when checked as an empty object', () => {
-                const test1 = lib.isEqual({})
-                const test2 = lib.isEqual({att1: '1', att2: '2', att3: '3'})
+                const test1 = lib.isEqual(new classToTest({}))
+                const test2 = lib.isEqual(new classToTest({att1: '1', att2: '2', att3: '3'}))
                 expect(test1).to.be.equal(true)
-                expect(test2).to.be.equal(false)
+                expect(test2).to.be.equal(true)
             })
             it('it return false when checked as an non empty object', () => {
-                const test = lib.isEqual({version: '1.0'})
+                const test = lib.isEqual(new classToTest({version: '1.0', emitter: 'TEST'}))
                 expect(test).to.be.equal(false)
             })
             it('it return false when trying to set an invalid emitter format', () => {
@@ -156,12 +155,12 @@ describe('IMPULSE-EMITTER', () => {
             expect(test).to.eql(EMITTER.GOOD[0])
         })
         it('it return true when checked as an empty object', () => {
-            const test = lib.isEqual({})
+            const test = lib.isEqual(new classToTest({}))
             expect(test).to.be.equal(false)
         })
         it('it return false when checked as an non empty and different object', () => {
             EMITTER.BAD.forEach(emitter => {
-                const test = lib.isEqual(emitter)
+                const test = lib.isEqual(new classToTest(emitter))
                 expect(test).to.be.equal(false)
             })
         })
