@@ -50,14 +50,17 @@ An impulse object will be available by instatiation, with no information, or pro
 
 #### By Definition
 *Example 1*
+
 ```js
 let impulse = new Impulse(emitterId, entityName, channelName)
 ```
 *Example 2*
+
 ```js
 let impulse = new Impulse(emitterId, {entity: entityName, channel: channelName})
 ```
 *Example 3*
+
 ```js
 let impulse = new Impulse(emitterId, [
     {entity: entityNameA, channel: channelNameA_A}
@@ -66,6 +69,7 @@ let impulse = new Impulse(emitterId, [
 ])
 ```
 *Example 4*
+
 ```js
 let impulse = new Impulse(emitterId, [
     {entity: entityNameA, channels: [channelNameA_A, channelNameA_B]}
@@ -76,6 +80,7 @@ let impulse = new Impulse(emitterId, [
 #### Interactively
 
 *Example 1*
+
 ```js
 let impulse = new Impulse()
 // Sets the Emitter ID
@@ -84,6 +89,7 @@ impulse.setEmitterId(emitterId)
 impulse.addChannel(entityName, channelName)
 ```
 *Example 2*
+
 ```js
 let impulse = new Impulse(emitterId)
 // Adds a channel to send the impulse
@@ -91,6 +97,7 @@ impulse.addChannel(entityName, channelName)
 ```
 
 #### Add channel to send impulse
+
 ```js
 impulse.addChannel(entityName, channelName)
 ```
@@ -98,17 +105,20 @@ impulse.addChannel(entityName, channelName)
 ### Content Management
 
 #### Add/Set content
+
 ```js
 impulse.setContent(partName, partContent)
 ```
 
 #### Get content
+
 ```js
 let contentPart = impulse.getContent(partName)
 let allContent = impulse.getContent()
 ```
 
 #### Remove content
+
 ```js
 impulse.removeContent(partName)
 ```
@@ -116,6 +126,7 @@ impulse.removeContent(partName)
 ### Traceability management
 
 #### Traceability set & unset
+
 ```js
 // Keep trace information
 impulse.doTrace()
@@ -131,6 +142,7 @@ impulse.noRemoteTrace()
 ### Debug management
 
 #### Debug set & unset
+
 ```js
 // Keep trace information
 impulse.doDebug()
