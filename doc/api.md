@@ -10,6 +10,7 @@ This class will be responsible to provide methods as registration, send messages
 
 #### Currently 
 Currently the message structure is very simple and it is just composed by the message itself. The channel and entity are requested through the method arguments.
+
 ```js
 {message: ...}
 ```
@@ -18,6 +19,7 @@ Currently the message structure is very simple and it is just composed by the me
 It is our intention to make the message a little more structured and allowing other capabilities like traceability and encryption.
 
 For this we will need to have ready the message class that will be responsible for the message structure and capabilities.
+
 ```js
 {
     head: {
@@ -45,11 +47,13 @@ For this we will need to have ready the message class that will be responsible f
 It is possible to prepare the new instance by configuration or interactively
 
 #### By Configuration
+
 ```js
 let api = new Api(varConfiguration, varPublicBus, varPrivateBus)
 ```
 
 #### Interactive
+
 ```js
 let api = new Api()
 
@@ -67,11 +71,13 @@ api.registerPrivate(privateChannelsConfiguration)
 ```
 
 #### Get identification
+
 ```js
 cost apiId = api.getId()
 ```
 
 #### Verification
+
 ```js
 // Check if public bus is set
 api.hasPublic()
@@ -81,6 +87,7 @@ api.hasPrivate()
 ```
 
 #### Send messages
+
 ```js
 // send a message to a public channel
 let firstMessageId = api.sendPublic(entity, channel, message)
@@ -90,6 +97,7 @@ let secondMessageId = api.sendPrivate(entity, channel, message)
 ```
 
 #### Discovery
+
 ```js
 // Check if the channel exists (in both private and public)
 let status = bus.exists(entityName, channelName)
