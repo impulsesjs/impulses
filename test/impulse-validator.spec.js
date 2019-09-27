@@ -13,6 +13,9 @@ let lib,
     emit,
     frequency
 
+// Mock of an EmitterClass for type check
+class EmitterClass {}
+
 const impulseTemplate =  {
     id: 'impulseID', // Internal impulse ID / signature
     info: {
@@ -74,6 +77,11 @@ describe('IMPULSE-VALIDATOR', () => {
                 const test = lib.validateEmit(emit)
                 expect(test).to.be.equal(true)
             })
+            it('it should fail when time is not an object', () => {
+                emit = 'not an object'
+                const test = lib.validateEmit(emit)
+                expect(test).to.be.equal(false)
+            })
             it('it should fail when time is not defined', () => {
                 delete(emit.time)
                 const test = lib.validateEmit(emit)
@@ -110,7 +118,14 @@ describe('IMPULSE-VALIDATOR', () => {
             beforeEach(() => {
                 emitter = Object.assign({}, emitterTemplate)
             })
-
+            it('it should succeed when the type is valid', () => {
+                const test = lib.validateEmitterType(new EmitterClass())
+                expect(test).to.be.equal(true)
+            })
+            it('it should fail when the type is invalid', () => {
+                const test = lib.validateEmitterType(emitter)
+                expect(test).to.be.equal(false)
+            })
             it('it should succeed when valid', () => {
                 const test = lib.validateEmitter(emitter)
                 expect(test).to.be.equal(true)

@@ -102,6 +102,16 @@ const impulseValidationHelper = class ImpulseValidationHelperClass {
         // }
 
         /**
+         * Validates if the provided emitter is the correct type
+         * @param {EmitterClass} emitter 
+         * @returns {Boolean}
+         */
+        const validateEmitterType = emitter => {
+            if (typeof emitter !== 'object' || emitter.constructor.name !== 'EmitterClass') return false
+            return true;
+        }
+
+        /**
          * 
          * @param {Object} emitter 
          */
@@ -115,9 +125,10 @@ const impulseValidationHelper = class ImpulseValidationHelperClass {
 
         /**** Privileged Methods *************************************************************************************/
 
-        this.validateImpulse = impulse => validate(impulse)
+        // this.validateImpulse = impulse => validate(impulse)
         this.validateFrequency = freqeuency => validateFrequency(freqeuency)
         this.validateEmit = emit => validateEmit(emit)
+        this.validateEmitterType = emitter => validateEmitterType(emitter)
         this.validateEmitter = emitter => validateEmitter(emitter)
     }
 
