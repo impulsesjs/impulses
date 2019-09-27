@@ -85,9 +85,9 @@ const impulseValidationHelper = class ImpulseValidationHelperClass {
         const validateEmit = emit => {
             try {
                 validateEmitType(emit)
-                validateEmitTime(emit)
-                validateEmitInfo(emit)
-                validateEmitContent(emit)
+                validateIfDate(emit.time)
+                validateIfObject(emit.info)
+                validateIfObject(emit.content)
                 return true
             } catch (error) {
                 return false
@@ -95,27 +95,15 @@ const impulseValidationHelper = class ImpulseValidationHelperClass {
         }
 
         const validateEmitType = emit => {
-            if (typeof emit !== 'object') {
-                throw new TypeError()
-            }
+            if (typeof emit !== 'object') throw new TypeError()
         }
 
-        const validateEmitTime = emit => {
-            if (!emit.time || emit.time.constructor !== Date) {
-                throw new TypeError()
-            }
+        const validateIfDate = toValidate => {
+            if (!toValidate|| toValidate.constructor !== Date) throw new TypeError()
         }
 
-        const validateEmitInfo = emit => {
-            if (!emit.info || typeof emit.info !== 'object') {
-                throw new TypeError()
-            }
-        }
-
-        const validateEmitContent = emit => {
-            if (!emit.content || typeof emit.content !== 'object') {
-                throw new TypeError()
-            }
+        const validateIfObject = toValidate => {
+            if (typeof toValidate === 'undefined' || typeof toValidate !== 'object') throw new TypeError()
         }
 
         // const validateInfoHistoryEmitters = emitters => {
