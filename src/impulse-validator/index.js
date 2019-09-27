@@ -6,6 +6,18 @@ const impulseValidationHelper = class ImpulseValidationHelperClass {
 
         /**** Private Methods ****************************************************************************************/
 
+        const validateIfDate = toValidate => {
+            if (!toValidate|| toValidate.constructor !== Date) throw new TypeError()
+        }
+
+        const validateIfObject = toValidate => {
+            if (typeof toValidate === 'undefined' || typeof toValidate !== 'object') throw new TypeError()
+        }
+
+        const validateIfString = toValidate => {
+            if (typeof toValidate === 'undefined' || typeof toValidate !== 'string') throw new TypeError()
+        }
+
         // const validate = impulse => {
         //     if (!impulse.id || typeof impulse.id !== 'string') return false
         //     if (!impulse.info || typeof impulse.info !== 'object') return false
@@ -38,12 +50,14 @@ const impulseValidationHelper = class ImpulseValidationHelperClass {
         // }
 
         const validateFrequency = ferquency => {
-            if (typeof ferquency !== 'object' ||
-                (!ferquency.entity || typeof ferquency.entity !== 'string') ||
-                (!ferquency.channel || typeof ferquency.channel !== 'string')) {
+            try {
+                validateIfObject(ferquency)
+                validateIfString(ferquency.entity)
+                validateIfString(ferquency.channel)
+                return true
+            } catch (error) {
                 return false
             }
-            return true
         }
 
         // const validateInfoReply = reply => {
@@ -84,7 +98,7 @@ const impulseValidationHelper = class ImpulseValidationHelperClass {
 
         const validateEmit = emit => {
             try {
-                validateEmitType(emit)
+                validateIfObject(emit)
                 validateIfDate(emit.time)
                 validateIfObject(emit.info)
                 validateIfObject(emit.content)
@@ -92,18 +106,6 @@ const impulseValidationHelper = class ImpulseValidationHelperClass {
             } catch (error) {
                 return false
             }
-        }
-
-        const validateEmitType = emit => {
-            if (typeof emit !== 'object') throw new TypeError()
-        }
-
-        const validateIfDate = toValidate => {
-            if (!toValidate|| toValidate.constructor !== Date) throw new TypeError()
-        }
-
-        const validateIfObject = toValidate => {
-            if (typeof toValidate === 'undefined' || typeof toValidate !== 'object') throw new TypeError()
         }
 
         // const validateInfoHistoryEmitters = emitters => {
@@ -133,12 +135,14 @@ const impulseValidationHelper = class ImpulseValidationHelperClass {
          * @param {Object} emitter 
          */
         const validateEmitter = emitter => {
-            if (typeof emitter !== 'object' ||
-                (!emitter.emitter || typeof emitter.emitter !== 'string') ||
-                (!emitter.version || typeof emitter.version !== 'string')) {
+            try {
+                validateIfObject(emitter)
+                validateIfString(emitter.emitter)
+                validateIfString(emitter.version)
+                return true
+            } catch (error) {
                 return false
             }
-            return true;
         }
 
         /**** Privileged Methods *************************************************************************************/
