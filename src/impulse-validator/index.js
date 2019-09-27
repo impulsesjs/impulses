@@ -83,13 +83,39 @@ const impulseValidationHelper = class ImpulseValidationHelperClass {
         // }
 
         const validateEmit = emit => {
-            if (typeof emit !== 'object' ||
-                (!emit.time || emit.time.constructor !== Date) ||
-                (!emit.info || typeof emit.info !== 'object') ||
-                (!emit.content || typeof emit.content !== 'object')) {
+            try {
+                validateEmitType(emit)
+                validateEmitTime(emit)
+                validateEmitInfo(emit)
+                validateEmitContent(emit)
+                return true
+            } catch (error) {
                 return false
             }
-            return true;
+        }
+
+        const validateEmitType = emit => {
+            if (typeof emit !== 'object') {
+                throw new TypeError()
+            }
+        }
+
+        const validateEmitTime = emit => {
+            if (!emit.time || emit.time.constructor !== Date) {
+                throw new TypeError()
+            }
+        }
+
+        const validateEmitInfo = emit => {
+            if (!emit.info || typeof emit.info !== 'object') {
+                throw new TypeError()
+            }
+        }
+
+        const validateEmitContent = emit => {
+            if (!emit.content || typeof emit.content !== 'object') {
+                throw new TypeError()
+            }
         }
 
         // const validateInfoHistoryEmitters = emitters => {
