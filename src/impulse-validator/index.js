@@ -38,9 +38,11 @@ const impulseValidationHelper = class ImpulseValidationHelperClass {
         // }
 
         const validateFrequency = ferquency => {
-            if (!ferquency.entity || typeof ferquency.entity !== 'string') return false
-            if (!ferquency.channel || typeof ferquency.channel !== 'string') return false
-
+            if (typeof ferquency !== 'object' ||
+                (!ferquency.entity || typeof ferquency.entity !== 'string') ||
+                (!ferquency.channel || typeof ferquency.channel !== 'string')) {
+                return false
+            }
             return true
         }
 
@@ -81,11 +83,12 @@ const impulseValidationHelper = class ImpulseValidationHelperClass {
         // }
 
         const validateEmit = emit => {
-            if (typeof emit !== 'object') return false
-            if (!emit.time || emit.time.constructor !== Date ) return false
-            if (!emit.info || typeof emit.info !== 'object') return false
-            if (!emit.content || typeof emit.content !== 'object') return false
-
+            if (typeof emit !== 'object' ||
+                (!emit.time || emit.time.constructor !== Date) ||
+                (!emit.info || typeof emit.info !== 'object') ||
+                (!emit.content || typeof emit.content !== 'object')) {
+                return false
+            }
             return true;
         }
 
@@ -116,10 +119,11 @@ const impulseValidationHelper = class ImpulseValidationHelperClass {
          * @param {Object} emitter 
          */
         const validateEmitter = emitter => {
-            if (typeof emitter !== 'object') return false
-            if (!emitter.emitter || typeof emitter.emitter !== 'string') return false
-            if (!emitter.version || typeof emitter.version !== 'string') return false
-
+            if (typeof emitter !== 'object' ||
+                (!emitter.emitter || typeof emitter.emitter !== 'string') ||
+                (!emitter.version || typeof emitter.version !== 'string')) {
+                return false
+            }
             return true;
         }
 
