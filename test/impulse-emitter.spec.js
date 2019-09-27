@@ -37,10 +37,14 @@ const EMITTER = {
         },
     ]
 }
-
+// let validatorResult = false
 describe('IMPULSE-EMITTER', () => {
     beforeEach(() => {
         lib = new classToTest()
+        // lib.__test__.validator = {
+        //     validateEmitter: () => validatorResult
+        // }
+
         sandbox.on(lib.__test__.validator, ['validateEmitter']);
     })
 

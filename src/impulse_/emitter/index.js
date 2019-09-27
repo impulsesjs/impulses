@@ -71,26 +71,34 @@ const emitterClass = class EmitterClass {
             return Object.assign({}, info)
         }
 
-        const isEqual = infoCheck => {
-            let equal = true
-            if (Object.keys(info).length !== Object.keys(infoCheck).length) {
+        const checkObjectKeysEquality = (objA, objB) => {
+            const objAKeys = Object.keys(objA)
+            const objBKeys = Object.keys(objB)
+            if (objAKeys.length !== objBKeys.length) {
                 return false
             }
-
-            Object.keys(info).forEach(attribute => {
-                if (!infoCheck[attribute] || info[attribute] !== infoCheck[attribute]) {
-                    equal = false;
-                }
-            })
-
-            Object.keys(infoCheck).forEach(attribute => {
-                if (!info[attribute] || info[attribute] !== infoCheck[attribute]) {
-                    equal = false;
-                }
-            })
-
-            return equal;
+            const keyResult = objAKeys.filter(key => (objBKeys.indexOf(key) >= 0))
+            return (keyResult.length !== objAKeys.length) ? false : true
         }
+
+        const checkObjectEquality = (objA, objB) => {
+            let equal = true
+            Object.keys(objA).forEach(attribute => {
+                if (!objB[attribute] || objA[attribute] !== objB[attribute]) {
+                    equal = false;
+                }
+            })
+            return equal
+        }
+
+        const isEqual = emitterInfo => {
+            if (!checkObjectKeysEquality(info, emitterInfo)) {
+                return false
+            }
+            return checkObjectEquality(info, emitterInfo)
+        }
+
+
         
         initInternalId()
         setInfo(emitterInfo)
@@ -122,7 +130,7 @@ const emitterClass = class EmitterClass {
          * @param {EmitterClass} emitter
          * @returns {boolean}
          */
-        this.isEqual = emitter => isEqual(emitter.getInfo())
+        this.isEqual = emitter => validator.validateEmitterType(emitter) ? isEqual(emitter.getInfo()) : false
 
         /**** Test Area **********************************************************************************************/
 
