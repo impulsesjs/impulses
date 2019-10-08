@@ -12,6 +12,12 @@ defaults: &defaults
     - image: circleci/node:8
       environment:
           NODE_ENV: test
+  steps:
+    - run:
+        name: Setup Code Climate test-reporter
+        command: |
+          curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+          chmod +x ./cc-test-reporter
 
 jobs:
   install:
@@ -53,11 +59,9 @@ jobs:
       - attach_workspace:
           at: ~/project
       - run:
-          name: Setup Code Climate test-reporter
+          name: Initialize Code Climate Report Tool
           command: |
             if [[ -z $CI_PULL_REQUEST ]]; then
-              curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-              chmod +x ./cc-test-reporter
               /cc-test-reporter before-build
             fi
       - run: 
