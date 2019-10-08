@@ -266,10 +266,7 @@ const channel = class ChannelClass {
             const listener = listenerQ.get(id)
             endQueueProcessing()
             if (listener === null) {
-                if (typeof callback === 'function') {
-                    return callback()
-                }
-                return null
+                return callback()
             } else {
                 return listener.data
             }
