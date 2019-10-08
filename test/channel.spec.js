@@ -192,6 +192,16 @@ describe('Given an instance of channel', () => {
     describe('After I have added an invalid listener while channel is active', () => {
         let id
 
+        it('it should not return an queue id when no listener is provided', () => {
+            id = lib.addListener()
+            expect(id).to.be.equal(false)
+        })
+
+        it('it should not return an queue id when listener without id is provided', () => {
+            id = lib.addListener({})
+            expect(id).to.be.equal(false)
+        })
+
         it('it should not return an queue id', () => {
             id = lib.addListener(invalidListener_noListener)
             expect(id).to.be.equal(false)
@@ -219,6 +229,10 @@ describe('Given an instance of channel', () => {
             lib.send(message1)
         })
 
+        it('should exist before the second message', () => {
+            expect(lib.listenerInfo(id)).to.be.not.equal(null)
+        })
+
         it('should work 2 times but not 3 (2#2)', (done) => {
             lib.removeListener(id) // removing the previous hook
             listenerDynamic1.listener = function (message) {
@@ -237,6 +251,12 @@ describe('Given an instance of channel', () => {
         })
     })
 
+    describe('After I have added a listener with limited life time', () => {
+        it('should not work due to listener not being a function',  () => {
+            console.log(lib.listenerInfo('INVALID_ID'))
+            expect(lib.listenerInfo('INVALID_ID')).to.be.equal(null)
+        })
+    })
 
     describe('After I have added a listener with limited life time (1)', () => {
         let id
@@ -261,7 +281,7 @@ describe('Given an instance of channel', () => {
 
     // describe('After I have instantiated a channel in hold mode', () => {
     //     let id, msgId
-    //
+    
     //     it('should be possible to get the message info',  () => {
     //         let test = new Channel('SOME.NAME', true)
     //         msgId = test.send(message1)

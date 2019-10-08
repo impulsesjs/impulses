@@ -78,6 +78,14 @@ describe('Given an instance of queue', () => {
             expect(valuesMock.spy.destroy.called).to.be.true
             expect(res).to.be.true
         })
+
+        it('it should return true if queue destroy null value', () => {
+            queueMock.return.indexOf = 1
+            valuesMock.return.destroy = null;
+            let res = lib.cancel(id)
+            expect(queueMock.spy.indexOf.called).to.be.true
+            expect(res).to.be.true
+        })
     })
 
     describe('After I have canceled an invalid id', () => {
