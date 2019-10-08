@@ -52,13 +52,26 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/project
-      - run: npm run test:cov
+      - run:
+          name: Setup Code Climate test-reporter
+          command: |
+            if [[ -z $CI_PULL_REQUEST ]]; then
+              curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+              chmod +x ./cc-test-reporter
+              /cc-test-reporter before-build
+            fi
+      - run: 
+          name: Build Coverage Report
+          command: |
+            npm run test:cov
+            export COVERAGE_EXIT_CODE="$?"
       - run:
           name: Report coverage stats for non-PRs
           command: |
             if [[ -z $CI_PULL_REQUEST ]]; then
               cat ./coverage/lcov.info | ./node_modules/.bin/codecov
               cat ./coverage/lcov.info | ./node_modules/.bin/codacy-coverage
+              /cc-test-reporter after-build --exit-code $COVERAGE_EXIT_CODE
             fi
 
 workflows:
