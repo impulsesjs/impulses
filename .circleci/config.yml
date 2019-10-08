@@ -60,9 +60,6 @@ jobs:
               chmod +x ./cc-test-reporter
               ./cc-test-reporter before-build
             fi
-      - run:
-          name: Initialize Code Climate Report Tool
-          command: |
       - run: 
           name: Build Coverage Report
           command: |
