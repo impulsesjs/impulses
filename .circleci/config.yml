@@ -71,7 +71,7 @@ jobs:
             if [[ -z $CI_PULL_REQUEST ]]; then
               cat ./coverage/lcov.info | ./node_modules/.bin/codecov
               cat ./coverage/lcov.info | ./node_modules/.bin/codacy-coverage
-              ./cc-test-reporter after-build --exit-code $COVERAGE_EXIT_CODE
+              ./cc-test-reporter after-build --exit-code 0
             fi
 
 workflows:
