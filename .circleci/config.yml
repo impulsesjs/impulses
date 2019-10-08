@@ -16,6 +16,7 @@ defaults: &defaults
     - run:
         name: Setup Code Climate test-reporter
         command: |
+          echo "Setup Code Climate test-reporter"
           curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
           chmod +x ./cc-test-reporter
 
@@ -26,12 +27,12 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v1-lib-{{ .Branch }}-{{ checksum "package-lock.json" }}
-            - v1-lib-{{ .Branch }}-
-            - v1-lib-
+            - v2-lib-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - v2-lib-{{ .Branch }}-
+            - v2-lib-
       - run: npm install
       - save_cache:
-          key: v1-lib-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          key: v2-lib-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
             - node_modules/
       - persist_to_workspace:
