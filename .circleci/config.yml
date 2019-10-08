@@ -12,13 +12,6 @@ defaults: &defaults
     - image: circleci/node:8
       environment:
           NODE_ENV: test
-  steps:
-    - run:
-        name: Setup Code Climate test-reporter
-        command: |
-          echo "Setup Code Climate test-reporter"
-          curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-          chmod +x ./cc-test-reporter
 
 jobs:
   install:
@@ -27,12 +20,12 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v2-lib-{{ .Branch }}-{{ checksum "package-lock.json" }}
-            - v2-lib-{{ .Branch }}-
-            - v2-lib-
+            - v1-lib-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - v1-lib-{{ .Branch }}-
+            - v1-lib-
       - run: npm install
       - save_cache:
-          key: v2-lib-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          key: v1-lib-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
             - node_modules/
       - persist_to_workspace:
@@ -60,11 +53,16 @@ jobs:
       - attach_workspace:
           at: ~/project
       - run:
-          name: Initialize Code Climate Report Tool
+          name: Setup Code Climate test-reporter
           command: |
             if [[ -z $CI_PULL_REQUEST ]]; then
-              /cc-test-reporter before-build
+              curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+              chmod +x ./cc-test-reporter
+              ./cc-test-reporter before-build
             fi
+      - run:
+          name: Initialize Code Climate Report Tool
+          command: |
       - run: 
           name: Build Coverage Report
           command: |
@@ -76,7 +74,7 @@ jobs:
             if [[ -z $CI_PULL_REQUEST ]]; then
               cat ./coverage/lcov.info | ./node_modules/.bin/codecov
               cat ./coverage/lcov.info | ./node_modules/.bin/codacy-coverage
-              /cc-test-reporter after-build --exit-code $COVERAGE_EXIT_CODE
+              ./cc-test-reporter after-build --exit-code $COVERAGE_EXIT_CODE
             fi
 
 workflows:
