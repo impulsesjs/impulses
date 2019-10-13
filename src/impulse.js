@@ -170,7 +170,6 @@ const impulse = class ImpulseApiClass {
          * Generate the Unique ID for the provided target
          *
          * @param {*} serializeTarget Target to be serialized
-         * 
          * @return {string} Generated Unique ID
          */
         const generateId = (serializeTarget) => {
@@ -216,7 +215,7 @@ const impulse = class ImpulseApiClass {
         /**
          * Sets the Emitter
          * 
-         * @param {EmitterEntity} emitter EmitterClass Instance
+         * @param {EmitterClass} emitter EmitterClass Instance
          */
         const setEmitter = (emitter) => {
             impulse.info.emitter = emitter
@@ -225,10 +224,9 @@ const impulse = class ImpulseApiClass {
         /**
          * Sets the current Emitter Information
          * 
-         * @param {EmitterEntity} emitterInformation 
-         * 
          * @throws {TypeError}
          * 
+         * @param {EmitterEntity} emitterInformation 
          * @return {true}
          */
         const setCurrentEmitter = (emitterInformation) => {
@@ -243,7 +241,7 @@ const impulse = class ImpulseApiClass {
         /**
          * Get the currently set emitter
          * 
-         * @return {EmitterEntity|false} False if no emitter
+         * @return {EmitterClass|false} False if no emitter
          */
         const getEmitter = () => {
             return currentEmitter ? currentEmitter : false;
@@ -251,7 +249,8 @@ const impulse = class ImpulseApiClass {
 
         /**
          * Get the known emitter list
-         * @return {EmitterEntity[]}
+         * 
+         * @return {EmitterClass[]}
          */
         const getKnownEmitters = () => {
             return communicationFlow.emitters.slice()
@@ -259,6 +258,7 @@ const impulse = class ImpulseApiClass {
 
         /**
          * Set a Communication Bus to emit impulses
+         * 
          * @param {CommunicationBus} bus
          */
         const setBus = (bus) => {
@@ -270,7 +270,6 @@ const impulse = class ImpulseApiClass {
          * 
          * @param {string} entityName 
          * @param {string} channelName 
-         * 
          * @return {boolean}
          */
         const addFrequency = (entityName, channelName) => {
@@ -380,7 +379,6 @@ const impulse = class ImpulseApiClass {
          * 
          * @param {string} entityName 
          * @param {string} channelName 
-         * 
          * @return {boolean}
          */
         const hasFrequencyFromBasic = (entityName, channelName) => {
@@ -449,7 +447,6 @@ const impulse = class ImpulseApiClass {
          * Sets the trace Information
          * 
          * @param {Object} traceContent 
-         * 
          * @return {boolean}
          */
         const subscribeTrace = (traceContent) => {
@@ -465,7 +462,6 @@ const impulse = class ImpulseApiClass {
          * Sets the debug Information
          * 
          * @param {Object} debugContent 
-         * 
          * @return {boolean}
          */
         const subscribeDebug = (debugContent) => {
@@ -548,7 +544,6 @@ const impulse = class ImpulseApiClass {
          * Gets the last emit in the stack
          * 
          * @param {boolean} [clone=true] To get a clone from the master
-         * 
          * @return {Object|undefined}
          */
         const getLastEmitInfo = (clone = true) => {
@@ -645,11 +640,38 @@ const impulse = class ImpulseApiClass {
         /**** Privileged Methods *************************************************************************************/
 
         /** Current Emitter */
+
+        /**
+         * Sets the current Emitter Information
+         * 
+         * @throws {TypeError}
+
+         * @param {EmitterEntity} emitterInformation 
+         * @return {true}
+         */
         this.setEmitter = (emitter) => setCurrentEmitter(emitter)
+
+        /**
+         * Check if the current emitter is set
+         * 
+         * @return {boolean} False if no emitter
+         */
         this.hasEmitter = () => hasEmitter()
+
+        /**
+         * Get the currently set emitter
+         * 
+         * @return {EmitterClass|false} False if no emitter
+         */
         this.getEmitter = () => getEmitter()
 
         /** Bus */
+
+        /**
+         * Set a Communication Bus to emit impulses
+         * 
+         * @param {CommunicationBus} bus
+         */
         this.setBus = (bus) => setBus(bus)
 
         /** Frequenc(y/ies) management */
