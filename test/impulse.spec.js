@@ -164,7 +164,7 @@ describe('IMPULSE', () => {
         
             it('it should have stored the emitter information', () => {
                 const emitter = lib.getEmitter()
-                expect(emitter).to.be.eql(emitter_1)
+                expect(emitter.getInfo()).to.be.eql(emitter_1)
             })
         })
 
