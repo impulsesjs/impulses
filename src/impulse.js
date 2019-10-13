@@ -64,7 +64,7 @@ const impulse = class ImpulseApiClass {
         const impulse =  {
             id: null, // Internal impulse ID / signature
             info: {
-                emitter: null, // External ID from the emitter
+                emitter: null, // External emitter information
                 frequencies: new FrequencyCollectionClass(),
                 reply: { // Set if the impulse is a reply impulse
                     impulse: null, // Internal impulse ID / signature
@@ -154,7 +154,8 @@ const impulse = class ImpulseApiClass {
 
             destination.keys().forEach(name => {
                 if (validation[name] && toImport[name]) {
-                    if (validation[name].indexOf(typeof toImport[name]) >= 0 || validation[name].indexOf('exists') >= 0) {
+                    if (validation[name].indexOf(typeof toImport[name]) >= 0 
+                        || validation[name].indexOf('exists') >= 0) {
                         destination[name] = toImport[name]
                     } else {
                         failed = true;
@@ -170,7 +171,7 @@ const impulse = class ImpulseApiClass {
          *
          * @param {*} serializeTarget Target to be serialized
          * 
-         * @returns {string} Generated Unique ID
+         * @return {string} Generated Unique ID
          */
         const generateId = (serializeTarget) => {
             const serializedImpulse = JSON.stringify(serializeTarget)
@@ -183,7 +184,7 @@ const impulse = class ImpulseApiClass {
         /**
          * Generates the Impulse  Unique ID / Signature
          * 
-         * @returns {string} Generated Impulse Unique ID / Signature
+         * @return {string} Generated Impulse Unique ID / Signature
          */
         const generateImpulseId = () => {
             return `i.${generateId(impulse)}`
@@ -213,12 +214,12 @@ const impulse = class ImpulseApiClass {
         }
 
         /**
-         * Sets the Emitter ID
+         * Sets the Emitter
          * 
-         * @param {string} emitterId Emitter ID
+         * @param {EmitterEntity} emitter EmitterClass Instance
          */
-        const setEmitterId = (emitterId) => {
-            impulse.info.emitter = emitterId
+        const setEmitter = (emitter) => {
+            impulse.info.emitter = emitter
         }
 
         /**
@@ -228,15 +229,32 @@ const impulse = class ImpulseApiClass {
          * 
          * @throws {TypeError}
          * 
-         * @returns {true}
+         * @return {true}
          */
-        const setEmitter = (emitterInformation) => {
+        const setCurrentEmitter = (emitterInformation) => {
             const emitter = new EmitterClass()
             if (!emitter.setInfo(emitterInformation)) {
                 return false
             }
             currentEmitter = emitter
             return true
+        }
+
+        /**
+         * Get the currently set emitter
+         * 
+         * @return {EmitterEntity|false} False if no emitter
+         */
+        const getEmitter = () => {
+            return currentEmitter ? currentEmitter : false;
+        }
+
+        /**
+         * Get the known emitter list
+         * @return {EmitterEntity[]}
+         */
+        const getKnownEmitters = () => {
+            return communicationFlow.emitters.slice()
         }
 
         /**
@@ -248,28 +266,12 @@ const impulse = class ImpulseApiClass {
         }
 
         /**
-         * Get the currently set emitter
-         * 
-         * @return {EmitterEntity|undefined}
-         */
-        const getEmitter = () => {
-            return currentEmitter ? currentEmitter.getInfo() : false;
-        }
-
-        /**
-         * Get the known emitter list
-         */
-        const getKnownEmitters = () => {
-            return communicationFlow.emitters.slice()
-        }
-
-        /**
          * Add a frequency for the impulse to be sent
          * 
          * @param {string} entityName 
          * @param {string} channelName 
          * 
-         * @returns {boolean}
+         * @return {boolean}
          */
         const addFrequency = (entityName, channelName) => {
             if (hasBus()) {
@@ -320,26 +322,32 @@ const impulse = class ImpulseApiClass {
         /**
          * Adds the emitter to the list if not present
          * 
-         * @param {EmmiterClass} emitterObject 
+         * @param {EmmiterClass} emitter 
          */
-        const addToEmitersIndex = (emitterObject) => {
+        const addToEmitersIndex = (emitter) => {
             emittersCountForRolbackControl = communicationFlow.emitters.length
-            if (!isEmitterPresentInTheEmittersIndex(emitterObject)) {
-                communicationFlow.emitters.push(emitterObject)
+            if (!isEmitterPresentInTheEmittersIndex(emitter)) {
+                communicationFlow.emitters.push(emitter)
             }
         }
 
         /**
          * Rollback the last addition to the emitter index
+         * 
+         * @param {EmmiterClass} emitter
          */
-        const addToEmitersIndexRollBack = (emitterObject) => {
-            if (isTheLastEmitterInTheIndexList(emitterObject) && !hasEmitterSentHistoryInStack(emitterObject) && emittersCountForRolbackControl < communicationFlow.emitters.length) {
+        const addToEmitersIndexRollBack = (emitter) => {
+            if (isTheLastEmitterInTheIndexList(emitter) 
+                && !hasEmitterSentHistoryInStack(emitter) 
+                && emittersCountForRolbackControl < communicationFlow.emitters.length) {
                 communicationFlow.emitters.pop()
             }
         }
 
         /**
          * Check if the current emitter is set
+         * 
+         * @return {boolean} False if no emitter
          */
         const hasEmitter = () => {
             return !!getEmitter()
@@ -348,18 +356,20 @@ const impulse = class ImpulseApiClass {
         /**
          * Check if there is any message sent by the provided emitter
          * 
-         * @param {EmitterClass} emitterObject 
+         * @param {EmitterClass} emitter 
          * @return {boolean}
          */
-        const hasEmitterSentHistoryInStack = (emitterObject) => {
-            return !!communicationFlow.emitStack.find(emit => areTheSameEmitters(emit.info.emitter, emitterObject))
+        const hasEmitterSentHistoryInStack = (emitter) => {
+            return !!communicationFlow.emitStack.find(emit => {
+                return emit.info.emitter.isEqual(emitter)
+            })
         }
 
         /**
          * Check if the provided frequency is already in the list
          * 
          * @param {ImpulseFrequency} frequencyObject 
-         * @returns {boolean}
+         * @return {boolean}
          */
         const hasFrequency = (frequencyObject) => {
             return !!impulse.info.frequencies.has(frequencyObject)
@@ -371,7 +381,7 @@ const impulse = class ImpulseApiClass {
          * @param {string} entityName 
          * @param {string} channelName 
          * 
-         * @returns {boolean}
+         * @return {boolean}
          */
         const hasFrequencyFromBasic = (entityName, channelName) => {
             const newFrequency = new FrequencyClass(entityName, channelName)
@@ -381,25 +391,11 @@ const impulse = class ImpulseApiClass {
         /**
          * Check if a CommunicationBus has been set
          * 
-         * @returns {boolean}
+         * @return {boolean}
          */
         const hasBus = () => {
             return !!connectedBus
         }
-
-        /**
-         * Cheks if the emitter information is valid
-         * 
-         * @param {Object} emitterInformation 
-         * 
-         * @returns {string|boolean} missing property name or true
-         */
-        // const isValidEmitterInfo = (emitterInformation) => {
-        //     if (emitterInformation.constructor !== Object || !emitterInformation.emitter) {
-        //         return 'emitter'
-        //     }
-        //     return true
-        // }
 
         /**
          * Check if there are any frequencies set
@@ -411,49 +407,30 @@ const impulse = class ImpulseApiClass {
         /**
          * Check if the emitter is already in the index
          * 
-         * @param {EmitterObject} emitterObject 
+         * @param {EmitterClass} emitter 
          * @return {boolean}
          */
-        const isEmitterPresentInTheEmittersIndex = (emitterObject) => {
-            return !!communicationFlow.emitters.find(emitter => {
-                return emitter.isEqual(emitterObject)
+        const isEmitterPresentInTheEmittersIndex = (emitter) => {
+            return !!communicationFlow.emitters.find(flowEmitter => {
+                return flowEmitter.isEqual(emitter)
             })
         }
 
         /**
          * Check if it is the last emitter in the list
          * 
-         * @param {EmitterClass} emitterObject 
+         * @param {EmitterClass} emitter 
          * @return {boolean}
          */
-        const isTheLastEmitterInTheIndexList = (emitterObject) => {
+        const isTheLastEmitterInTheIndexList = (emitter) => {
             const lastAddedPos = communicationFlow.emitters.length - 1
-            if (areTheSameEmitters(communicationFlow.emitters[lastAddedPos], emitterObject)) {
-                return true
-            }
-            return false
+            return communicationFlow.emitters[lastAddedPos].isEqual(emitter)
         }
 
         /**
-         * Compare two emitters to check if they are the same
-         * 
-         * @param {EmitterClass} emitterA 
-         * @param {EmitterClass} emitterB 
-         */
-        const areTheSameEmitters = (emitterA, emitterB) => areTheSameObject(emitterA, emitterB)
-
-        /**
-         * Compare two objects to check if they are the same
-         * 
-         * @param {Object} objectA 
-         * @param {Object} objectB 
-         */
-        const areTheSameObject = (objectA, objectB) => JSON.stringify(objectA) === JSON.stringify(objectB)
-        
-        /**
          * Check if the current impulse will be traced
          * 
-         * @returns {boolean}
+         * @return {boolean}
          */
         const isTraceable = () => {
             return !!impulse.info.options.trace
@@ -462,7 +439,7 @@ const impulse = class ImpulseApiClass {
         /**
          * Check if the impulse will be debbuged
          * 
-         * @returns {boolean}
+         * @return {boolean}
          */
         const isDebugable = () => {
             return !!impulse.info.options.debug
@@ -473,7 +450,7 @@ const impulse = class ImpulseApiClass {
          * 
          * @param {Object} traceContent 
          * 
-         * @returns {boolean}
+         * @return {boolean}
          */
         const subscribeTrace = (traceContent) => {
             if (typeof traceContent === 'object') {
@@ -489,7 +466,7 @@ const impulse = class ImpulseApiClass {
          * 
          * @param {Object} debugContent 
          * 
-         * @returns {boolean}
+         * @return {boolean}
          */
         const subscribeDebug = (debugContent) => {
             if (typeof debugContent === 'object') {
@@ -527,7 +504,7 @@ const impulse = class ImpulseApiClass {
          * Check if the content is in a valid format
          * 
          * @param {*} contentObj 
-         * @returns {boolean}
+         * @return {boolean}
          */
         const isValidContent = (contentObj) => (typeof contentObj === 'object')
 
@@ -535,7 +512,7 @@ const impulse = class ImpulseApiClass {
          * Add extra content or replace with new content
          * 
          * @param {Object} contentObj 
-         * @returns {boolean}
+         * @return {boolean}
          */
         const addContent = (contentObj) => {
             if (isValidContent(contentObj)) {
@@ -549,7 +526,7 @@ const impulse = class ImpulseApiClass {
          * Sets the new content (destroys previous content)
          * 
          * @param {Object} contentObj 
-         * @returns {boolean}
+         * @return {boolean}
          */
         const setContent = (contentObj) => {
             if (isValidContent(contentObj)) {
@@ -572,7 +549,7 @@ const impulse = class ImpulseApiClass {
          * 
          * @param {boolean} [clone=true] To get a clone from the master
          * 
-         * @returns {Object|undefined}
+         * @return {Object|undefined}
          */
         const getLastEmitInfo = (clone = true) => {
             const count = communicationFlow.emitStack.length
@@ -604,7 +581,7 @@ const impulse = class ImpulseApiClass {
          * Dispatch the impulse to all defined frequencies and collect the impulseId for each one
          * 
          * @param {function} rollback Rollback function so we undo the actions
-         * @returns {boolean}
+         * @return {boolean}
          */
         const dispatch = (rollback) => {
             let emitted = 0;
@@ -632,7 +609,7 @@ const impulse = class ImpulseApiClass {
 
         const executeTransaction = (action, rollback) => {
             if (hasBus() && isFrequencySet() && hasEmitter()) {
-                setEmitterId(currentEmitter.getId())
+                setEmitter(currentEmitter)
                 addToEmitersIndex(currentEmitter)
                 setImpulseSignature()
                 setImpulseHistory()
@@ -668,7 +645,7 @@ const impulse = class ImpulseApiClass {
         /**** Privileged Methods *************************************************************************************/
 
         /** Current Emitter */
-        this.setEmitter = (emitterInfo) => setEmitter(emitterInfo)
+        this.setEmitter = (emitter) => setCurrentEmitter(emitter)
         this.hasEmitter = () => hasEmitter()
         this.getEmitter = () => getEmitter()
 
