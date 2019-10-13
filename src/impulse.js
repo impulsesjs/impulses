@@ -257,6 +257,15 @@ const impulse = class ImpulseApiClass {
         }
 
         /**
+         * Check if a CommunicationBus has been set
+         * 
+         * @return {boolean}
+         */
+        const hasBus = () => {
+            return !!connectedBus
+        }
+
+        /**
          * Set a Communication Bus to emit impulses
          * 
          * @param {CommunicationBus} bus
@@ -268,18 +277,28 @@ const impulse = class ImpulseApiClass {
         /**
          * Add a frequency for the impulse to be sent
          * 
+         * @param {FrequencyClass} frequency
+         * @return {boolean}
+         */
+        const addFrequency = (frequency) => {
+            if (hasBus()) {
+                if (!!connectedBus.exists(frequency.getEntity(), frequency.getChannel())) {
+                    return impulse.info.frequencies.add(frequency)
+                }
+            }
+            return false
+        }
+
+        /**
+         * Add a frequency for the impulse to be sent
+         * 
          * @param {string} entityName 
          * @param {string} channelName 
          * @return {boolean}
          */
-        const addFrequency = (entityName, channelName) => {
-            if (hasBus()) {
-                if (!!connectedBus.exists(entityName, channelName)) {
-                    const newFrequency = new FrequencyClass(entityName, channelName)
-                    return impulse.info.frequencies.add(newFrequency)
-                }
-            }
-            return false
+        const addFrequencyFromBasic = (entityName, channelName) => {
+            const newFrequency = new FrequencyClass(entityName, channelName)
+            return addFrequency(newFrequency)
         }
 
         /**
@@ -367,11 +386,11 @@ const impulse = class ImpulseApiClass {
         /**
          * Check if the provided frequency is already in the list
          * 
-         * @param {ImpulseFrequency} frequencyObject 
+         * @param {FrequencyClass} frequency 
          * @return {boolean}
          */
-        const hasFrequency = (frequencyObject) => {
-            return !!impulse.info.frequencies.has(frequencyObject)
+        const hasFrequency = (frequency) => {
+            return !!impulse.info.frequencies.has(frequency)
         }
 
         /**
@@ -384,15 +403,6 @@ const impulse = class ImpulseApiClass {
         const hasFrequencyFromBasic = (entityName, channelName) => {
             const newFrequency = new FrequencyClass(entityName, channelName)
             return hasFrequency(newFrequency)
-        }
-
-        /**
-         * Check if a CommunicationBus has been set
-         * 
-         * @return {boolean}
-         */
-        const hasBus = () => {
-            return !!connectedBus
         }
 
         /**
@@ -675,8 +685,28 @@ const impulse = class ImpulseApiClass {
         this.setBus = (bus) => setBus(bus)
 
         /** Frequenc(y/ies) management */
-        this.addFrequency = (entity, channel) => addFrequency(entity, channel)
+
+        /**
+         * Add a frequency for the impulse to be sent
+         * 
+         * @param {string} entityName 
+         * @param {string} channelName 
+         * @return {boolean}
+         */
+        this.addFrequency = (entity, channel) => addFrequencyFromBasic(entity, channel)
+
+        /**
+         * Check if the provided frequency is already in the list
+         * 
+         * @param {string} entityName 
+         * @param {string} channelName 
+         * @return {boolean}
+         */
         this.hasFrequency = (entity, channel) => hasFrequencyFromBasic(entity, channel)
+
+        /**
+         * Check if there are any frequencies set
+         */
         this.isFrequencySet = () => isFrequencySet()
 
         /** Emitter history (trace/log) */
