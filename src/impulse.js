@@ -6,13 +6,6 @@ import FrequencyCollectionClass from './impulse_/frequency-collection'
 import FrequencyClass from './impulse_/frequency'
 
 /**
- * 
- * @typedef {Object} ImpulseFrequency
- * @prop {function} getEntity 
- * @prop {function} getChannel
- * @prop {function} is
- * @prop {function} isEqual
- * 
  * @typedef {Object} ImpulseInfoReplyEntity
  * @prop {string|null} [impulse=?] Internal impulse ID / signature
  * @prop {string|null} [emitter=?] External ID from the emitter
@@ -23,8 +16,8 @@ import FrequencyClass from './impulse_/frequency'
  * @prop {boolean} debug
  * 
  * @typedef {Object} ImpulseInfoEntity
- * @prop {string} emitter
- * @prop {Object[]} frequencies
+ * @prop {EmitterClass} emitter
+ * @prop {FrequencyCollectionClass[]} frequencies
  * @prop {ImpulseInfoReplyEntity} [reply=?]
  * @prop {ImpulseInfoOptionsEntity} options
  * @prop {boolean} encryption
@@ -96,7 +89,7 @@ const impulse = class ImpulseApiClass {
         let currentEmitter = undefined
 
         /** @type {CommunicationBus} */
-        let connectedBus = undefined;
+        let connectedBus = undefined
 
         /**** Private Methods ****************************************************************************************/
 
