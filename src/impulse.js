@@ -4,6 +4,7 @@ import Md5 from './md5'
 import EmitterClass from './impulse_/emitter'
 import FrequencyCollectionClass from './impulse_/frequency-collection'
 import FrequencyClass from './impulse_/frequency'
+import OptionsSubscribeClass from './impulse_/options/subscribe'
 
 /**
  * @typedef {Object} ImpulseInfoReplyEntity
@@ -12,8 +13,8 @@ import FrequencyClass from './impulse_/frequency'
  * @prop {number|null} [stack=?] Reply to the position in the emitStack
  * 
  * @typedef {Object} ImpulseInfoOptionsEntity
- * @prop {boolean} trace
- * @prop {boolean} debug
+ * @prop {OptionsSubscribeClass} trace
+ * @prop {OptionsSubscribeClass} debug
  * 
  * @typedef {Object} ImpulseInfoEntity
  * @prop {EmitterClass} emitter
@@ -65,10 +66,8 @@ const impulse = class ImpulseApiClass {
                     stack: null, // Wich emit is this impulse related to in the stack
                 },
                 options: {
-                    trace: false,
-                    traceContent: null,
-                    debug: false,
-                    debugContent: null,
+                    trace: new OptionsSubscribeClass(),
+                    debug: new OptionsSubscribeClass(),
                 },
                 encryption: false,
             },
@@ -313,12 +312,12 @@ const impulse = class ImpulseApiClass {
                 content: {}
             }
 
-            if (impulse.info.options.trace && impulse.info.options.traceContent) {
-                emitStackItem.content.trace = Object.assign({}, impulse.info.options.traceContent)
+            if (impulse.info.options.trace.isSubscribed() && impulse.info.options.trace.hasContent()) {
+                emitStackItem.content.trace = Object.assign({}, impulse.info.options.trace.get())
             }
 
-            if (impulse.info.options.debug && impulse.info.options.debugContent) {
-                emitStackItem.content.debug = Object.assign({}, impulse.info.options.debugContent)
+            if (impulse.info.options.debug.isSubscribed() && impulse.info.options.debug.hasContent()) {
+                emitStackItem.content.debug = Object.assign({}, impulse.info.options.debug.get())
             }
             communicationFlow.emitStack.push(emitStackItem)
         }
@@ -433,64 +432,14 @@ const impulse = class ImpulseApiClass {
          * 
          * @return {boolean}
          */
-        const isTraceable = () => {
-            return !!impulse.info.options.trace
-        }
+        const isTraceable = () => impulse.info.options.trace.isSubscribed()
 
         /**
          * Check if the impulse will be debbuged
          * 
          * @return {boolean}
          */
-        const isDebugable = () => {
-            return !!impulse.info.options.debug
-        }
-
-        /**
-         * Sets the trace Information
-         * 
-         * @param {Object} traceContent 
-         * @return {boolean}
-         */
-        const subscribeTrace = (traceContent) => {
-            if (typeof traceContent === 'object') {
-                impulse.info.options.trace = true
-                impulse.info.options.traceContent = Object.assign({}, traceContent)
-                return true
-            }
-            return false
-        }
-
-        /**
-         * Sets the debug Information
-         * 
-         * @param {Object} debugContent 
-         * @return {boolean}
-         */
-        const subscribeDebug = (debugContent) => {
-            if (typeof debugContent === 'object') {
-                impulse.info.options.debug = true
-                impulse.info.options.debugContent = Object.assign({}, debugContent)
-                return true
-            }
-            return false
-        }
-
-        /**
-         * Removes the trace flag and content
-         */
-        const cancelTrace = () => {
-            impulse.info.options.trace = false
-            impulse.info.options.traceContent = undefined
-        }
-
-        /**
-         * Removes the debug flag and content
-         */
-        const cancelDebug = () => {
-            impulse.info.options.debug = false
-            impulse.info.options.debugContent = undefined
-        }
+        const isDebugable = () => impulse.info.options.debug.isSubscribed()
 
         /**
          * Clears all content
@@ -705,12 +654,48 @@ const impulse = class ImpulseApiClass {
         /** Emitter history (trace/log) */
         this.getKnownEmitters = () => getKnownEmitters()
 
-        this.subscribeTrace = (traceContent) => subscribeTrace(traceContent)
-        this.cancelTrace = () => cancelTrace()
+        /**
+         * Subscribe the trace and sets the trace content
+         * 
+         * @param {object} traceContent
+         * @return {boolean}
+         */
+        this.subscribeTrace = (traceContent) => impulse.info.options.trace.subscribe(traceContent)
+
+        /**
+         * Cancel the trace subscription
+         * 
+         * @return {boolean}
+         */
+        this.cancelTrace = () => impulse.info.options.trace.cancel()
+
+        /**
+         * Check if the current trace is subscribed
+         * 
+         * @return {boolean}
+         */
         this.isTraceable = () => isTraceable()
 
-        this.subscribeDebug = (debugContent) => subscribeDebug(debugContent)
-        this.cancelDebug = () => cancelDebug()
+        /**
+         * Subscribe the debug and sets the debug content
+         * 
+         * @param {object} debugContent
+         * @return {boolean}
+         */
+        this.subscribeDebug = (debugContent) => impulse.info.options.debug.subscribe(debugContent)
+
+        /**
+         * Cancel the debug subscription
+         * 
+         * @return {boolean}
+         */
+        this.cancelDebug = () => impulse.info.options.debug.cancel()
+
+        /**
+         * Check if the current debug is subscribed
+         * 
+         * @return {boolean}
+         */
         this.isDebugable = () => isDebugable()
 
         this.setContent = (contentInformation) => setContent(contentInformation)
