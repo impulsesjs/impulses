@@ -1,6 +1,6 @@
 'use strict'
 
-const optionsDebugClass = class OptionsDebugClass {
+const optionsSubscribeClass = class OptionsSubscribeClass {
     /**
      * @constructor
      */
@@ -8,13 +8,13 @@ const optionsDebugClass = class OptionsDebugClass {
 
         /**** Private Attributes *************************************************************************************/
 
-        let debug = false
-        let debugContent = undefined
+        let subscribed = false
+        let subscribedContent = undefined
 
         /**** Private Methods ****************************************************************************************/
 
         const initContent = () => {
-            debugContent = undefined
+            subscribedContent = undefined
         }
 
         /**
@@ -23,7 +23,12 @@ const optionsDebugClass = class OptionsDebugClass {
          * @return {boolean}
          */
         const isSubscribed = () => {
-            return !!debug
+            return !!subscribed
+        }
+
+        const hasContent = () => {
+            return subscribedContent || 
+                   (subscribedContent.constructor === Object && Object.keys(subscribedContent).length > 0)
         }
 
         /**
@@ -34,8 +39,8 @@ const optionsDebugClass = class OptionsDebugClass {
          */
         const subscribe = (content) => {
             if (!isSubscribed() && content && content.constructor === Object) {
-                debug = true
-                debugContent = Object.assign({}, content)
+                subscribed = true
+                subscribedContent = Object.assign({}, content)
                 return true
             }
             return false
@@ -48,7 +53,7 @@ const optionsDebugClass = class OptionsDebugClass {
             if (!isSubscribed()) {
                 return false
             }
-            debug = false
+            subscribed = false
             initContent()
             return true
         }
@@ -56,11 +61,12 @@ const optionsDebugClass = class OptionsDebugClass {
         /**
          * Gets the debug contents
          */
-        const get = () => debugContent
+        const get = () => subscribedContent
 
         /**** Privileged Methods *************************************************************************************/
 
         this.isSubscribed = () => isSubscribed()
+        this.hasContent = () => hasContent()
         this.subscribe = (content) => subscribe(content)
         this.cancel = () => cancel()
         this.get = () => get()
@@ -70,4 +76,4 @@ const optionsDebugClass = class OptionsDebugClass {
 
 }
 
-export default optionsDebugClass
+export default optionsSubscribeClass

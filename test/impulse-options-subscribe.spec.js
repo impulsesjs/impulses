@@ -1,7 +1,7 @@
 /* global describe, it, before */
 
 import chai from 'chai'
-import classToTest from '../src/impulse_/options/debug'
+import classToTest from '../src/impulse_/options/subscribe'
 
 chai.expect();
 
@@ -10,7 +10,7 @@ const expect = chai.expect;
 let lib
 
 // let validatorResult = false
-describe('IMPULSE-OPTIONS-DEBUG', () => {
+describe('IMPULSE-OPTIONS-SUBSCRIBE', () => {
     beforeEach(() => {
         lib = new classToTest()
     })
