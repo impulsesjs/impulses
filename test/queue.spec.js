@@ -1,5 +1,6 @@
 /* global describe, it, before */
 
+// TODO: Replace with spies
 import chai from 'chai'
 import Queue from '../src/queue'
 import MockHelper from './mocked/mockClassHelper.mock'

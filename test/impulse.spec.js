@@ -1,5 +1,5 @@
 /* global describe, it, before */
-
+// TODO: isolate the unit with proper spies
 import chai from 'chai'
 // import Bus from '../src/bus';
 import Impulse from '../src/impulse'
@@ -419,7 +419,6 @@ describe('IMPULSE', () => {
                                     lib.subscribeTrace(traceContent)
                                 })
                                 it('it should add the trace to the content', () => {
-                                    console.log('aqui')
                                     const result = lib.emit()
                                     const content = lib.getContent()
                                     const emitInfo = lib.getLastEmitInfo()
