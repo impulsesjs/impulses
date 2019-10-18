@@ -5,6 +5,7 @@ import EmitterClass from './impulse_/emitter'
 import FrequencyCollectionClass from './impulse_/frequency-collection'
 import FrequencyClass from './impulse_/frequency'
 import OptionsSubscribeClass from './impulse_/options/subscribe'
+import ContentClass from './impulse_/content'
 
 /**
  * @typedef {Object} ImpulseInfoReplyEntity
@@ -71,7 +72,7 @@ const impulse = class ImpulseApiClass {
                 },
                 encryption: false,
             },
-            content: {},
+            content: new ContentClass(),
             history: {},
         }
 
@@ -442,57 +443,6 @@ const impulse = class ImpulseApiClass {
         const isDebugable = () => impulse.info.options.debug.isSubscribed()
 
         /**
-         * Clears all content
-         */
-        const clearContent = () => {
-            impulse.content = {}
-        }
-
-        /**
-         * Check if the content is in a valid format
-         * 
-         * @param {*} contentObj 
-         * @return {boolean}
-         */
-        const isValidContent = (contentObj) => (typeof contentObj === 'object')
-
-        /**
-         * Add extra content or replace with new content
-         * 
-         * @param {Object} contentObj 
-         * @return {boolean}
-         */
-        const addContent = (contentObj) => {
-            if (isValidContent(contentObj)) {
-                impulse.content = Object.assign(impulse.content, contentObj)
-                return true
-            }
-            return false
-        }
-
-        /**
-         * Sets the new content (destroys previous content)
-         * 
-         * @param {Object} contentObj 
-         * @return {boolean}
-         */
-        const setContent = (contentObj) => {
-            if (isValidContent(contentObj)) {
-                clearContent()
-                impulse.content = Object.assign({}, contentObj)
-                return true
-            }
-            return false
-        }
-
-        /**
-         * Get the current content
-         */
-        const getContent = () => {
-            return impulse.content
-        }
-
-        /**
          * Gets the last emit in the stack
          * 
          * @param {boolean} [clone=true] To get a clone from the master
@@ -698,10 +648,10 @@ const impulse = class ImpulseApiClass {
          */
         this.isDebugable = () => isDebugable()
 
-        this.setContent = (contentInformation) => setContent(contentInformation)
-        this.addContent = (contentInformation) => addContent(contentInformation)
-        this.getContent = () => getContent()
-        this.clearContent = () => clearContent()
+        this.setContent = (contentInformation) => impulse.content.set(contentInformation)
+        this.addContent = (contentInformation) => impulse.content.add(contentInformation)
+        this.getContent = () => impulse.content.get()
+        this.clearContent = () => impulse.content.set({})
         
         this.emit = () => emit()
         this.getEmitCount = () => getEmitCount()
