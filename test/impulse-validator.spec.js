@@ -2,7 +2,7 @@
 
 import chai from 'chai'
 // import Bus from '../src/bus';
-import classToTest from '../src/impulse-validator'
+import { impulseValidator as classToTest }  from '../src/impulse-validator'
 
 chai.expect();
 

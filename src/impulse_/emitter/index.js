@@ -1,6 +1,6 @@
 'use strict'
 import Md5 from '../../md5'
-import ImpulseValidator from '../../impulse-validator'
+import { impulseValidator } from '../../impulse-validator'
 
 /**
 * @typedef {Object} EmitterEntity
@@ -10,11 +10,11 @@ import ImpulseValidator from '../../impulse-validator'
 
 const emitterClass = class EmitterClass {
 
-    constructor (emitterInfo) {
+    constructor (serializedInfo) {
 
         /**** Private Attributes *************************************************************************************/
 
-        const validator = new ImpulseValidator();
+        const validator = new impulseValidator()
         let internalId = undefined
         let info = {}
 
@@ -45,7 +45,15 @@ const emitterClass = class EmitterClass {
          * Initializes the internal ID
          */
         const initInternalId = () => {
-            internalId = generateId()
+            if (!internalId) {
+                internalId = generateId()
+            }
+        }
+
+        const importFromSerialized = (serialized) => {
+            if (serialized && serialized.id && serialized.info && setInfo(serialized.info)) {
+                internalId = serialized.id
+            }
         }
 
         /**
@@ -98,10 +106,13 @@ const emitterClass = class EmitterClass {
             return checkObjectEquality(info, emitterInfo)
         }
 
-
+        const serialize = () => Object.assign({}, {
+            id: internalId,
+            info: getInfo(),
+        })
         
+        importFromSerialized(serializedInfo)
         initInternalId()
-        setInfo(emitterInfo)
 
         /**** Privileged Methods *************************************************************************************/
 
@@ -131,6 +142,8 @@ const emitterClass = class EmitterClass {
          * @returns {boolean}
          */
         this.isEqual = emitter => validator.validateEmitterType(emitter) ? isEqual(emitter.getInfo()) : false
+
+        this.serialize = () => serialize()
 
         /**** Test Area **********************************************************************************************/
 

@@ -158,4 +158,4 @@ const impulseValidationHelper = class ImpulseValidationHelperClass {
 
 }
 
-export default impulseValidationHelper
+export const impulseValidator = impulseValidationHelper

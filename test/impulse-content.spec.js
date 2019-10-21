@@ -30,18 +30,21 @@ describe('IMPULSE-CONTENT', () => {
         it('should be possible to set content', () => {
             expect(lib.set(toSet)).to.be.equal(true)
             expect(lib.get()).to.be.eql(toSet)
+            expect(lib.serialize()).to.be.eql(toSet)
         })
     
         it('should not be possible to add a non object content', () => {
             expect(lib.set(toSet)).to.be.equal(true)
             expect(lib.add('JUST A TEST')).to.be.equal(false)
             expect(lib.get()).to.be.eql(toSet)
+            expect(lib.serialize()).to.be.eql(toSet)
         })
     
         it('should be possible to add content', () => {
             expect(lib.set(toSet)).to.be.equal(true)
             expect(lib.add(toAdd)).to.be.equal(true)
             expect(lib.get()).to.be.eql(toAdd)
+            expect(lib.serialize()).to.be.eql(toAdd)
         })
     })
     
@@ -52,11 +55,13 @@ describe('IMPULSE-CONTENT', () => {
 
         it('should have content', () => {
             expect(lib.get()).to.be.eql(toSet)
+            expect(lib.serialize()).to.be.eql(toSet)
         })
     
         it('should be possible to add content', () => {
             expect(lib.add(toAdd)).to.be.equal(true)
             expect(lib.get()).to.be.eql(toAdd)
+            expect(lib.serialize()).to.be.eql(toAdd)
         })
     })
 

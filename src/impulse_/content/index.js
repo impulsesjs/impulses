@@ -2,7 +2,7 @@
 
 const contentClass = class ContentClass {
 
-    constructor (initialContent) {
+    constructor (serializedContent) {
 
         /**** Private Attributes *************************************************************************************/
 
@@ -17,13 +17,6 @@ const contentClass = class ContentClass {
          * @return {boolean}
          */
         const isValid = (contentObj) => (contentObj && contentObj.constructor === Object)
-
-        /**
-         * Clears all content
-         */
-        // const clear = () => {
-        //     content = {}
-        // }
 
         /**
          * Add extra content or replace with new content
@@ -63,7 +56,9 @@ const contentClass = class ContentClass {
             return Object.assign({}, content)
         }
 
-        set(initialContent)
+        const serialize = () => get()
+
+        set(serializedContent)
 
         /**** Privileged Methods *************************************************************************************/
 
@@ -71,16 +66,7 @@ const contentClass = class ContentClass {
         this.set = (contentInfo) => set(contentInfo)
         this.add = (contentInfo) => add(contentInfo)
         this.get = () => get()
-
-        /**** Test Area **********************************************************************************************/
-
-        if (process.env.NODE_ENV === 'test') {
-            // Allow unit test mocking
-            this.__test__ = {
-                // validator: validator,
-            }
-        }
-
+        this.serialize = () => serialize()
     }
 
     /**** Prototype Methods ******************************************************************************************/

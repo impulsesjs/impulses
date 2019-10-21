@@ -4,7 +4,7 @@ const optionsSubscribeClass = class OptionsSubscribeClass {
     /**
      * @constructor
      */
-    constructor () {
+    constructor (serializedObject) {
 
         /**** Private Attributes *************************************************************************************/
 
@@ -26,10 +26,11 @@ const optionsSubscribeClass = class OptionsSubscribeClass {
             return !!subscribed
         }
 
-        const hasContent = () => {
-            return subscribedContent || 
-                   (subscribedContent.constructor === Object && Object.keys(subscribedContent).length > 0)
+        const isContentValid = content => {
+            return !!content && content.constructor === Object && Object.keys(content).length > 0
         }
+
+        const hasContent = () => isContentValid(subscribedContent)
 
         /**
          * Sets the debug Information
@@ -60,8 +61,29 @@ const optionsSubscribeClass = class OptionsSubscribeClass {
 
         /**
          * Gets the debug contents
+         * 
+         * @return {object|undefined}
          */
-        const get = () => subscribedContent
+        const get = () => {
+            if (subscribedContent && subscribedContent.constructor === Object) {
+                return Object.assign({}, subscribedContent)
+            }
+            return undefined
+        }
+
+        const serialize = () => Object.assign({}, {
+            subscribed, subscribed, 
+            content: get(),
+        })
+
+        const importFromSerialized = serialized => {
+            if (serialized && serialized.constructor === Object && serialized.subscribed && serialized.content && isContentValid(serialized.content)) {
+                subscribed = serialized.subscribed
+                subscribedContent = serialized.content
+            }
+        }
+
+        importFromSerialized(serializedObject)
 
         /**** Privileged Methods *************************************************************************************/
 
@@ -70,6 +92,7 @@ const optionsSubscribeClass = class OptionsSubscribeClass {
         this.subscribe = (content) => subscribe(content)
         this.cancel = () => cancel()
         this.get = () => get()
+        this.serialize = () => serialize()
     }
 
     /**** Prototype Methods ******************************************************************************************/

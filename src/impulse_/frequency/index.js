@@ -7,12 +7,12 @@ const frequencyClass = class FequencyClass {
      * @param {string} entity 
      * @param {string} channel 
      */
-    constructor (entity, channel) {
+    constructor (entityOrSerializedFrequency, channel) {
 
         /**** Private Attributes *************************************************************************************/
 
-        let entityName = entity
-        let channelName = channel
+        let entityName = undefined
+        let channelName = undefined
 
         /**** Private Methods ****************************************************************************************/
 
@@ -62,6 +62,25 @@ const frequencyClass = class FequencyClass {
          * @returns {boolean}
          */
         const isEqual = otherFreq => isFrequency(otherFreq.getEntity(), otherFreq.getChannel())
+
+        const serialize = () => ({
+            entity: getEntity(),
+            channel: getChannel(),
+        })
+
+        const importFromSerialized = (serialized) => {
+            if (serialized && serialized.constructor === Object && serialized.entity && serialized.channel) {
+                entityName = serialized.entity
+                channelName = serialized.channel
+            }
+        }
+
+        if (entityOrSerializedFrequency && !channel) {
+            importFromSerialized(entityOrSerializedFrequency)
+        } else if (entityOrSerializedFrequency && channel) {
+            entityName = entityOrSerializedFrequency
+            channelName = channel
+        }
 
         /**
          * Reset the frequency information to the intital state
@@ -200,10 +219,13 @@ const frequencyClass = class FequencyClass {
          * @returns {boolean}
          */
         this.isEqual = freq => isEqual(freq)
+
+        this.serialize = () => serialize()
     }
 
     /**** Prototype Methods ******************************************************************************************/
 
 }
 
-export default frequencyClass
+// export default frequencyClass
+export const Frequency = frequencyClass

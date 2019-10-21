@@ -1,12 +1,13 @@
 'use strict'
+import { Frequency as FrequencyClass } from '../frequency'
 
 const frequencyCollectionClass = class FequencyCollectionClass {
 
-    constructor (config) {
+    constructor (serializedInfo) {
 
         /**** Private Attributes *************************************************************************************/
 
-        config = config || {}
+        // config = config || {}
 
         // const configuration = Object.assign({}, config)
 
@@ -56,6 +57,20 @@ const frequencyCollectionClass = class FequencyCollectionClass {
         }
 
         const each = (workingfunction) => collection.forEach(workingfunction)
+
+        const importSerialized = (serialized) => {
+            if (serialized && serialized.constructor === Array) {
+                serialized.forEach(serializedFreq => {
+                    add(new FrequencyClass(serializedFreq))
+                })
+            }
+        }
+
+        const serialize = () => {
+            return collection.map(freq => freq.serialize())
+        }
+
+        importSerialized(serializedInfo)
         
         /**** Privileged Methods *************************************************************************************/
 
@@ -64,7 +79,7 @@ const frequencyCollectionClass = class FequencyCollectionClass {
         // this.find = (itemToSearch) => find(itemToSearch)
         this.count = () => count()
         this.each = (workingfunction) => each(workingfunction)
-
+        this.serialize = () => serialize()
     }
 
     /**** Prototype Methods ******************************************************************************************/

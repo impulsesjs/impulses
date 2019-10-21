@@ -9,6 +9,14 @@ const expect = chai.expect;
 
 let lib
 
+const serializedObject = {
+    subscribed: true, 
+    content: {
+        id: 'TEST_ID',
+        value: 'TEST_VALUE'
+    },
+}
+
 // let validatorResult = false
 describe('IMPULSE-OPTIONS-SUBSCRIBE', () => {
     beforeEach(() => {
@@ -18,6 +26,11 @@ describe('IMPULSE-OPTIONS-SUBSCRIBE', () => {
     describe('After I have an instance not subscribed', () => {
         it('it should not be in subscribed mode', () => {
             const test = lib.isSubscribed()
+            expect(test).to.be.equal(false)
+        })
+
+        it('it should not have content', () => {
+            const test = lib.hasContent()
             expect(test).to.be.equal(false)
         })
 
@@ -63,7 +76,7 @@ describe('IMPULSE-OPTIONS-SUBSCRIBE', () => {
     describe('After I have a subscribed instance', () => {
         beforeEach(() => {
             lib = new classToTest()
-            lib.subscribe({})
+            lib.subscribe(serializedObject.content)
         })
 
         it('it should be in subscribed mode', () => {
@@ -71,9 +84,14 @@ describe('IMPULSE-OPTIONS-SUBSCRIBE', () => {
             expect(test).to.be.equal(true)
         })
 
+        it('it should return the same object that initialized it', () => {
+            const test = lib.serialize()
+            expect(test).to.be.eql(serializedObject)
+        })
+
         it('it should return an object when fetched', () => {
             const test = lib.get()
-            expect(test).to.be.eql({})
+            expect(test).to.be.eql(serializedObject.content)
         })
 
         it('it should return true when trying to cancel it', () => {
@@ -87,4 +105,34 @@ describe('IMPULSE-OPTIONS-SUBSCRIBE', () => {
         })
     })
 
+    describe('After I have a subscribed instance', () => {
+        beforeEach(() => {
+            lib = new classToTest(serializedObject)
+        })
+
+        it('it should be in subscribed mode', () => {
+            const test = lib.isSubscribed()
+            expect(test).to.be.equal(true)
+        })
+
+        it('it should return the same object that initialized it', () => {
+            const test = lib.serialize()
+            expect(test).to.be.eql(serializedObject)
+        })
+
+        it('it should return an object when fetched', () => {
+            const test = lib.get()
+            expect(test).to.be.eql(serializedObject.content)
+        })
+
+        it('it should return true when trying to cancel it', () => {
+            const test = lib.cancel()
+            expect(test).to.be.equal(true)
+        })
+
+        it('it should return false when trying subscribe', () => {
+            const test = lib.subscribe({})
+            expect(test).to.be.equal(false)
+        })
+    })
 })

@@ -1,12 +1,16 @@
 /* global describe, it, before */
-
+// TODO: needs spies to mock frequnecy and do the proper unit testing
 import chai from 'chai'
-// import Bus from '../src/bus';
-import classToTest from '../src/impulse_/frequency-collection'
+import spies from 'chai-spies'
 
+import classToTest from '../src/impulse_/frequency-collection'
+import * as Frequency from '../src/impulse_/frequency'
+
+chai.use(spies);
 chai.expect();
 
 const expect = chai.expect;
+const sandbox = chai.spy.sandbox();
 
 let lib
 
@@ -23,6 +27,24 @@ const CHANNEL = {
 let objFrequencyEntityCorrect = true
 let objFrequencyChannelCorrect = true
 let objFrequencyIndex = '0';
+const serializedFrequencyCorrect = [
+    {
+        entity: `${ENTITY.CORRECT}_0`,
+        channel: `${CHANNEL.CORRECT}_0`,
+    },
+    {
+        entity: `${ENTITY.CORRECT}_1`,
+        channel: `${CHANNEL.CORRECT}_1`,
+    },
+    {
+        entity: `${ENTITY.CORRECT}_2`,
+        channel: `${CHANNEL.CORRECT}_2`,
+    },
+    {
+        entity: `${ENTITY.CORRECT}_3`,
+        channel: `${CHANNEL.CORRECT}_3`,
+    },
+];
 const objFrequencyCorrect = [
     {
         getEntity: () => `${ENTITY.CORRECT}_0`,
@@ -46,14 +68,13 @@ const objFrequencyQuery = {
     getChannel: () => objFrequencyChannelCorrect ? `${CHANNEL.CORRECT}_${objFrequencyIndex}` : `${CHANNEL.WRONG}_${objFrequencyIndex}`,
 };
     
-
 describe('IMPULSE-FREQUENCY-COLLECTION', () => {
 
-    beforeEach(() => {
-        lib = new classToTest()
-    })
-
     describe('After I have an empty instance', () => {
+        beforeEach(() => {
+            lib = new classToTest()
+        })
+
         describe('and while it is empty', () => {
             it('it should return false when verifying if it has a frequency', () => {
                 const test = lib.has(objFrequencyCorrect[0])
@@ -157,6 +178,38 @@ describe('IMPULSE-FREQUENCY-COLLECTION', () => {
                 })
                 expect(iteraction).to.be.equal(4)
             })
-        })        
+        })
+    })
+
+    describe('When instanciating with a serialized object', () => {
+        beforeEach(() => {
+            sandbox.on(Frequency, 'Frequency')
+        })
+
+        afterEach(() => {
+            sandbox.restore()
+        })
+
+        it('it should create internal freqeuncy objects', () => {
+            expect(Frequency.Frequency).to.not.have.been.called()
+            lib = new classToTest(serializedFrequencyCorrect)
+            expect(Frequency.Frequency).to.have.been.called()
+        })
+    })
+
+    describe('After I have an instance from an serialized information', () => {
+        beforeEach(() => {
+            lib = new classToTest(serializedFrequencyCorrect)
+        })
+
+        it('it should return the correct serialized object', () => {
+            const test = lib.serialize()
+            expect(test).to.be.eql(serializedFrequencyCorrect)
+        })
+
+        it('it should return false when verifying if it has a frequency', () => {
+            const test = lib.has(objFrequencyCorrect[0])
+            expect(test).to.be.equal(true)
+        })
     })
 })
