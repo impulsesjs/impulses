@@ -3,7 +3,7 @@
 import Md5 from './md5'
 import EmitterClass from './impulse_/emitter'
 import FrequencyCollectionClass from './impulse_/frequency-collection'
-import FrequencyClass from './impulse_/frequency'
+import { Frequency as FrequencyClass } from './impulse_/frequency'
 import OptionsSubscribeClass from './impulse_/options/subscribe'
 import ContentClass from './impulse_/content'
 
@@ -73,7 +73,7 @@ const impulse = class ImpulseApiClass {
                 encryption: false,
             },
             content: new ContentClass(),
-            history: {},
+            history: new ContentClass(),
         }
 
         /** @type {ImpulseCommunicationFlowEntity} */
@@ -194,7 +194,7 @@ const impulse = class ImpulseApiClass {
          */
         const setImpulseHistory = () => {
             if (isTraceable() && isDebugable()) {
-                impulse.history = communicationFlow
+                impulse.history.set(communicationFlow)
             }
         }
 
@@ -202,7 +202,7 @@ const impulse = class ImpulseApiClass {
          * Rollback the history set
          */
         const setImpulseHistoryRollBack = () => {
-            impulse.history = {}
+            impulse.history.set({})
         }
 
         /**
@@ -474,6 +474,23 @@ const impulse = class ImpulseApiClass {
         //     return JSON.stringify(impulse)
         // }
 
+
+        const serialize = () => Object.assign({}, {
+            id: impulse.id,
+            info: {
+                emitter: impulse.info.emitter.serialize(),
+                frequencies: impulse.info.frequencies.serialize(),
+                // TODO: REPLY
+                options: {
+                    trace: impulse.info.options.trace.serialize(),
+                    debug: impulse.info.options.debug.serialize(),
+                },
+                encryption: impulse.info.encryption,
+            },
+            content: impulse.content.serialize(),
+            history: impulse.history.serialize(),
+        })
+
         /**
          * Dispatch the impulse to all defined frequencies and collect the impulseId for each one
          * 
@@ -482,7 +499,8 @@ const impulse = class ImpulseApiClass {
          */
         const dispatch = (rollback) => {
             let emitted = 0;
-            impulse.history = Object.assign({}, communicationFlow);
+            impulse.history.set(communicationFlow);
+
             /** @property {CommunicationBus} connectedBus */
             const emit = getLastEmitInfo(false)
             if (emit && emit.info && emit.info.frequencies) {
