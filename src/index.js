@@ -21,4 +21,4 @@ class impulses {
     }
 }
 
-module.exports = new impulses()
+export const Impulses = new impulses()
