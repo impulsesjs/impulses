@@ -39,5 +39,6 @@ node_modules
 
 # Exclude other
 output-compile/
+output-test/
 RELEASE_NOTE*.md
 .DS_Store
