@@ -186,7 +186,7 @@ const channel = class ChannelClass {
             return false
         }
 
-        function isValidListener (listenerInfo, validCallback) {
+        function isValidListener (listenerInfo) {
             // { id: 1, listener: () => {} }
             // Checking required attributes and respective types
             if (!listenerInfo) {
