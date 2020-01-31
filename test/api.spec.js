@@ -309,7 +309,7 @@ describe('After I have an API instance with Public and Private BUS set and Chann
             chn.sendAndListen({message: 'Request message'}, {id:200, listener: clientListener})
             // chn.send(sendMessage)
         }
-//        expect(lib.sendPublic(...message1)).to.be.false
+        //        expect(lib.sendPublic(...message1)).to.be.false
     })
 
 })
