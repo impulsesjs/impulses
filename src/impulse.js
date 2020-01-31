@@ -6,6 +6,7 @@ import FrequencyCollectionClass from './impulse_/frequency-collection'
 import { Frequency as FrequencyClass } from './impulse_/frequency'
 import OptionsSubscribeClass from './impulse_/options/subscribe'
 import ContentClass from './impulse_/content'
+import EmitStack from './impulse_/emit-stack'
 
 /**
  * @typedef {Object} ImpulseInfoReplyEntity
@@ -78,8 +79,8 @@ const impulse = class ImpulseApiClass {
 
         /** @type {ImpulseCommunicationFlowEntity} */
         const communicationFlow = {
-            emitStack: [],
-            emitters: [],
+            emitStack: new EmitStack(), //[],
+            emitters: [], // EmitterClass[]
         }
 
         /** @type {Number} temporary control for the number of emitters */
@@ -194,7 +195,10 @@ const impulse = class ImpulseApiClass {
          */
         const setImpulseHistory = () => {
             if (isTraceable() && isDebugable()) {
-                impulse.history.set(communicationFlow)
+                const flow = {}
+                flow.emitStack = communicationFlow.emitStack.serialize()
+                flow.emitters = communicationFlow.emitters.map(emitter => emitter.serialize())
+                impulse.history.set(flow)
             }
         }
 
@@ -304,31 +308,30 @@ const impulse = class ImpulseApiClass {
              * Sensitive data migh be present
              ***************************/
 
-            // First we need to set the emitter to the lask known/set one
+            // First we need to set the emitter to the last known/set one
             impulse.info.emitter = getEmitter()
+            communicationFlow.emitStack.push(impulse.info, impulse.info.options.trace, impulse.info.options.debug)
 
-            const emitStackItem = {
-                time: (new Date()).getTime(),
-                info: Object.assign({}, impulse.info),
-                content: {}
-            }
+            // const emitStackItem = {
+            //     time: (new Date()).getTime(),
+            //     info: Object.assign({}, impulse.info),
+            //     content: {}
+            // }
 
-            if (impulse.info.options.trace.isSubscribed() && impulse.info.options.trace.hasContent()) {
-                emitStackItem.content.trace = Object.assign({}, impulse.info.options.trace.get())
-            }
+            // if (impulse.info.options.trace.isSubscribed() && impulse.info.options.trace.hasContent()) {
+            //     emitStackItem.content.trace = Object.assign({}, impulse.info.options.trace.get())
+            // }
 
-            if (impulse.info.options.debug.isSubscribed() && impulse.info.options.debug.hasContent()) {
-                emitStackItem.content.debug = Object.assign({}, impulse.info.options.debug.get())
-            }
-            communicationFlow.emitStack.push(emitStackItem)
+            // if (impulse.info.options.debug.isSubscribed() && impulse.info.options.debug.hasContent()) {
+            //     emitStackItem.content.debug = Object.assign({}, impulse.info.options.debug.get())
+            // }
+            // communicationFlow.emitStack.push(emitStackItem)
         }
 
         /**
          * Rollback the emitted signal from history/stack
          */
-        const addToEmitStackRollBack = () => {
-            communicationFlow.emitStack.pop()
-        }
+        const addToEmitStackRollBack = () => communicationFlow.emitStack.pop()
 
         /**
          * Adds the emitter to the list if not present
@@ -371,9 +374,10 @@ const impulse = class ImpulseApiClass {
          * @return {boolean}
          */
         const hasEmitterSentHistoryInStack = (emitter) => {
-            return !!communicationFlow.emitStack.find(emit => {
-                return emit.info.emitter.isEqual(emitter)
-            })
+            return communicationFlow.emitStack.find(emitter)
+            // return !!communicationFlow.emitStack.find(emit => {
+            //     return emit.info.emitter.isEqual(emitter)
+            // })
         }
 
         /**
@@ -449,15 +453,16 @@ const impulse = class ImpulseApiClass {
          * @return {Object|undefined}
          */
         const getLastEmitInfo = (clone = true) => {
-            const count = communicationFlow.emitStack.length
-            if (count > 0) {
-                if (clone) {
-                    return Object.assign({}, communicationFlow.emitStack[count-1])
-                } else {
-                    return communicationFlow.emitStack[count-1]
-                }
-            }
-            return undefined
+            return communicationFlow.emitStack.getLastEmitInfo(clone)
+            // const count = communicationFlow.emitStack.length
+            // if (count > 0) {
+            //     if (clone) {
+            //         return Object.assign({}, communicationFlow.emitStack[count-1])
+            //     } else {
+            //         return communicationFlow.emitStack[count-1]
+            //     }
+            // }
+            // return undefined
         }
 
         /**
@@ -465,9 +470,7 @@ const impulse = class ImpulseApiClass {
          * 
          * @return {number}
          */
-        const getEmitCount = () => {
-            return communicationFlow.emitStack.length
-        }
+        const getEmitCount = () => communicationFlow.emitStack.count()
 
         // const serilizeImpulse = () => {
         //     impulse.history = Object.assign({}, communicationFlow);
@@ -475,21 +478,28 @@ const impulse = class ImpulseApiClass {
         // }
 
 
-        const serialize = () => Object.assign({}, {
-            id: impulse.id,
-            info: {
-                emitter: impulse.info.emitter.serialize(),
-                frequencies: impulse.info.frequencies.serialize(),
-                // TODO: REPLY
-                options: {
-                    trace: impulse.info.options.trace.serialize(),
-                    debug: impulse.info.options.debug.serialize(),
+        const serialize = () => {
+            const history = impulse.history.serialize()
+            history.emitters = history.emitters.map(emitter => emitter.serialize())
+            console.log('HISTORY:', history)
+            const serialized = Object.assign({}, {
+                id: impulse.id,
+                info: {
+                    emitter: impulse.info.emitter.serialize(),
+                    frequencies: impulse.info.frequencies.serialize(),
+                    // TODO: REPLY
+                    options: {
+                        trace: impulse.info.options.trace.serialize(),
+                        debug: impulse.info.options.debug.serialize(),
+                    },
+                    encryption: impulse.info.encryption,
                 },
-                encryption: impulse.info.encryption,
-            },
-            content: impulse.content.serialize(),
-            history: impulse.history.serialize(),
-        })
+                content: impulse.content.serialize(),
+                history: history,
+            })
+            console.log('SERIALIZED:', JSON.stringify(serialized))
+            return serialized
+        }
 
         /**
          * Dispatch the impulse to all defined frequencies and collect the impulseId for each one
@@ -500,6 +510,7 @@ const impulse = class ImpulseApiClass {
         const dispatch = (rollback) => {
             let emitted = 0;
             impulse.history.set(communicationFlow);
+            console.log('IMPULSE:', impulse)
 
             /** @property {CommunicationBus} connectedBus */
             const emit = getLastEmitInfo(false)
@@ -509,7 +520,8 @@ const impulse = class ImpulseApiClass {
                     const channel = freq.getChannel()
                     if (!!connectedBus.exists(entity, channel)) {
                         const channelObj = connectedBus.get(entity, channel)
-                        freq.impulseId = channelObj.send(impulse)
+                        const impulseToSend = serialize()
+                        freq.impulseId = channelObj.send(impulseToSend)
                         emitted++
                     }
                 })

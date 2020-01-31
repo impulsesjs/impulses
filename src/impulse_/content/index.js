@@ -56,8 +56,6 @@ const contentClass = class ContentClass {
             return Object.assign({}, content)
         }
 
-        const serialize = () => get()
-
         set(serializedContent)
 
         /**** Privileged Methods *************************************************************************************/
@@ -66,7 +64,7 @@ const contentClass = class ContentClass {
         this.set = (contentInfo) => set(contentInfo)
         this.add = (contentInfo) => add(contentInfo)
         this.get = () => get()
-        this.serialize = () => serialize()
+        this.serialize = () => get()
     }
 
     /**** Prototype Methods ******************************************************************************************/
