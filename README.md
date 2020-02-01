@@ -9,10 +9,10 @@
   <a href="https://app.fossa.io/projects/git%2Bgithub.com%2Fimpulsesjs%2Fimpulses?ref=badge_shield" alt="FOSSA Status"><img src="https://app.fossa.io/api/projects/git%2Bgithub.com%2Fimpulsesjs%2Fimpulses.svg?type=shield" alt="FOSSA Status"/></a>
 </p>
 <p align="center">
-  <a href="https://www.npmjs.com/package/impulses"><img src="https://img.shields.io/github/size/impulsesjs/impulses/lib/impulses.min.js.svg" alt="Size"></a>
-  <a href="https://www.npmjs.com/package/impulses"><img src="https://img.shields.io/npm/dm/impulses.svg" alt="Downloads"></a>
-  <a href="https://www.npmjs.com/package/impulses"><img src="https://img.shields.io/npm/v/impulses.svg" alt="Version"></a>
-  <a href="https://www.npmjs.com/package/impulses"><img src="https://img.shields.io/npm/l/impulses.svg" alt="License"></a>
+  <a href="https://www.npmjs.com/package/impulses"><img src="https://img.shields.io/bundlephobia/min/impulses?label=size" alt="Size"></a>
+  <a href="https://www.npmjs.com/package/impulses"><img src="https://badgen.net/npm/dm/impulses" alt="Downloads"></a>
+  <a href="https://www.npmjs.com/package/impulses"><img src="https://badgen.net/npm/v/impulses" alt="Version"></a>
+  <a href="https://www.npmjs.com/package/impulses"><img src="https://badgen.net/npm/license/impulses" alt="License"></a>
 </p>
 
 # Impulses
