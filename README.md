@@ -9,7 +9,7 @@
   <a href="https://app.fossa.io/projects/git%2Bgithub.com%2Fimpulsesjs%2Fimpulses?ref=badge_shield" alt="FOSSA Status"><img src="https://app.fossa.io/api/projects/git%2Bgithub.com%2Fimpulsesjs%2Fimpulses.svg?type=shield" alt="FOSSA Status"/></a>
 </p>
 <p align="center">
-  <a href="https://www.npmjs.com/package/impulses"><img src="https://img.shields.io/bundlephobia/min/impulses?label=size" alt="Size"></a>
+  <a href="https://bundlephobia.com/result?p=impulses"><img src="https://img.shields.io/bundlephobia/min/impulses?label=size" alt="Size"></a>
   <a href="https://www.npmjs.com/package/impulses"><img src="https://badgen.net/npm/dm/impulses" alt="Downloads"></a>
   <a href="https://www.npmjs.com/package/impulses"><img src="https://badgen.net/npm/v/impulses" alt="Version"></a>
   <a href="https://www.npmjs.com/package/impulses"><img src="https://badgen.net/npm/license/impulses" alt="License"></a>
