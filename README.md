@@ -53,6 +53,10 @@ Detailed changes for each release are documented in the [release notes](https://
 ## Contribution
 Please make sure to read the [Contributing Guide](https://github.com/impulsesjs/impulses/blob/dev/.github/CONTRIBUTING.md) before making a pull request.
 
+### Big Thanks
+
+Cross-browser Testing Platform and Open Source ❤️ provided by [Sauce Labs](https://saucelabs.com)
+
 ## License
 
 [MIT](http://opensource.org/licenses/MIT)
