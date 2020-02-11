@@ -53,9 +53,11 @@ const Values = class ValuesClass {
          * @returns {Object|{}}
          */
         function getPointerTo (fullPath = '') {
-            if (fullPath === '')
-                return value
-            return fullPath.split('.').reduce((valuesIn, currentPath) => valuesIn[currentPath] || null, value)
+            return fullPath === ''
+                ? value
+                : fullPath
+                    .split('.')
+                    .reduce((valuesIn, currentPath) => valuesIn[currentPath] || null, value)
         }
 
         /**
@@ -65,13 +67,10 @@ const Values = class ValuesClass {
          * @returns {boolean}
          */
         function destroy (fullPath) {
-            let holder_path = fullPath.split('.')
-            let to_delete = holder_path.splice(-1, 1)[0]
-            let holder = getPointerTo(holder_path.join('.'))
-            if (holder.hasOwnProperty(to_delete)) {
-                return Reflect.deleteProperty(holder, to_delete)
-            }
-            return false
+            const holder_path = fullPath.split('.')
+            const to_delete = holder_path.splice(-1, 1)[0]
+            const holder = getPointerTo(holder_path.join('.'))
+            return holder.hasOwnProperty(to_delete) ? Reflect.deleteProperty(holder, to_delete) : false
         }
 
         /**
@@ -91,13 +90,15 @@ const Values = class ValuesClass {
          * @param {*} valueToSet Values to be stored
          */
         function set (fullPath, valueToSet) {
-            let full_path = fullPath.split('.')
-            let ptr = full_path.reduce((valuePtr, block, idx) => {
-                if (!valuePtr.hasOwnProperty(block)) {
-                    Reflect.set(valuePtr, block, {})
-                }
-                return (idx === full_path.length - 1) ? valuePtr : valuePtr[block]
-            }, value)
+            const full_path = fullPath.split('.')
+            const ptr = full_path.reduce(
+                (valuePtr, block, idx) => {
+                    if (!valuePtr.hasOwnProperty(block)) {
+                        Reflect.set(valuePtr, block, {})
+                    }
+                    return (idx === full_path.length - 1) ? valuePtr : valuePtr[block]
+                }, 
+                value)
             if (Reflect.set(ptr, full_path.pop(), valueToSet) === true) {
                 setDirty()
             }
@@ -175,4 +176,4 @@ const Values = class ValuesClass {
     /**** Prototype Methods ******************************************************************************************/
 }
 
-export default Values
+export { Values }

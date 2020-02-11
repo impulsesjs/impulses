@@ -9,7 +9,7 @@
  * @see http://www.myersdaily.org/joseph/javascript/md5-text.html
  * @see http://jsperf.com/md5-shootout/7
  */
-const md5 = class MD5 {
+const Md5 = class MD5 {
 
     /**
      * Creates and initializes a Values object
@@ -19,7 +19,7 @@ const md5 = class MD5 {
     constructor(alwaysUseSafe = false) {
         /**** Private Attributes *************************************************************************************/
 
-        let hexChr = '0123456789abcdef'.split('')
+        const hexChr = '0123456789abcdef'.split('')
 
         // Some IEs are the only ones known of that need the idiotic function.
         let isSpecialIe = false
@@ -59,8 +59,8 @@ const md5 = class MD5 {
             if (!alwaysUseSafe && !isSpecialIe) {
                 return (x + y) & 0xFFFFFFFF
             } else {
-                let leastSignificantWord = (x & 0xFFFF) + (y & 0xFFFF)
-                let mostSignificantWord = (x >> 16) + (y >> 16) + (leastSignificantWord >> 16)
+                const leastSignificantWord = (x & 0xFFFF) + (y & 0xFFFF)
+                const mostSignificantWord = (x >> 16) + (y >> 16) + (leastSignificantWord >> 16)
                 return (mostSignificantWord << 16) | (leastSignificantWord & 0xFFFF)
             }
         }
@@ -97,7 +97,7 @@ const md5 = class MD5 {
          * @returns {array}
          */
         function stringToBlocks(data) {
-            let blocks = []
+            const blocks = []
             for (let idx = 0; idx < 64; idx += 4) {
                 blocks[idx >> 2] = data.charCodeAt(idx)
                     + (data.charCodeAt(idx + 1) << 8)
@@ -114,7 +114,7 @@ const md5 = class MD5 {
          * @returns {string}
          */
         function blocksToHex(blocks) {
-            let hex_result = []
+            const hex_result = []
             blocks.forEach((block) => {
                 hex_result.push(numberToHex(block))
             })
@@ -148,12 +148,12 @@ const md5 = class MD5 {
          * @param {int[]} blocks
          */
         function cycle(state, blocks) {
-            let val_a = state[0]
-            let val_b = state[1]
-            let val_c = state[2]
-            let val_d = state[3]
+            const val_a = state[0]
+            const val_b = state[1]
+            const val_c = state[2]
+            const val_d = state[3]
 
-            let settings = {
+            const settings = {
                 runState: [val_a, val_b, val_c, val_d],
                 cycles: [{method: ff, blockMap: [0,1,2,3, 4,5,6,7, 8,9,10,11, 12,13,14,15], extra: [
                     [7, -680876936],  [12, -389564586],  [17,  606105819],  [22, -1044525330],
@@ -192,8 +192,8 @@ const md5 = class MD5 {
          * @returns {string}
          */
         function calculate(data) {
-            let data_length = data.length
-            let state = [1732584193, -271733879, -1732584194, 271733878]
+            const data_length = data.length
+            const state = [1732584193, -271733879, -1732584194, 271733878]
             let idx
 
             for (idx = 64; idx <= data.length; idx += 64) {
@@ -201,7 +201,7 @@ const md5 = class MD5 {
             }
 
             data = data.substring(idx - 64)
-            let tail = [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0];
+            const tail = [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0];
             for (idx = 0; idx < data.length; idx++) {
                 tail[idx >> 2] |= data.charCodeAt(idx) << ((idx % 4) << 3)
             }
@@ -226,4 +226,4 @@ const md5 = class MD5 {
     }
 }
 
-export default md5
+export { Md5 }

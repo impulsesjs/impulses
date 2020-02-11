@@ -1,6 +1,6 @@
 'use strict'
 
-import Channel from './channel'
+import { Channel } from './channel'
 
 /**
  * @typedef {object} ChannelInfo
@@ -12,7 +12,7 @@ import Channel from './channel'
  * @typedef {ChannelInfo[]} ChannelsInfo
  */
 
-const CommBus = class CommBusClass {
+const Bus = class CommBusClass {
 
     /**
      * Creates and initializes a Channel Object
@@ -21,7 +21,7 @@ const CommBus = class CommBusClass {
 
         /**** Private Attributes *************************************************************************************/
 
-        let channelsInfo = {}
+        const channelsInfo = {}
 
         /**** Private Methods ****************************************************************************************/
 
@@ -54,16 +54,16 @@ const CommBus = class CommBusClass {
          * @returns {String[]} List of the registered channels (entity.name)
          */
         function register(channels) {
-            let registeredChannels = []
+            const registeredChannels = []
             if (channels.constructor !== Array) {
                 channels = [channels]
             }
 
             channels.forEach((channel) => {
                 if (isValidChannelInformation(channel)) {
-                    let channelInfo = Object.assign({}, channel)
-                    let entity = channelInfo.entity
-                    let name = channelInfo.name
+                    const channelInfo = Object.assign({}, channel)
+                    const entity = channelInfo.entity
+                    const name = channelInfo.name
                     delete channelInfo.entity
                     delete channelInfo.name
                     channelInfo.channel = new Channel(entity, name)
@@ -74,7 +74,7 @@ const CommBus = class CommBusClass {
                     if (!channelsInfo.hasOwnProperty(entity)) {
                         Reflect.set(channelsInfo, entity, {})
                     }
-                    let entityObj = Reflect.getOwnPropertyDescriptor(channelsInfo, entity).value
+                    const entityObj = Reflect.getOwnPropertyDescriptor(channelsInfo, entity).value
                     if (!entityObj.hasOwnProperty(name)) {
                         Reflect.set(entityObj, name, channelInfo)
                         registeredChannels.push(`${entity}.${name}`)
@@ -112,7 +112,7 @@ const CommBus = class CommBusClass {
          */
         function get(entity, channelName) {
             if (channelsInfo.hasOwnProperty(entity)) {
-                let entityInfo = Reflect.getOwnPropertyDescriptor(channelsInfo, entity).value
+                const entityInfo = Reflect.getOwnPropertyDescriptor(channelsInfo, entity).value
                 if (entityInfo.hasOwnProperty(channelName)) {
                     return Reflect.getOwnPropertyDescriptor(entityInfo, channelName).value.channel
                 }
@@ -162,4 +162,4 @@ const CommBus = class CommBusClass {
     /**** Prototype Methods ******************************************************************************************/
 }
 
-export default CommBus
+export { Bus }

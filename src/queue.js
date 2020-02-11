@@ -1,6 +1,6 @@
 'use strict'
 
-import Values from './values'
+import { Values } from './values'
 
 const Queue = class QueueClass {
 
@@ -50,8 +50,8 @@ const Queue = class QueueClass {
         function next () {
             if (queue.length > 0) {
                 getLock()
-                let id = queue.shift()
-                let data = get(id)
+                const id = queue.shift()
+                const data = get(id)
                 queuedData.destroy(id)
                 releaseLock()
                 return data
@@ -86,11 +86,11 @@ const Queue = class QueueClass {
          * @returns {boolean|null}
          */
         function cancel (id) {
-            let pos = queue.indexOf(id)
+            const pos = queue.indexOf(id)
             if (pos >= 0) {
                 getLock()
                 queue.splice(pos, 1)
-                let result = queuedData.destroy(id)
+                const result = queuedData.destroy(id)
                 releaseLock()
                 return (result !== null) ? result : true
             }
@@ -155,5 +155,4 @@ const Queue = class QueueClass {
     /**** Prototype Methods ******************************************************************************************/
 }
 
-export default Queue
-// module.exports = Queue
+export { Queue }
