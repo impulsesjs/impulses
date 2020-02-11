@@ -15,24 +15,12 @@ let message1 = ['ENTITY_NAME', 'CHANNEL_1', {field1: 'field1 value'}]
 let replyMessage = {message: 'This is the reply'}
 let errMessage1 = ['ENTITY_NAME', 'CHANNEL_11', {field1: 'field1 value'}]
 
-let privateMessage1 = ['ENTITY_NAME_PRIVATE', 'CHANNEL_1_PRIVATE', {field1: 'field1 value'}]
-let privateErrMessage1 = ['ENTITY_NAME_PRIVATE', 'CHANNEL_11_PRIVATE', {field1: 'field1 value'}]
-
 let channelConfig = {
     entity: 'ENTITY_NAME',
     channels: [
         {name: 'CHANNEL_1', require: [ 'field1' ]},
         {name: 'CHANNEL_2', require: [ 'field1', 'field2' ]},
         {name: 'CHANNEL_3'},
-    ]
-}
-
-let privateChannelConfig = {
-    entity: 'ENTITY_NAME_PRIVATE',
-    channels: [
-        {name: 'CHANNEL_1_PRIVATE', require: [ 'field1' ]},
-        {name: 'CHANNEL_2_PRIVATE', require: [ 'field1', 'field2' ]},
-        {name: 'CHANNEL_3_PRIVATE'},
     ]
 }
 
@@ -58,10 +46,6 @@ const listenerTest = (done, mustInclude = undefined, reply=false) => (message) =
             done()
         }
     }
-}
-
-const listenerCallback = (toTest) => (message) => {
-    if (toTest) toTest(message)
 }
 
 describe('Integration Tests', () => {
@@ -292,7 +276,7 @@ describe('Integration Tests', () => {
             expect(lib.getListenerInfo(listenerId)).to.be.null
         })
 
-        it('it should be able reply back through the same channel in a public BUS', (done) => {
+        it('it should be able reply back through the same channel in a BUS', (done) => {
             const clientListener = listenerTest(done, replyMessage, true)
             const listenerId = lib.sendAndListen('ENTITY_NAME', 'CHANNEL_3', {message: 'Request message'}, {id:200, listener: clientListener})
             expect(listenerId).not.to.be.false

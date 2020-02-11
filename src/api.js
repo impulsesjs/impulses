@@ -413,7 +413,7 @@ const Api = class ApiClass {
          *
          * @return {int|false} Registered Message ID or False
          */ 
-        this.send = (entityName, channelName, message) => sendMessage(entityName, channelName, message, bus)
+        this.send = (entityName, channelName, message) => sendMessage(entityName, channelName, message)
 
         /**
          * Sends a message to the channel and makes the listener hear
