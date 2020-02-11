@@ -1,9 +1,9 @@
 'use strict'
 
-import Md5 from './md5'
-import Bus from './bus'
+import { Md5 } from './md5'
+import { Bus } from './bus'
 
-const api = class ApiClass {
+const Api = class ApiClass {
 
     /**
      * Creates and initializes a bus Object
@@ -11,29 +11,22 @@ const api = class ApiClass {
      * @throws TypeError
      *
      * @param {Object} [configuration={}] Api configuration object
-     * @param {Bus} [publicBus=null]   Bus object that will be considered public
-     * @param {Bus} [pirvateBus=null]  Bus object that will be considered private
+     * @param {Bus} [providedBus=null]   Bus object that will be considered public
      */
-    constructor (configuration = {}, publicBus = null, privateBus = null) {
+    constructor (configuration = {}, providedBus = null) {
 
         // Configuration Validation
         if (configuration.constructor !== Object) {
             throw TypeError('Configuration must be of type Object')
         }
 
-        if (publicBus !== null && publicBus.constructor !== Bus) {
+        if (providedBus !== null && providedBus.constructor !== Bus) {
             throw TypeError('Public BUS Object is Invalid')
         }
 
-        if (privateBus !== null && privateBus.constructor !== Bus) {
-            throw TypeError('Private BUS Object is Invalid')
-        }
-
         /**** Private Attributes *************************************************************************************/
-
-        // let apiInfo = configuration
-        let pubBus = publicBus
-        let privBus = privateBus
+        const listenersId = new Map();
+        let bus = providedBus
         let id = undefined
 
         id = initId()
@@ -41,7 +34,7 @@ const api = class ApiClass {
 
         function initId () {
             if (!id) {
-                // TODO: Make the hash more unique
+                // TODO: Make the hash more unique 
                 return (new Md5()).calculate(JSON.stringify(this) + ('' + Math.random() * 5000))
             }
             return id
@@ -59,66 +52,26 @@ const api = class ApiClass {
         /**
          * Check if a given bus is set
          *
-         * @param  {Bus} bus Bus object to be verified
          * @return {Boolean}     True if the bus is valid
          */
-        function isBusSet(bus) {
+        function isBusSet() {
             return bus !== null
-        }
-
-        /**
-         * Checks if the public BUS is defined
-         *
-         * @return {boolean} True if the public bus is set
-         */
-        function existPublic() {
-            return isBusSet(pubBus)
-        }
-
-        /**
-         * Checks if the private BUS is defined
-         *
-         * @return {boolean} True if the private bus is set
-         */
-        function existPrivate() {
-            return isBusSet(privBus)
         }
 
         /**
          * Validates if a given object is a valid bus object
          *
-         * @param  {Bus} bus Object to be validated
+         * @param  {Bus} busToCheck Object to be validated
          * @return {boolean} True if the bus is valid
          */
-        function isBus(bus) {
-            return bus.constructor === Bus
+        function isBus(busToCheck) {
+            return busToCheck.constructor === Bus
         }
 
-        /**
-         * Sets the public BUS
-         *
-         * @throws TypeError
-         *
-         * @param {Bus} publicBus BUS to be used as public
-         */
-        function setPublicBus(publicBus) {
-            if (isBus(publicBus)) {
-                pubBus = publicBus
-            } else {
-                throw TypeError('Expecting Bus type')
-            }
-        }
-
-        /**
-         * Sets the private BUS
-         *
-         * @throws TypeError
-         *
-         * @param {Bus} privateBus BUS to be used as private
-         */
-        function setPrivateBus(privateBus) {
-            if (isBus(privateBus)) {
-                privBus = privateBus
+        function setBus(busToSet) {
+            if (isBus(busToSet)) {
+                bus = busToSet
+                // TODO: Need to reset any map related to the previous bus
             } else {
                 throw TypeError('Expecting Bus type')
             }
@@ -128,7 +81,7 @@ const api = class ApiClass {
          * Verifies the minimum required structure for the Channel Configuration
          *
          * @param  {Object}  channelConfig Channel configuration object
-         * @return {Boolean}               True if valid
+         * @return {Boolean} True if valid
          */
         function isValidChannelConfig(channelConfig) {
             if (channelConfig.constructor === Object) {
@@ -142,21 +95,74 @@ const api = class ApiClass {
             return false
         }
 
+        /*************************************************************/
+        /** Channel Related ******************************************/
+        /*************************************************************/
+
         /**
-         * [registerChannels description]
-         *
-         * @throws Error, TypeError
-         *
-         * @param  {Bus} targetBus         Target Bus Object
-         * @param  {Object} [channelConfig={}] Channel Configuration Object
-         * @return {String[]}                  Array with registered channels (check bus.register)
+         * Gets channel object if exists
+         * 
+         * @param {String} entityName Entity Name
+         * @param {String} channelName Channel Name
+         * 
+         * @returns {Channel|undefined}
          */
-        function registerChannels(targetBus, channelConfig = {}) {
-            if (isBusSet(targetBus)) {
+        function getChannel(entityName, channelName) {
+            if (isBusSet()) {
+                const channelObj = bus.get(entityName, channelName)
+                if (channelObj !== null) {
+                    return channelObj
+                }
+            }
+            return undefined;
+        }
+
+        /**
+         * Gets channel object by listener ID if exists
+         * 
+         * @param {String} entityName Entity Name
+         * @param {String} channelName Channel Name
+         * 
+         * @returns {Channel|undefined}
+         */
+        function getChannelByListenerId(listenerId) {
+            if (listenersId.has(listenerId)) {
+                const { entity, channel } = listenersId.get(listenerId)
+                return getChannel(entity, channel)
+            }
+            return undefined;
+        }
+        
+        function getChannelStatus (entityName, channelName) {
+            const channelObj = getChannel(entityName, channelName)
+            return !!channelObj ? channelObj.getStatus() : undefined
+        }
+
+        function openChannel (entityName, channelName) {
+            const channelObj = getChannel(entityName, channelName)
+            return !!channelObj && channelObj.open()
+        }
+
+        function closeChannel (entityName, channelName) {
+            const channelObj = getChannel(entityName, channelName)
+            return !!channelObj && channelObj.close()
+        }
+
+        function holdChannel (entityName, channelName) {
+            const channelObj = getChannel(entityName, channelName)
+            return !!channelObj && channelObj.hold()
+        }
+        
+        function resumeChannel (entityName, channelName) {
+            const channelObj = getChannel(entityName, channelName)
+            return !!channelObj && channelObj.resume()
+        }
+        
+        function initChannels (channelConfig = {}) {
+            if (isBusSet()) {
                 if (isValidChannelConfig(channelConfig)) {
-                    let channels = channelConfig.channels.map((channelInfo) => {
-                        // TODO: Need to validate the Channel Config
-                        let res = {
+                    const channels = channelConfig.channels.map((channelInfo) => {
+                        const res = {
                             entity: channelConfig.entity,
                             name: channelInfo.name,
                         }
@@ -169,7 +175,7 @@ const api = class ApiClass {
                         }
                         return res
                     })
-                    return targetBus.register(channels)
+                    return bus.register(channels)
                 } else {
                     throw TypeError('Invalid channel configuration')
                 }
@@ -178,101 +184,92 @@ const api = class ApiClass {
             }
         }
 
-        /**
-         * Send a message to a given BUS
-         *
-         * @param  {String} entity  Entity name
-         * @param  {String} channel Channel name
-         * @param  {Object} message Message to be sent
-         * @param  {Bus} bus     Bus to be used
-         *
-         * @return {int|false}      Registered Id or False
-         */
-        function sendMessage(entity, channel, message, bus) {
-            /** @type {Bus} */
-            let targetBus = bus || pubBus
+        function sanitizeChannelListenerMap () {
+            listenersId.forEach((value, id, map) => {
+                if (!getChannelListenerInfo(id)) {
+                    removeChannelListener(listenerId)
+                }
+            })
+        }
 
-            if (isBusSet(targetBus)) {
-                let channelObj = targetBus.get(entity, channel)
-                if (channelObj !== null) {
-                    return channelObj.send(message)
+        function addChannelListener (entity, channel, listenerInfo) {
+            sanitizeChannelListenerMap()
+            const channelObj = getChannel(entity, channel)
+            let listenerId = false
+            if (channelObj) {
+                listenerId = channelObj.addListener(listenerInfo)
+                if (listenerId) {
+                    listenersId.set(listenerId, {entity, channel})
                 }
             }
+            return listenerId
+        }
 
-            return false
+        function removeChannelListener (listenerId) {
+            const channelObj = getChannelByListenerId(listenerId)
+            if (channelObj) {
+                channelObj.removeListener(listenerId)
+            }
+            listenersId.delete(listenerId)
+        }
+
+        function getChannelListenerInfo (listenerId) {
+            const channelObj = getChannelByListenerId(listenerId)
+            return !!channelObj ? channelObj.listenerInfo(listenerId) : null
+        }
+
+        function sendMessage (entity, channel, message) {
+            sanitizeChannelListenerMap()
+            const channelObj = getChannel(entity, channel)
+            return !!channelObj && channelObj.send(message)
+        }
+
+        function sendAndListen (entityName, channelName, message, listenerInfo) {
+            const channelObj = getChannel(entityName, channelName)
+            return !!channelObj ? channelObj.sendAndListen(message, listenerInfo) : false
+        }
+
+        function getMessageInfo (entityName, channelName, messageId) {
+            const channelObj = getChannel(entityName, channelName)
+            return !!channelObj ? channelObj.messageInfo(messageId) : null
         }
 
         /**
+         * Discover if a channel exists
+         * 
+         * @param {String} entityName Entity name
+         * @param {String} cahnnelName Channel name
+         * 
+         * @return {ChannelClass|false} False if no Channel found
+         */
+        function discoverChannel (entityName, cahnnelName) {
+            // TODO: Refactor - same as getChannel
+            if (isBusSet()) {
+                return bus.get(entityName, cahnnelName)
+            }
+            return false
+        }        
+        
+        /**
          * Get the information for the reply
          *
-         * @param  {Object} message   Message
-         * @return {Object|false}     Entity and Channel information or false if none
+         * @param  {Object} message Message
+         * @return {Object|false} Entity and Channel information or false if none
          */
-        function getReplyInformation(message) {
+        function getReplyInformation (message) {
             if (typeof message.reply_stack !== 'undefined') {
                 return message.reply_stack.pop()
             }
             return false
         }
 
-        /**
-         * Discovers the Channel in the correct BUS
-         *
-         * @param  {String} entity  Entity name
-         * @param  {String} name Channel name
-         *
-         * @return {ChannelClass|false}  False if no Channel found
-         */
-        function discoverChannel(entity, name) {
-            return discovePublicChannel(entity, name) || discovePrivateChannel(entity, name)
-        }
-
-        /**
-         * Discover if a channel exists in the public bus
-         * 
-         * @param {String} entityName Entity name
-         * @param {String} cahnnelName Channel name
-         * 
-         * @return {ChannelClass|false}  False if no Channel found
-         */
-        function discovePublicChannel(entityName, cahnnelName) {
-            if (existPublic()) {
-                return pubBus.get(entityName, cahnnelName)
-            }
-            return false
-        }
-
-        /**
-         * Discover if a channel exists in the private bus
-         * 
-         * @param {String} entityName Entity name
-         * @param {String} cahnnelName Channel name
-         * 
-         * @return {ChannelClass|false}  False if no Channel found
-         */
-        function discovePrivateChannel(entityName, cahnnelName) {
-            if (existPrivate()) {
-                return privBus.get(entityName, cahnnelName)
-            }
-            return false
-        }
-        
-        /**
-         * Reply to a given message
-         * 
-         * TODO: need to make the reply for a specific message ID.
-         *
-         * @param  {Object} message        Message to be sent in the reply
-         * @param  {Object} requestMessage Message to reply
-         * @return {boolean}               True if replied successfully
-         */
-        function reply(message, requestMessage) {
-            let reply_to = getReplyInformation(requestMessage)
+        function reply (message, requestMessage) {
+            const reply_to = getReplyInformation(requestMessage)
             if (reply_to !== false) {
-                let channel_found = discoverChannel(reply_to.entity, reply_to.name)
-                if (channel_found !== false) {
+                const channelFound = discoverChannel(reply_to.entity, reply_to.name)
+                if (channelFound) {
                     message.reply = true
-                    channel_found.send(message)
+                    channelFound.send(message)
                     return true
                 }
             }
@@ -288,112 +285,167 @@ const api = class ApiClass {
          */
         this.getId = () => getId()
 
+        /*************************************************************/
+        /** Bus Related **********************************************/
+        /*************************************************************/
+
         /**
-         * Checks if the public BUS is defined
+         * Checks if the BUS is defined
          *
          * @return {boolean} True if the public bus is set
          */
-        this.hasPublic = () => existPublic()
+        this.hasBus = () => isBusSet()
 
         /**
-         * Checks if the private BUS is defined
-         *
-         * @return {boolean} True if the public bus is set
-         */
-        this.hasPrivate = () => existPrivate()
-
-        /**
-         * Sets the public BUS
+         * Sets/Overrides the BUS
          *
          * @throws TypeError
          *
-         * @param {Bus} publicBus BUS to be used as public
+         * @param {Bus} busToSet BUS to be used as public
          */
-        this.setPublicBus = (publicBus) => setPublicBus(publicBus)
+        this.setBus = (bus) => setBus(bus)
+        
+        /*************************************************************/
+        /** Channel Related ******************************************/
+        /*************************************************************/
+        
+        /**
+         * Get a specific channel status
+         * 
+         * @param {String} entityName Entity Name
+         * @param {String} channelName Channel Name
+         * 
+         * @returns {Number} 
+         */
+        this.getChannelStatus = (entityName, channelName) => getChannelStatus(entityName, channelName)
+        /**
+         * Open the channel activity (if not active)
+         * 
+         * @param {String} entityName Entity Name
+         * @param {String} channelName Channel Name
+         * 
+         * @returns {Boolean}
+         */
+        this.openChannel = (entityName, channelName) => openChannel(entityName, channelName)
 
         /**
-         * Sets the private BUS
-         *
-         * @throws TypeError
-         *
-         * @param {Bus} privateBus BUS to be used as public
+         * Close the channel activity (if open)
+         * 
+         * @param {String} entityName Entity Name
+         * @param {String} channelName Channel Name
+         * 
+         * @returns {Boolean}
          */
-        this.setPrivateBus = (privateBus) => setPrivateBus(privateBus)
+        this.closeChannel = (entityName, channelName) => closeChannel(entityName, channelName)
 
         /**
-         * Register channels in the public BUS
+         * Freezes the channel activity (if active)
+         * 
+         * @param {String} entityName Entity Name
+         * @param {String} channelName Channel Name
+         * 
+         * @returns {Boolean}
+         */
+        this.holdChannel = (entityName, channelName) => holdChannel(entityName, channelName)
+
+        /**
+         * Resume the channel activity (if on hold)
+         * 
+         * @param {String} entityName Entity Name
+         * @param {String} channelName Channel Name
+         * 
+         * @returns {Boolean}
+         */
+        this.resumeChannel = (entityName, channelName) => resumeChannel(entityName, channelName)
+        
+        /**
+         * Bulk channel initialization
          *
          * @throws Error, TypeError
          *
-         * @param  {Object} channelConfig Channel Configuration
-         * @return {String[]}             Array with registered channels (check bus.register)
+         * @param  {Object} [channelConfig={}] Channel Configuration Object
+         * @returns {String[]} Array with registered channels (check bus.register)
          */
-        this.registerPublic = (channelConfig) => registerChannels(pubBus, channelConfig)
+        this.initChannels = (channelConfig) => initChannels(channelConfig)
+        
+        /**
+         * Adds a listener to a specific channel
+         * 
+         * @param {String} entity 
+         * @param {String} channel 
+         * @param {{id: Number, listener: Function}} listener 
+         * 
+         * @returns {String|false}
+         */
+        this.addListener = (entityName, channelName, listener) => addChannelListener(entityName, channelName, listener)
+        
+        /**
+         * Remove a listener
+         *
+         * @param {String} listenerId listener ID
+         */
+        this.removeListener = (listenerId) => removeChannelListener(listenerId)
 
         /**
-         * Register channels in the private BUS
+         * Gets a listener information for the provided ID
          *
-         * @throws Error, TypeError
-         *
-         * @param  {Object} channelConfig Channel Configuration
-         * @return {String[]}             Array with registered channels (check bus.register)
+         * @param {String} listenerId listener ID
+         * @returns {Object|null}
          */
-        this.registerPrivate = (channelConfig) => registerChannels(privBus, channelConfig)
+        this.getListenerInfo = (listenerId) => getChannelListenerInfo(listenerId)
 
         /**
-         * Send a message to the public BUS
-         *
-         * @param  {String} entityName  Entity name
-         * @param  {String} channelName Channel name
-         * @param  {Object} message Message to be sent
-         *
-         * @return {int|false}      Registered Id or False
-         */
-        this.sendPublic = (entityName, channelName, message) => sendMessage(entityName, channelName, message, pubBus)
-
-        /**
-         * Send a message to the private BUS
-         *
-         * @param  {String} entityName  Entity name
-         * @param  {String} channelName Channel name
-         * @param  {Object} message Message to be sent
-         *
-         * @return {int|false}      Registered Id or False
-         */
-        this.sendPrivate = (entityName, channelName, message) => sendMessage(entityName, channelName, message, privBus)
-
-        /**
-         * check If the channel exists
+         * Discover if a channel exists
          * 
          * @param {String} entityName Entity name
-         * @param {String} channelName Channel name
-         * @return {boolean}
+         * @param {String} cahnnelName Channel name
+         * 
+         * @return {ChannelClass|false} False if no Channel found
          */
         this.exists = (entityName, channelName) => !!discoverChannel(entityName, channelName)
-
+        
         /**
-         * check If the channel exists as public
-         * 
-         * @param {String} entityName Entity name
+         * Send a message to the BUS
+         *
+         * @param {String} entityName  Entity name
          * @param {String} channelName Channel name
-         * @return {boolean}
-         */
-        this.existsPublic = (entityName, channelName) => !!discovePublicChannel(entityName, channelName)
+         * @param {Object} message Message to be sent
+         *
+         * @return {int|false} Registered Message ID or False
+         */ 
+        this.send = (entityName, channelName, message) => sendMessage(entityName, channelName, message, bus)
 
         /**
-         * check If the channel exists as private
-         * 
-         * @param {String} entityName Entity name
+         * Sends a message to the channel and makes the listener hear
+         *
+         * @param {String} entityName  Entity name
          * @param {String} channelName Channel name
-         * @return {boolean}
+         * @param {Object} message
+         * @param {Object} listenerInfo
+         *
+         * @return {String|false} listenerId
          */
-        this.existsPrivate = (entityName, channelName) => !!discovePrivateChannel(entityName, channelName)
+        this.sendAndListen = (entityName, channelName, message, listenerInfo) => sendAndListen(entityName, channelName, message, listenerInfo)
 
         /**
-         * Reply to a message using the same channel
+         * Gets a message information for a specific ID
          * 
-         * @param {Object} message 
-         * @param {Object} requestMessage 
+         * @param {String} entityName  Entity name
+         * @param {String} channelName Channel name
+         * @param {String} messageId
+         * 
+         * @returns {Object|null} Message Information Object or null if not found
+         */
+        this.getMessageInfo = (entityName, channelName, messageId) => getMessageInfo(entityName, channelName, messageId)
+
+        /**
+         * Reply to a given message
+         * 
+         * TODO: need to make the reply for a specific message ID.
+         *
+         * @param {Object} message Message to be sent in the reply
+         * @param {Object} requestMessage Message to reply
+         * @return {boolean} True if replied successfully
          */
         this.reply = (message, requestMessage) => reply(message, requestMessage)
     }
@@ -401,4 +453,4 @@ const api = class ApiClass {
     /**** Prototype Methods ******************************************************************************************/
 }
 
-export default api
+export { Api }
