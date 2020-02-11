@@ -1,7 +1,7 @@
 /* global describe, it, before */
 
 import chai from 'chai';
-import Channel from '../src/channel';
+import { Channel } from '../src/channel';
 import MockHelper from './mocked/mockClassHelper.mock'
 
 chai.expect();
