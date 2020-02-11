@@ -1,7 +1,7 @@
 /* global describe, it, before */
 
 import chai from 'chai';
-import Bus from '../src/bus';
+import { Bus } from '../src/bus';
 import MockHelper from './mocked/mockClassHelper.mock'
 
 chai.expect();

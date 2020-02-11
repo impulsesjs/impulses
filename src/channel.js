@@ -1,10 +1,16 @@
 'use strict'
 
-import Queue from './queue'
-import MD5 from './md5'
+import { Queue } from './queue'
+import { Md5 as MD5 } from './md5'
+
+const channelStatusCodes = {
+    CLOSED_STATUS: 0,
+    OPEN_STATUS: 1,
+    ON_HOLD_STATUS: 2,
+}
 
 // TODO: need this to be WebWorker Working
-const channel = class ChannelClass {
+const Channel = class ChannelClass {
     /**
      * @constructor ChannelClass
      * 
@@ -15,20 +21,16 @@ const channel = class ChannelClass {
     constructor (entityName, channelName, initOnHold = false) {
 
         /**** Private Attributes *************************************************************************************/
-        const CLOSED_STATUS = 0
-        const OPEN_STATUS = 1
-        const ON_HOLD_STATUS = 2
-
         const md5 = new MD5()
 
         let processingQueue = false
-        let entity = entityName
-        let name = channelName
+        const entity = entityName
+        const name = channelName
         let statusOpen = true
         let statusHold = initOnHold || false
         let hookList = []
-        let listenerQ = new Queue()
-        let messageQ = new Queue()
+        const listenerQ = new Queue()
+        const messageQ = new Queue()
 
         /**** Private Methods ****************************************************************************************/
 
@@ -163,14 +165,14 @@ const channel = class ChannelClass {
          */
         function getStatus () {
             if (!isOpen()) {
-                return CLOSED_STATUS
+                return channelStatusCodes.CLOSED_STATUS
             }
 
             if (isOnHold()) {
-                return ON_HOLD_STATUS
+                return channelStatusCodes.ON_HOLD_STATUS
             }
 
-            return OPEN_STATUS
+            return channelStatusCodes.OPEN_STATUS
         }
 
         /**
@@ -221,18 +223,12 @@ const channel = class ChannelClass {
          */
         function cancelHook (id) {
             try {
-                let idx = hookList.findIndex((item) => {
+                const idx = hookList.findIndex((item) => {
                     return item.qid === id
                 })
                 if (idx >= 0) {
                     hookList.splice(idx, 1)
                 }
-                // for (let idx = 0; idx < hookList.length; idx++) {
-                //     if (hookList[idx].qid === id) {
-                //         hookList.splice(idx, 1)
-                //         break
-                //     }
-                // }
             }
             catch (e) {
                 // something went wrong probably list length change due to concurrent cancellation / activity
@@ -278,7 +274,7 @@ const channel = class ChannelClass {
          * @param {Object} message Message object
          */
         function addReplyInfo(message) {
-            let reply_stack = {entity: entity, name: name}
+            const reply_stack = {entity: entity, name: name}
             if (typeof message.reply_stack === 'undefined') {
                 message.reply_stack = []
             }
@@ -292,8 +288,8 @@ const channel = class ChannelClass {
          */
         function processMessage (message) {
             try {
+                addReplyInfo(message)
                 hookList.forEach((item) => {
-                    addReplyInfo(message)
                     item.data.listener(message) // No need to check here since we are ensuring its existence when coming from the queue
                     if (item.data.times > 0) {
                         item.data.times--
@@ -325,10 +321,10 @@ const channel = class ChannelClass {
          * @param {Object} message
          * @param {Object} listenerInfo
          *
-         * @return {Object} listenerInfo
+         * @return {String|false} listenerId
          */
         function sendAndListen (message, listenerInfo) {
-            let id = addListener(listenerInfo)
+            const id = addListener(listenerInfo)
             send(message)
             return id
         }
@@ -337,7 +333,7 @@ const channel = class ChannelClass {
          * Get a message information for the provided id
          *
          * @param {string} id Message ID
-         * @returns {*}
+         * @returns {*|null}
          */
         function getMessageInfo (id) {
             return messageQ.get(id).data
@@ -365,7 +361,7 @@ const channel = class ChannelClass {
                 while (listenerInfo !== null) {
                     if (typeof listenerInfo.data.listener === 'function') {
                         hash = md5.calculate(listenerInfo.toString())
-                        let item = {id: hash, qid: listenerInfo.id, data: listenerInfo.data}
+                        const item = {id: hash, qid: listenerInfo.id, data: listenerInfo.data}
                         hookList.push(item)
                     }
                     listenerInfo = listenerQ.next()
@@ -498,4 +494,4 @@ const channel = class ChannelClass {
     /**** Prototype Methods ******************************************************************************************/
 }
 
-export default channel
+export { Channel, channelStatusCodes }
