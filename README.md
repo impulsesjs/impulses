@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://circleci.com/gh/impulsesjs/impulses/tree/dev"><img src="https://img.shields.io/circleci/project/impulsesjs/impulses/dev.svg" alt="Build Status"></a>
-  <a href="https://codecov.io/gh/impulsesjs/impulses?branch=dev"><img src="https://codecov.io/gh/impulsesjs/impulses/branch/dev/graph/badge.svg" alt="Coverage Status"></a>
+  <a href="https://codecov.io/gh/impulsesjs/impulses?branch=dev"><img src="https://badgen.net/codecov/c/github/impulsesjs/impulses?icon=codecov" alt="Coverage Status"></a>
   <a href="https://www.codacy.com/manual/joaocac/impulses?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=impulsesjs/impulses&amp;utm_campaign=Badge_Grade"><img src="https://api.codacy.com/project/badge/Grade/cf61e57e8f7e4eca898bb3c6efdb5d3f" alt="Codacity Code Grade"></a>
   <a href="https://codeclimate.com/github/impulsesjs/impulses"><img src="https://badgen.net/codeclimate/maintainability/impulsesjs/impulses?icon=codeclimate" alt="Code Climate Maintainability"></a>
   <a href="https://codeclimate.com/github/impulsesjs/impulses"><img src="https://badgen.net/codeclimate/tech-debt/impulsesjs/impulses?icon=codeclimate&label=tech.%20debt" alt="Code Climate Maintainability"></a>
