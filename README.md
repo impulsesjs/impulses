@@ -9,6 +9,7 @@
   <a href="https://deepscan.io/dashboard#view=project&tid=5463&pid=7282&bid=70632"><img src="https://deepscan.io/api/teams/5463/projects/7282/branches/70632/badge/grade.svg" alt="DeepScan grade"></a>
 </p>
 <p align="center">
+  <a href="https://lgtm.com/projects/g/impulsesjs/impulses"><img src="https://badgen.net/lgtm/alerts/g/impulsesjs/impulses?icon=lgtm" alt="LGTM alerts"/></a>
   <a href="https://app.saucelabs.com/u/jcorreia"><img src="https://saucelabs.com/buildstatus/jcorreia" alt="Sauce Test Status"/></a>
   <a href="https://snyk.io//test/github/impulsesjs/impulses?targetFile=package.json"><img src="https://snyk.io//test/github/impulsesjs/impulses/badge.svg?targetFile=package.json" alt="Known Vulnerabilities" data-canonical-src="https://snyk.io//test/github/impulsesjs/impulses?targetFile=package.json" style="max-width:100%;"></a>
   <a href="https://app.fossa.io/projects/git%2Bgithub.com%2Fimpulsesjs%2Fimpulses?ref=badge_shield" alt="FOSSA Status"><img src="https://app.fossa.io/api/projects/git%2Bgithub.com%2Fimpulsesjs%2Fimpulses.svg?type=shield" alt="FOSSA Status"/></a>
